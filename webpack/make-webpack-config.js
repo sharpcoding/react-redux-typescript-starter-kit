@@ -2,7 +2,6 @@ var path = require("path");
 var webpack = require("webpack");
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
 var StatsPlugin = require("stats-webpack-plugin");
-var loadersByExtension = require("../config/loadersByExtension");
 
 module.exports = function(options) {
   var entry;
@@ -115,7 +114,49 @@ module.exports = function(options) {
     },
     target: 'web',
     module: {
-      loaders: loadersByExtension(loaders).concat(loadersByExtension(stylesheetLoaders))
+      //work based on https://medium.com/@victorleungtw/how-to-use-webpack-with-react-and-bootstrap-b94d33765970#.lgd67lg82
+      loaders: [
+        {
+          extensions: [ 'js' ],
+          test: /\.(js)(\?.*)?$/,
+          loaders: [ 'react-hot', 'babel-loader' ],
+          include: process.env.PWD + '/client' 
+        },
+        {
+          extensions: [ 'ts', 'tsx' ],
+          test: /\.(ts|tsx)(\?.*)?$/,
+          loaders: [ 'react-hot', 'ts-loader' ] 
+        },
+        {
+          test: /\.(css)(\?.*)?$/,
+          extensions: [ 'css' ],
+          loader: 'style-loader!css-loader' 
+        },
+        { 
+          test: /\.png$/, 
+          loader: "url-loader?limit=100000" 
+        },
+        { 
+          test: /\.jpg$/, 
+          loader: "file-loader" 
+        },
+        {
+          test: /\.(woff|woff2)(\?v=\d+\.\d+\.\d+)?$/, 
+          loader: 'url?limit=10000&mimetype=application/font-woff'
+        },
+        {
+          test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/, 
+          loader: 'url?limit=10000&mimetype=application/octet-stream'
+        },
+        {
+          test: /\.eot(\?v=\d+\.\d+\.\d+)?$/, 
+          loader: 'file'
+        },
+        {
+          test: /\.svg(\?v=\d+\.\d+\.\d+)?$/, 
+          loader: 'url?limit=10000&mimetype=image/svg+xml'
+        }
+      ]
     },
     devtool: options.devtool,
     debug: options.debug,
