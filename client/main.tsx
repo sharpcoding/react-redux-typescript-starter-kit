@@ -3,6 +3,7 @@ import * as ReactDOM from 'react-dom';
 import { Store, createStore, compose, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
 import { Button, DropdownButton, ButtonGroup, MenuItem } from 'react-bootstrap';
+import { MainScreen as GraphMainScreen } from './graphScreen/components/mainScreen';
 // import App from './main/components/App';
 // import rootReducer from './main/reducer';
 
@@ -13,17 +14,7 @@ const composeEnhancers = window['__REDUX_DEVTOOLS_EXTENSION_COMPOSE__'] || compo
 ReactDOM.render(
   <span>
   <h3>Hello from React and Bootstrap</h3>
-  <div>
-    <Button bsSize="large">This is a large React-Bootstrap button</Button>
-    <ButtonGroup>
-      <DropdownButton bsStyle="success" title="Dropdown">
-        <MenuItem key="1">Dropdown link</MenuItem>
-        <MenuItem key="2">Dropdown link</MenuItem>
-      </DropdownButton>
-      <Button bsStyle="info">Middle</Button>
-      <Button bsStyle="info">Right</Button>
-    </ButtonGroup>
-  </div>
+  <GraphMainScreen selectedGraph={null} dispatch={null} />
   </span>,
    document.getElementById('app')
 );
