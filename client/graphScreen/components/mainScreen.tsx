@@ -2,7 +2,7 @@ import { Dispatch } from 'redux';
 import { Button } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import * as React from 'react';
-import { ScatterPlot } from './scatter-plot';
+import { ScatterPlot } from './scatterPlot';
 import { GraphScreenState, EnumSelectedChartType } from '../model';
 import { selectChartAction } from '../actions';
 

@@ -2,8 +2,8 @@ import * as React   from 'react';
 import * as d3      from 'd3';
 import * as _ from 'lodash';
 import { connect } from 'react-redux';
-import DataCircles  from './data-circle';
-import XYAxis       from './x-y-axis';
+import DataCircles  from './dataCircles';
+import XYAxis       from './xyAxis';
 import { Point2D } from '../model';
 
 export interface ScatterPlotProps {
