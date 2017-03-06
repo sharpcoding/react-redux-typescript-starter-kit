@@ -3,7 +3,13 @@ export enum EnumSelectedChartType {
   Pie
 }
 
+export type Point2D = {
+  x: number;
+  y: number;
+}
+
 export type GraphScreenState = {
   chartType: EnumSelectedChartType,
-  chartTypeToDescriptionMapping: Object
+  chartTypeToDescriptionMapping: Object,
+  randomArrayOfPoints: Point2D[]
 };

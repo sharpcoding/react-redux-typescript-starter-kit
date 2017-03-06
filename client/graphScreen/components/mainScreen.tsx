@@ -2,6 +2,7 @@ import { Dispatch } from 'redux';
 import { Button } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import * as React from 'react';
+import { ScatterPlot } from './scatter-plot';
 import { GraphScreenState, EnumSelectedChartType } from '../model';
 import { selectChartAction } from '../actions';
 
@@ -29,6 +30,9 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
           Display Pie Chart
         </Button>
         <span>Selected chart: {this.props.state.chartTypeToDescriptionMapping[this.props.state.chartType]}</span>
+        <div>
+           <ScatterPlot width={700} height={500} padding={30} data={this.props.state.randomArrayOfPoints} />
+        </div>
       </div>
     );
   }
@@ -39,7 +43,7 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
 //a fragment MainScreen component keeps interest in 
 const mapStateToProps = state => {
   //console.log() only for demonstration purposes
-  console.log('mapStateToProps', state);
+  console.log('mainScreen mapStateToProps', state);
   return  {
     state: state.graphScreenState
   }
