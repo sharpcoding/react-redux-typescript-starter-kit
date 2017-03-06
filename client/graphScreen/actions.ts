@@ -3,7 +3,9 @@ import { createAction, Action } from 'redux-actions';
 import { GraphScreenState, EnumSelectedChartType } from './model';
 
 export const SELECT_CHART = 'SELECT_CHART';
-export const RANDOMIZE_DATA = 'RANDOMIZE_DATA';
+export const CHANGE_MAX_X_AXIS_VALUE = 'CHANGE_MAX_X_AXIS_VALUE';
+export const CHANGE_MAX_Y_AXIS_VALUE = 'CHANGE_MAX_Y_AXIS_VALUE';
+export const CHANGE_NUMBER_OF_POINTS = 'CHANGE_NUMBER_OF_POINTS';
 
 /**
  * This is a fragment of code that actually transforms call arguments 
@@ -12,15 +14,27 @@ export const RANDOMIZE_DATA = 'RANDOMIZE_DATA';
  */
 const selectChartAction = createAction<EnumSelectedChartType, EnumSelectedChartType>(
   SELECT_CHART,
-  (chartType: EnumSelectedChartType) => chartType
+  (t: EnumSelectedChartType) => t
 );
 
-const randomizeDataAction = createAction<void>(
-  RANDOMIZE_DATA,
-  () => {}
+const changeMaxXAxisValue = createAction<number, number>(
+  CHANGE_MAX_X_AXIS_VALUE,
+  (v: number) => v
+);
+
+const changeMaxYAxisValue = createAction<number, number>(
+  CHANGE_MAX_Y_AXIS_VALUE,
+  (v: number) => v
+);
+
+const changeNumbeOfPoints = createAction<number, number>(
+  CHANGE_NUMBER_OF_POINTS,
+  (v: number) => v
 );
 
 export {
   selectChartAction,
-  randomizeDataAction
+  changeMaxXAxisValue,
+  changeMaxYAxisValue,
+  changeNumbeOfPoints
 }

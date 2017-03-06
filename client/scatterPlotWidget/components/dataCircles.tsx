@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import * as _ from 'lodash';
-import { Point2D } from '../model';
+import { Point2D } from '../models';
 
 export interface DataCirclesProps {
   xScale: (value: number) => number;

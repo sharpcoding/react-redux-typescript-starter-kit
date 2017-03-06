@@ -2,8 +2,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Store, createStore, compose, applyMiddleware, combineReducers } from 'redux';
 import { Provider } from 'react-redux';
-import { Button, DropdownButton, ButtonGroup, MenuItem } from 'react-bootstrap';
-import GraphMainScreen from './graphScreen/components/mainScreen';
+import GraphMainScreen from './graphScreen';
 import graphScreenState from './graphScreen/reducer';
 
 const combinedRedures = combineReducers({
@@ -17,7 +16,7 @@ const store: Store<any> = createStore(combinedRedures, composeEnhancers(applyMid
 ReactDOM.render(
   <Provider store={store}>
     <span>
-      <h3>Hello from React, Redux and Bootstrap</h3>
+      <h3>Hello from React, Redux, D3 and Bootstrap</h3>
       <GraphMainScreen />
     </span>
   </Provider>,
