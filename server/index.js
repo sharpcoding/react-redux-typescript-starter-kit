@@ -13,8 +13,8 @@ module.exports = function(options) {
   var publicPath = stats.publicPath;
 
   var renderer = new Renderer({
-    styleUrl: options.separateStylesheet && (publicPath + "todos.css?" + stats.hash),
-    scriptUrl: publicPath + [].concat(stats.assetsByChunkName.todos)[0]
+    styleUrl: options.separateStylesheet && (publicPath + "starterKit.css?" + stats.hash),
+    scriptUrl: publicPath + [].concat(stats.assetsByChunkName.starterKit)[0]
   });
 
   var app = express();

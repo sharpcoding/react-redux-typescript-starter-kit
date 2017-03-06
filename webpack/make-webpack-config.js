@@ -8,7 +8,7 @@ module.exports = function(options) {
 
   if (options.development) {
     entry = {
-      todos: [
+      starterKit: [
         'webpack-dev-server/client?http://0.0.0.0:2992',
         'webpack/hot/only-dev-server',
         './client/index'
@@ -16,23 +16,9 @@ module.exports = function(options) {
     };
   } else {
     entry = {
-      todos: './client/index'
+      starterKit: './client/index'
     }
   }
-
-  var loaders = {
-    "js": {
-      loaders: options.development ? ["react-hot", "babel-loader"] : ["babel-loader"],
-      include: path.join(__dirname, "..", "client")
-    },
-    "ts|tsx": {
-      loaders: ['react-hot', 'ts-loader']
-    }
-  };
-
-  var stylesheetLoaders = {
-    "css": 'css-loader'
-  };
 
   var publicPath = options.development
     ? "http://localhost:2992/_assets/"
@@ -45,16 +31,6 @@ module.exports = function(options) {
       chunkModules: true
     })
   ];
-
-  Object.keys(stylesheetLoaders).forEach(function(ext) {
-    var stylesheetLoader = stylesheetLoaders[ext];
-    if(Array.isArray(stylesheetLoader)) stylesheetLoader = stylesheetLoader.join("!");
-    if(options.separateStylesheet) {
-      stylesheetLoaders[ext] = ExtractTextPlugin.extract("style-loader", stylesheetLoader);
-    } else {
-      stylesheetLoaders[ext] = "style-loader!" + stylesheetLoader;
-    }
-  });
 
   if(options.separateStylesheet) {
     plugins = plugins.concat([
@@ -120,7 +96,7 @@ module.exports = function(options) {
           extensions: [ 'js' ],
           test: /\.(js)(\?.*)?$/,
           loaders: [ 'react-hot', 'babel-loader' ],
-          include: process.env.PWD + '/client' 
+          include: path.join(__dirname, "..", "client")
         },
         {
           extensions: [ 'ts', 'tsx' ],
