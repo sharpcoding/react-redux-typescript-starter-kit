@@ -12,9 +12,8 @@
     "build:dev": "node webpack/dev-server.js",
     "start": "concurrently \"npm run build\" \"node server/production\"",
     "start:dev": "concurrently \"npm run build:dev\" \"node server/development\"",
-    "test": "tsc && mocha --require test-setup --recursive ./dist/**/__spec__/**/*-spec.js",
-    "simple": "webpack --config webpack.config.simple.js --display-error-details"
-
+    "test": "tsc && mocha --require test-setup --recursive ./dist/**/__spec__/**/*-spec.js",    
+    "compile": "webpack --config webpack.config.simple.compile.js --display-error-details"
   },
   "author": "Sharp Coding <sharp.coding@gmail.com>",
   "license": "GPL",

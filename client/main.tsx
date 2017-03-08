@@ -1,3 +1,5 @@
+import './css/app.css';
+import 'bootstrap/dist/css/bootstrap.css';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Store, createStore, compose, applyMiddleware, combineReducers } from 'redux';

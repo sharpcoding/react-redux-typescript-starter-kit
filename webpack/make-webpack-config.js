@@ -137,10 +137,10 @@ module.exports = function(options) {
     devtool: options.devtool,
     debug: options.debug,
     resolveLoader: {
-      root: path.join(__dirname, '..', "node_modules")
+      root: path.join(__dirname, "node_modules")
     },
     resolve: {
-      root: path.join(__dirname, "..", "app"),
+      // root: path.join(__dirname, "..", "app"),
       modulesDirectories: ['node_modules'],
       extensions: ["", ".web.js", ".js", ".jsx", ".ts", ".tsx"]
     },

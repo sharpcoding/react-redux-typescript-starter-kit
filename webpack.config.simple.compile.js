@@ -1,6 +1,7 @@
 /***
- * This is a config file for webpack v 1.14.0, as described in package.json
- * See that some dependencies require older package
+ * This config file has been rewritten from scratch for clarity
+ * Dedicated for older webpack v 1.14.0, as described in package.json
+ * See that some dependencies require the older webpack package
  */
 
 const path = require('path');
@@ -9,7 +10,7 @@ const config = {
   entry: "./client/main",
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'just-webpack.bundle.js'
+    filename: 'webpack.simple.compile.js'
   },
   resolve: {
     modulesDirectories: ['node_modules'],    
@@ -63,7 +64,6 @@ const config = {
       }
     ]
   },
-  // context: __dirname
 };
 
 module.exports = config;
