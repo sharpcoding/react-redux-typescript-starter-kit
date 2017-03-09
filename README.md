@@ -1,11 +1,11 @@
 # React Redux Bootstrap Typescript D3 Starter Kit
 
-This work is greatly influenced by the following: 
+This work is influenced by the following: 
 - https://github.com/jaysoo/todomvc-redux-react-typescript
 - https://github.com/freddyrangel/playing-with-react-and-d3
 
 This is a fairly simple starter kit with the following libraries / "technologies" intermingled and playing well with each other:
-* Webpack with Developmnet Server extension and "hot-reloading"
+* Webpack in "production" (prod) and "development" (dev) modes
 * Redux
 * ReactJS
 * React Bootstrap https://react-bootstrap.github.io/
@@ -19,10 +19,10 @@ Requirements:
 
 ```
 npm install
-npm run start:dev
+npm run dev
 ```
-Visit [http://localhost:8000/](http://localhost:8000/) in your browser.
+Visit [http://localhost:8080/webpack-dev-server/client/index.html](http://localhost:8080/webpack-dev-server/client/index.html) in your browser.
 
 ## Additional notes
 
-Hot reloading works with React, but there is a problem with Redux, so it is best to use key-stroked reloading by pressing ctrl+r in Chrome
+Hot reloading does not work, yet Webpack in developement mode recompiles automatically, so it is best to work with old-school manual page refresh.
