@@ -7,20 +7,15 @@
     "url": "git@github.com:sharpcoding/rr-ts-d3-starter-kit.git"
   },
   "scripts": {
-    "postinstall": "typings install",
-    "build": "cross-env NODE_ENV=production webpack --config webpack/webpack-production.config.js --progress --profile --colors",
-    "build:dev": "node webpack/dev-server.js",
-    "start": "concurrently \"npm run build\" \"node server/production\"",
-    "start:dev": "concurrently \"npm run build:dev\" \"node server/development\"",
-    "test": "tsc && mocha --require test-setup --recursive ./dist/**/__spec__/**/*-spec.js",    
-    "compile": "webpack --config webpack.config.simple.compile.js --display-error-details"
+    "postinstall": "typings install",    
+    "dev": "webpack-dev-server --hot --config webpack.config.development.js --display-error-details",
+    "prod": "webpack --config webpack.config.common.js --display-error-details"    
   },
   "author": "Sharp Coding <sharp.coding@gmail.com>",
   "license": "GPL",
   "dependencies": {    
     "bootstrap": "3.3.7",
     "classnames": "2.2.3",
-    "concurrently": "2.0.0",
     "d3": "^3.5.16",
     "express": "4.13.3",
     "extract-text-webpack-plugin": "0.9.1",
