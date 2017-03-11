@@ -11,47 +11,20 @@ export interface TimeSeriesProps {
 }
 
 export class TimeSeries extends React.Component<TimeSeriesProps, void> {
-  componentDidUpdate() {
-    console.log("componentDidUpdated");
-    // this.renderPoints();
-  }
-
-  // componentDidMount() {
-  //   this.renderPoints();
-  // }
-
-  getPath(): string {
-    // var margin = {
-    //   left: 0,
-    //   top: 0
-    // };
-    // var p = this.refs['path'];
-
-    // //dsds 
-
+  getSvgPath(): string {
     var self = this;
 
-    // var x = 0;
     var line = d3.line()
-      .x(function(d: DateTimePoint) { return self.props.xScale(d.time); })
+      .x(function(d: DateTimePoint) { 
+        return self.props.xScale(d.time); 
+      })
       .y(function(d: DateTimePoint) { return self.props.yScale(d.value); });
 
     return line(this.props.data);
-
-    // var svg = d3.select("svg");//.call(magicD3Calls);
-    // var g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-    // g.append("path")
-    //   .datum(this.props.data)
-    //   .attr("fill", "none")
-    //   .attr("stroke", "steelblue")
-    //   .attr("stroke-linejoin", "round")
-    //   .attr("stroke-linecap", "round")
-    //   .attr("stroke-width", 1.5)
-    //   .attr("d", line);
   }
 
   render() {
-    return (<g><path d={this.getPath()} /></g>);
+    return (<g><path d={this.getSvgPath()} fill="none" stroke="steelblue" /></g>);
   }
 }
 

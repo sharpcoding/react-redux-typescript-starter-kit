@@ -1,11 +1,13 @@
 import { Dispatch } from 'redux';
-import { Button, FormGroup, ControlLabel, FormControl, HelpBlock  } from 'react-bootstrap';
-import { connect } from 'react-redux';
 import * as React from 'react';
+import { connect } from 'react-redux';
+import * as moment from 'moment';
+import { Button, FormGroup, ControlLabel, FormControl, HelpBlock  } from 'react-bootstrap';
 import { ScatterPlot } from '../scatterPlotWidget';
 import { LinearChart } from '../LinearChart';
-import { GraphScreenState, EnumSelectedChartType } from './model';
-import { changeMaxXAxisValue, changeMaxYAxisValue, changeNumbeOfPoints } from './actions';
+import { GraphScreenState } from './model';
+import { DateTimePicker } from './dateTimePicker';
+import { changeDateFromValue, changeDateToValue } from './actions';
 
 interface MainScreenProps {
   state: GraphScreenState;
@@ -24,34 +26,23 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
           that are immediately rendered in D3-based svg component on the screen.   
         </h5>
         <FormGroup>
-          <ControlLabel>Max x-axis value</ControlLabel>
-          <FormControl
-            type="number"
-            min="10"
-            max="10000"
-            value={state.maxXAxisValue}
-            placeholder="Max x value"
-            onChange={(e) => { this.props.dispatch(changeMaxXAxisValue(parseInt(e.target.value))) }} />
-          <ControlLabel>Max y-axis value</ControlLabel>
-          <FormControl
-            type="number"
-            min="10"
-            max="10000"
-            value={state.maxYAxisValue}
-            placeholder="Max y value"
-            onChange={(e) => { this.props.dispatch(changeMaxYAxisValue(parseInt(e.target.value))) }} />
-          <ControlLabel>Max number of points</ControlLabel>
-          <FormControl
-            type="number"
-            min="1"
-            max="10000"
-            value={state.numberOfPoints}
-            placeholder="Max number of points"
-            onChange={(e) => { this.props.dispatch(changeNumbeOfPoints(parseInt(e.target.value))) }} />
-
+          <ControlLabel>Date from</ControlLabel>
+          <DateTimePicker value={state.dateFrom} dateChanged={(value: string) => { 
+            this.props.dispatch(changeDateFromValue(value))
+          }} />
+          <ControlLabel>Date to</ControlLabel>
+          <DateTimePicker value={state.dateTo} dateChanged={(value: string) => { 
+            this.props.dispatch(changeDateToValue(value))
+          }} />
         </FormGroup>
         <div>
-          <LinearChart width={700} height={500} padding={30} data={this.props.state.randomArrayOfDateTimePoints} />
+          <LinearChart 
+            width={700} 
+            height={500} 
+            padding={30} 
+            data={this.props.state.points} 
+            from={this.props.state.dateFrom} 
+            to={this.props.state.dateTo} />
         </div>
       </form>
     );
