@@ -5,8 +5,9 @@
  */
 
 const path = require('path');
+var webpack = require("webpack");
 
-function makeCommonConfig() {
+function makeGenericConfig() {
   const config = {
     entry: "./client/main",
     output: {
@@ -70,9 +71,4 @@ function makeCommonConfig() {
   return config;
 };
 
-console.log("================================================================");
-console.log("Visit http://localhost:8080/webpack-dev-server/client/index.html");
-console.log("   or http://localhost:8080/client/index.html");
-console.log("================================================================");
-
-module.exports = makeCommonConfig();
+module.exports = makeGenericConfig();

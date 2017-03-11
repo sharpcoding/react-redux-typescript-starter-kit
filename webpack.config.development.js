@@ -62,6 +62,12 @@ function makeDevelopmentConfig(commonConfig) {
   );
 };
 
-var commonConfig = require("./webpack.config.common.js");
-var developmentConfig = makeDevelopmentConfig(commonConfig);
+
+console.log("================================================================");
+console.log("Visit http://localhost:8080/webpack-dev-server/client/index.html");
+console.log("   or http://localhost:8080/client/index.html");
+console.log("================================================================");
+
+var genericConfig = require("./webpack.config.generic.js");
+var developmentConfig = makeDevelopmentConfig(genericConfig);
 module.exports = developmentConfig;
