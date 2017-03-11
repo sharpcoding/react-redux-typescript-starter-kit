@@ -47,6 +47,9 @@ function makeDevelopmentConfig(commonConfig) {
         errors: true,
         warnings: true,
       },
+      watchOptions: {
+        poll: true
+      }
     },
     plugins: [
       new webpack.HotModuleReplacementPlugin(),
