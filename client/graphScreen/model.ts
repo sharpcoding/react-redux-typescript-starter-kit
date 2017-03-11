@@ -1,4 +1,5 @@
 import { Point2D } from '../scatterPlotWidget/models';
+import { DateTimePoint } from '../linearChart/models/dateTimePoint';
 
 export enum EnumSelectedChartType {
   Linear,
@@ -12,5 +13,6 @@ export type GraphScreenState = {
   maxXAxisValue: number,
   maxYAxisValue: number,
   numberOfPoints: number,
-  randomArrayOfPoints: Point2D[]
+  randomArrayOf2DPoints: Point2D[]
+  randomArrayOfDateTimePoints: DateTimePoint[]
 };

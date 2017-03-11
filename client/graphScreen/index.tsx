@@ -3,6 +3,7 @@ import { Button, FormGroup, ControlLabel, FormControl, HelpBlock  } from 'react-
 import { connect } from 'react-redux';
 import * as React from 'react';
 import { ScatterPlot } from '../scatterPlotWidget';
+import { LinearChart } from '../LinearChart';
 import { GraphScreenState, EnumSelectedChartType } from './model';
 import { changeMaxXAxisValue, changeMaxYAxisValue, changeNumbeOfPoints } from './actions';
 
@@ -50,7 +51,7 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
 
         </FormGroup>
         <div>
-          <ScatterPlot width={700} height={500} padding={30} data={this.props.state.randomArrayOfPoints} />
+          <LinearChart width={700} height={500} padding={30} data={this.props.state.randomArrayOfDateTimePoints} />
         </div>
       </form>
     );
