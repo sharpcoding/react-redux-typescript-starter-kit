@@ -1,4 +1,4 @@
-import { Dispatch } from 'redux';
+/*import { Dispatch } from 'redux';
 import { Button, FormGroup, ControlLabel, FormControl, HelpBlock  } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import * as React from 'react';
@@ -33,7 +33,9 @@ export const DateTimePicker = React.createClass<DateTimePickerProps, DateTimePic
     this.props.dateChanged(this.state.text);
   },
 
-  render() {
+  render() {    
+    // if (!this.props.value.isSame(moment(this.state)))
+    //   this.setState({ text: this.props.value.format("YYYY-MM-DD HH:mm") });
     return <FormControl type="text" 
       value={this.state.text}
       onChange={this.handleChange}
@@ -41,4 +43,4 @@ export const DateTimePicker = React.createClass<DateTimePickerProps, DateTimePic
   }
 });
 
-export default DateTimePicker;
+export default DateTimePicker;*/

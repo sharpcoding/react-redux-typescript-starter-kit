@@ -5,6 +5,7 @@ import { GraphScreenState } from './model';
 
 export const CHANGE_DATE_FROM_VALUE = 'CHANGE_DATE_FROM_VALUE';
 export const CHANGE_DATE_TO_VALUE = 'CHANGE_DATE_TO_VALUE';
+export const CHANGE_DATE_WINDOW_MINIMAL_WIDTH_MINUTES = 'CHANGE_DATE_WINDOW_MINIMAL_WIDTH_MINUTES';
 
 /**
  * This is a fragment of code that actually transforms call arguments 
@@ -22,7 +23,14 @@ const changeDateToValue = createAction<moment.Moment, string>(
   (v: string) => moment(v)
 );
 
+const changeDateWindowMinimalWidthMinutes = createAction<number, string>(
+  CHANGE_DATE_WINDOW_MINIMAL_WIDTH_MINUTES,
+  (v: string) => parseInt(v)
+);
+
+
 export {
   changeDateFromValue,
-  changeDateToValue
+  changeDateToValue,
+  changeDateWindowMinimalWidthMinutes
 }

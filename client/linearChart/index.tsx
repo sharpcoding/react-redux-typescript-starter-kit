@@ -15,7 +15,12 @@ export interface LinearChartProps {
 }
 
 export class LinearChart extends React.Component<LinearChartProps, void> {
-  filteredInRange = (data: DateTimePoint[]) => _.filter(data, el => el.time.isSameOrAfter(this.props.from) && el.time.isSameOrBefore(this.props.to))
+  filteredInRange = (data: DateTimePoint[]) => {
+    var unixFrom = this.props.from.unix();
+    var unixTo = this.props.to.unix();
+    
+    return _.filter(data, el => el.unix >= unixFrom && el.unix <= unixTo);
+  } 
   
   xMin = (data) => d3.min(data, (d: DateTimePoint) => d.time.toDate());
   xMax = (data) => d3.max(data, (d: DateTimePoint) => d.time.toDate());
@@ -23,7 +28,7 @@ export class LinearChart extends React.Component<LinearChartProps, void> {
   
   getXScale = (props: LinearChartProps) => {
     var filteredData = this.filteredInRange(this.props.data);
-    console.log('xy', [this.xMin(filteredData), this.xMax(filteredData)]);
+    console.log('filteredData.length', filteredData.length);
     return d3.scaleTime()
       .domain([this.xMin(filteredData), this.xMax(filteredData)])
       .range([props.padding, props.width - props.padding * 2]);

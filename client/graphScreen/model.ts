@@ -5,5 +5,6 @@ import { DateTimePoint } from '../linearChart/models/dateTimePoint';
 export type GraphScreenState = {
   dateFrom: moment.Moment,
   dateTo: moment.Moment,
+  dateFromToMinimalWidthMinutes: number;  
   points: DateTimePoint[]
 };
