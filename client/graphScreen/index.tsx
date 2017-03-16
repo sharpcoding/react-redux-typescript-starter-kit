@@ -8,7 +8,7 @@ import { LinearChart } from '../LinearChart';
 import { GraphScreenState } from './model';
 import { TextInput } from './../../components/ui/textInput';
 import { changeDateFromValue, changeDateToValue, changeDateWindowMinimalWidthMinutes } from './actions';
-import { ReactSlider } from './../../components/react-slider';
+import { ReactSlider } from './../../components/react-slider/react-slider';
 import { BootstrapFormGroupStaticText } from './../../components/ui/bootstrapFormGroupStaticText';
 
 interface MainScreenProps {
