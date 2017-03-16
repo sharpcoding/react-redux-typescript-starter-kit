@@ -1,6 +1,4 @@
-'use strict';
-
-var React = require('react');
+import * as React from 'react';
 
 /**
  * To prevent text selection while dragging.
@@ -36,135 +34,141 @@ function undoEnsureArray(x) {
   return x != null && x.length === 1 ? x[0] : x;
 }
 
-var ReactSlider = React.createClass({
+// export var ReactSlider2 = React.createClass<LinearChartProps, void> {
+// }
+
+export interface ReactSliderProps {
+  
+  /**
+   * The minimum value of the slider.
+   */
+  min: number,
+
+  /**
+   * The maximum value of the slider.
+   */
+  max: number,
+
+  /**
+   * Value to be added or subtracted on each step the slider makes.
+   * Must be greater than zero.
+   * `max - min` should be evenly divisible by the step value.
+   */
+  step?: number,
+
+  /**
+   * The minimal distance between any pair of handles.
+   * Must be positive, but zero means they can sit on top of each other.
+   */
+  minDistance?: number,
+
+  /**
+   * Determines the initial positions of the handles and the number of handles if the component has no children.
+   *
+   * If a number is passed a slider with one handle will be rendered.
+   * If an array is passed each value will determine the position of one handle.
+   * The values in the array must be sorted.
+   * If the component has children, the length of the array must match the number of children.
+   */
+  defaultValue?: (number | Array<number>),
+
+  /**
+   * Like `defaultValue` but for [controlled components](http://facebook.github.io/react/docs/forms.html#controlled-components).
+   */
+  value?: (number | Array<number>),
+
+  /**
+   * Determines whether the slider moves horizontally (from left to right) or vertically (from top to bottom).
+   */
+  orientation?: ('horizontal' | 'vertical'),
+
+  /**
+   * The css class set on the slider node.
+   */
+  className?: string,
+
+  /**
+   * The css class set on each handle node.
+   *
+   * In addition each handle will receive a numbered css class of the form `${handleClassName}-${i}`,
+   * e.g. `handle-0`, `handle-1`, ...
+   */
+  handleClassName?: string,
+
+  /**
+   * The css class set on the handle that is currently being moved.
+   */
+  handleActiveClassName?: string,
+
+  /**
+   * If `true` bars between the handles will be rendered.
+   */
+  withBars?: boolean,
+
+  /**
+   * The css class set on the bars between the handles.
+   * In addition bar fragment will receive a numbered css class of the form `${barClassName}-${i}`,
+   * e.g. `bar-0`, `bar-1`, ...
+   */
+  barClassName?: string,
+
+  /**
+   * If `true` the active handle will push other handles
+   * within the constraints of `min`, `max`, `step` and `minDistance`.
+   */
+  pearling?: boolean,
+
+  /**
+   * If `true` the handles can't be moved.
+   */
+  disabled?: boolean,
+
+  /**
+   * Disables handle move when clicking the slider bar
+   */
+  snapDragDisabled?: boolean,
+
+  /**
+   * Inverts the slider.
+   */
+  invert?: boolean,
+
+  /**
+   * Callback called before starting to move a handle.
+   */
+  onBeforeChange?: Function,
+
+  /**
+   * Callback called on every value change.
+   */
+  onChange?: Function,
+
+  /**
+   * Callback called only after moving a handle has ended.
+   */
+  onAfterChange?: Function,
+
+  /**
+   *  Callback called when the the slider is clicked (handle or bars).
+   *  Receives the value at the clicked position as argument.
+   */
+  onSliderClick?: Function
+}
+
+export interface ReactSliderState {
+  index: number;
+  upperBound: number;
+  sliderLength: number;
+  value: any;
+  zIndices: number[];
+}
+
+
+export var ReactSlider = React.createClass<ReactSliderProps, void>({
   displayName: 'ReactSlider',
-
-  propTypes: {
-
-    /**
-     * The minimum value of the slider.
-     */
-    min: React.PropTypes.number,
-
-    /**
-     * The maximum value of the slider.
-     */
-    max: React.PropTypes.number,
-
-    /**
-     * Value to be added or subtracted on each step the slider makes.
-     * Must be greater than zero.
-     * `max - min` should be evenly divisible by the step value.
-     */
-    step: React.PropTypes.number,
-
-    /**
-     * The minimal distance between any pair of handles.
-     * Must be positive, but zero means they can sit on top of each other.
-     */
-    minDistance: React.PropTypes.number,
-
-    /**
-     * Determines the initial positions of the handles and the number of handles if the component has no children.
-     *
-     * If a number is passed a slider with one handle will be rendered.
-     * If an array is passed each value will determine the position of one handle.
-     * The values in the array must be sorted.
-     * If the component has children, the length of the array must match the number of children.
-     */
-    defaultValue: React.PropTypes.oneOfType([
-      React.PropTypes.number,
-      React.PropTypes.arrayOf(React.PropTypes.number)
-    ]),
-
-    /**
-     * Like `defaultValue` but for [controlled components](http://facebook.github.io/react/docs/forms.html#controlled-components).
-     */
-    value: React.PropTypes.oneOfType([
-      React.PropTypes.number,
-      React.PropTypes.arrayOf(React.PropTypes.number)
-    ]),
-
-    /**
-     * Determines whether the slider moves horizontally (from left to right) or vertically (from top to bottom).
-     */
-    orientation: React.PropTypes.oneOf(['horizontal', 'vertical']),
-
-    /**
-     * The css class set on the slider node.
-     */
-    className: React.PropTypes.string,
-
-    /**
-     * The css class set on each handle node.
-     *
-     * In addition each handle will receive a numbered css class of the form `${handleClassName}-${i}`,
-     * e.g. `handle-0`, `handle-1`, ...
-     */
-    handleClassName: React.PropTypes.string,
-
-    /**
-     * The css class set on the handle that is currently being moved.
-     */
-    handleActiveClassName: React.PropTypes.string,
-
-    /**
-     * If `true` bars between the handles will be rendered.
-     */
-    withBars: React.PropTypes.bool,
-
-    /**
-     * The css class set on the bars between the handles.
-     * In addition bar fragment will receive a numbered css class of the form `${barClassName}-${i}`,
-     * e.g. `bar-0`, `bar-1`, ...
-     */
-    barClassName: React.PropTypes.string,
-
-    /**
-     * If `true` the active handle will push other handles
-     * within the constraints of `min`, `max`, `step` and `minDistance`.
-     */
-    pearling: React.PropTypes.bool,
-
-    /**
-     * If `true` the handles can't be moved.
-     */
-    disabled: React.PropTypes.bool,
-
-    /**
-     * Disables handle move when clicking the slider bar
-     */
-    snapDragDisabled: React.PropTypes.bool,
-
-    /**
-     * Inverts the slider.
-     */
-    invert: React.PropTypes.bool,
-
-    /**
-     * Callback called before starting to move a handle.
-     */
-    onBeforeChange: React.PropTypes.func,
-
-    /**
-     * Callback called on every value change.
-     */
-    onChange: React.PropTypes.func,
-
-    /**
-     * Callback called only after moving a handle has ended.
-     */
-    onAfterChange: React.PropTypes.func,
-
-    /**
-     *  Callback called when the the slider is clicked (handle or bars).
-     *  Receives the value at the clicked position as argument.
-     */
-    onSliderClick: React.PropTypes.func
-  },
-
-  getDefaultProps: function () {
-    return {
+  
+  getDefaultProps: () => {
+    return <ReactSliderProps>{
       min: 0,
       max: 100,
       step: 1,
@@ -180,10 +184,10 @@ var ReactSlider = React.createClass({
       disabled: false,
       snapDragDisabled: false,
       invert: false
-    };
+    }
   },
 
-  getInitialState: function () {
+  getInitialState: function(): ReactSliderState {
     var value = this._or(ensureArray(this.props.value), ensureArray(this.props.defaultValue));
 
     // reused throughout the component to store results of iterations over `value`
@@ -198,7 +202,7 @@ var ReactSlider = React.createClass({
       zIndices.push(i);
     }
 
-    return {
+    return <ReactSliderState> {
       index: -1,
       upperBound: 0,
       sliderLength: 0,
@@ -207,10 +211,11 @@ var ReactSlider = React.createClass({
     };
   },
 
+  
   // Keep the internal `value` consistent with an outside `value` if present.
   // This basically allows the slider to be a controlled component.
   componentWillReceiveProps: function (newProps) {
-    var value = this._or(ensureArray(newProps.value), this.state.value);
+    var value = this._or(ensureArray(newProps['value']), this.state.value);
 
     // ensure the array keeps the same size as `value`
     this.tempArray = value.slice();
@@ -442,7 +447,7 @@ var ReactSlider = React.createClass({
   _start: function (i, position) {
     // if activeElement is body window will lost focus in IE9
     if (document.activeElement && document.activeElement != document.body) {
-      document.activeElement.blur();
+      document.activeElement['blur']();
     }
 
     this.hasMoved = false;
@@ -777,4 +782,10 @@ var ReactSlider = React.createClass({
   }
 });
 
-exports.ReactSlider = ReactSlider;
+// export var ReactSlider = React.createClass<ReactSliderProps, void>({
+
+//   
+//   
+// });
+
+export default ReactSlider;
