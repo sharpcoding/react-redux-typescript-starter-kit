@@ -55,13 +55,13 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
         <Form horizontal>
           <FormGroup>
             <Col componentClass={ControlLabel} sm={2}>
-               Samples date from:
+               Samples from:
             </Col>
             <Col sm={2}>
               <BootstrapFormGroupStaticText text={state.points[0].time.format("YYYY-MM-DD HH:mm")} />
             </Col>
             <Col componentClass={ControlLabel} sm={2}>
-              Samples date to:
+              Samples to:
             </Col>
             <Col sm={2}>
               <BootstrapFormGroupStaticText text={state.points[state.points.length-1].time.format("YYYY-MM-DD HH:mm")} />
@@ -97,7 +97,7 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
         <LinearChart 
           width={700} 
           height={500} 
-          padding={30} 
+          padding={0} 
           data={this.props.state.points} 
           from={this.props.state.dateFrom} 
           to={this.props.state.dateTo} />
