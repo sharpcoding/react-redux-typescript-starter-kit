@@ -175,7 +175,7 @@ export var ReactSlider = React.createClass<ReactSliderProps, void>({
       minDistance: 0,
       defaultValue: 0,
       orientation: 'horizontal',
-      className: 'slider',
+      className: 'horizontal-slider',
       handleClassName: 'handle',
       handleActiveClassName: 'active',
       barClassName: 'bar',

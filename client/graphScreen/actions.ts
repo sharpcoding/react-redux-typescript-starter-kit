@@ -4,7 +4,7 @@ import { createAction, Action } from 'redux-actions';
 import { GraphScreenState } from './model';
 
 export const CHANGE_DATE_FROM_TO_VALUE = 'CHANGE_DATE_FROM_TO_VALUE';
-export const CHANGE_DATE_WINDOW_MINIMAL_WIDTH_MINUTES = 'CHANGE_DATE_WINDOW_MINIMAL_WIDTH_MINUTES';
+export const SETUP_WINDOW_WIDTH_MINUTES = 'SETUP_WINDOW_WIDTH_MINUTES';
 
 /**
  * This is a fragment of code that actually transforms call arguments 
@@ -17,13 +17,13 @@ const changeDateFromToValue = createAction<moment.Moment[], string, string>(
   (from: string, to: string) => [moment(from), moment(to)]
 );
 
-const changeDateWindowMinimalWidthMinutes = createAction<number, string>(
-  CHANGE_DATE_WINDOW_MINIMAL_WIDTH_MINUTES,
-  (v: string) => parseInt(v)
+const setupWindowWidthMinutes = createAction<number, number>(
+  SETUP_WINDOW_WIDTH_MINUTES,
+  (v: number) => v
 );
 
 
 export {
   changeDateFromToValue,
-  changeDateWindowMinimalWidthMinutes
+  setupWindowWidthMinutes
 }

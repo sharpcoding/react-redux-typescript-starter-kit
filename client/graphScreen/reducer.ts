@@ -7,7 +7,7 @@ import { DateTimePoint } from '../linearChart/models/dateTimePoint';
 import { GraphScreenState } from './model';
 import {
   CHANGE_DATE_FROM_TO_VALUE,
-  CHANGE_DATE_WINDOW_MINIMAL_WIDTH_MINUTES
+  SETUP_WINDOW_WIDTH_MINUTES
 } from './actions';
 
 const SAMPLE_VALUE_MAX = 150;
@@ -21,9 +21,17 @@ const DATE_WINDOW_MINIMAL_WIDTH_MINUTES = 10*24*60;
 const randomDateTimePoints = () => {
   var referenceDate = DATE_RANGE_MIN_VALUE.clone();  
   var result = [];
+  var currentValue = _.random(50, 100);
   while (referenceDate.isBefore(DATE_RANGE_MAX_VALUE)) {
-    result.push(<DateTimePoint>{ time: referenceDate.clone(), unix: referenceDate.unix(), value: 180*referenceDate.hours() + referenceDate.minutes() });
-    referenceDate.add("minutes", SAMPLES_EVERY_MINUTE);
+    result.push(<DateTimePoint>{ time: referenceDate.clone(), unix: referenceDate.unix(), value: currentValue });
+    referenceDate.add(SAMPLES_EVERY_MINUTE, "minutes");
+    var chanceForChangeIndexValue = _.random(0, 100);
+    if (_.inRange(chanceForChangeIndexValue, 0, 10)) {
+      currentValue += 40 - _.random(0, 80);
+    }
+    if (_.inRange(chanceForChangeIndexValue, 10, 30)) {
+      currentValue += 20 - _.random(0, 40);
+    }
   }
   return result;
 }
@@ -43,9 +51,8 @@ export default handleActions<GraphScreenState, GraphScreenState>({
    * 2) action (with payload type of moment.Moment) is created by action generator
    */
   [CHANGE_DATE_FROM_TO_VALUE]: (state: GraphScreenState, action: Action<moment.Moment[]>): GraphScreenState => {
-    console.log(CHANGE_DATE_FROM_TO_VALUE);
-    var dateFrom = action.payload[0];
-    var dateTo = action.payload[1];
+    var dateFrom = action.payload[0].clone();
+    var dateTo = action.payload[1].clone();
     if (dateFrom.isBefore(DATE_RANGE_MIN_VALUE)) {
       console.log(`rejecting - ${dateFrom.toDate()} is before date range min value ${DATE_RANGE_MIN_VALUE.toDate()}`);
       return state;
@@ -62,8 +69,7 @@ export default handleActions<GraphScreenState, GraphScreenState>({
     };
   },
 
-  [CHANGE_DATE_WINDOW_MINIMAL_WIDTH_MINUTES]: (state: GraphScreenState, action: Action<number>): GraphScreenState => {
-    console.log(CHANGE_DATE_WINDOW_MINIMAL_WIDTH_MINUTES);
+  [SETUP_WINDOW_WIDTH_MINUTES]: (state: GraphScreenState, action: Action<number>): GraphScreenState => {
     return {
       dateFrom: state.dateFrom.clone(),
       dateTo: state.dateTo.clone(),

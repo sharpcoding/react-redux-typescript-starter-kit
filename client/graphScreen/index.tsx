@@ -2,12 +2,13 @@ import { Dispatch } from 'redux';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import * as moment from 'moment';
+import * as _ from 'lodash';
 import { Panel, Button, ListGroup, ListGroupItem, Form, Col, FormGroup, ControlLabel, FormControl, HelpBlock  } from 'react-bootstrap';
 import { ScatterPlot } from '../scatterPlotWidget';
 import { LinearChart } from '../LinearChart';
 import { GraphScreenState } from './model';
 import { TextInput } from './../../components/ui/textInput';
-import { changeDateFromToValue, changeDateWindowMinimalWidthMinutes } from './actions';
+import { changeDateFromToValue, setupWindowWidthMinutes } from './actions';
 import { ReactSlider } from './../../components/react-slider/react-slider';
 import { BootstrapFormGroupStaticText } from './../../components/ui/bootstrapFormGroupStaticText';
 
@@ -53,29 +54,43 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
         </h5>
         <Form horizontal>
           <FormGroup>
-            <Col componentClass={ControlLabel} sm={4}>
+            <Col componentClass={ControlLabel} sm={2}>
+               Samples date from:
+            </Col>
+            <Col sm={2}>
+              <BootstrapFormGroupStaticText text={state.points[0].time.format("YYYY-MM-DD HH:mm")} />
+            </Col>
+            <Col componentClass={ControlLabel} sm={2}>
+              Samples date to:
+            </Col>
+            <Col sm={2}>
+              <BootstrapFormGroupStaticText text={state.points[state.points.length-1].time.format("YYYY-MM-DD HH:mm")} />
+            </Col>
+            <Col componentClass={ControlLabel} sm={2}>
+              Total number of samples:
+            </Col>
+            <Col sm={2}>
+              <BootstrapFormGroupStaticText text={state.points.length.toString()} />
+            </Col>
+          </FormGroup>
+          <FormGroup>
+            <Col componentClass={ControlLabel} sm={2}>
                Window date from:
             </Col>
-            <Col sm={8}>
+            <Col sm={2}>
               <BootstrapFormGroupStaticText text={state.dateFrom.format("YYYY-MM-DD HH:mm")} />
             </Col>
-          </FormGroup>
-          <FormGroup>
-            <Col componentClass={ControlLabel} sm={4}>
+            <Col componentClass={ControlLabel} sm={2}>
               Window date to:
             </Col>
-            <Col sm={8}>
+            <Col sm={2}>
               <BootstrapFormGroupStaticText text={state.dateTo.format("YYYY-MM-DD HH:mm")} />
             </Col>
-          </FormGroup>
-          <FormGroup>
-            <Col componentClass={ControlLabel} sm={4}>
-              Minimal Window width minutes:
+            <Col componentClass={ControlLabel} sm={2}>
+              Min. window width:
             </Col>
-            <Col sm={8}>
-              <TextInput value={state.dateFromToMinimalWidthMinutes.toString()} changed={(value: string) => { 
-                this.props.dispatch(changeDateWindowMinimalWidthMinutes(value)) 
-              }} />
+            <Col sm={2}>
+              <BootstrapFormGroupStaticText text={ state.dateFromToMinimalWidthMinutes.toString() + " minutes"} />
             </Col>
           </FormGroup>
         </Form>
@@ -87,7 +102,6 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
           from={this.props.state.dateFrom} 
           to={this.props.state.dateTo} />
         <ReactSlider 
-          className="horizontal-slider" 
           defaultValue={[this.translateDateTimeToMinutesDomain(state, state.dateFrom), this.translateDateTimeToMinutesDomain(state, state.dateTo)]}           
           min={0} 
           max={this.calculateDomainLengthMinutes(state)} 
@@ -103,6 +117,14 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
             }
           }}            
         />
+        <Button
+          onClick={() => this.props.dispatch(setupWindowWidthMinutes(state.dateTo.diff(state.dateFrom, "minutes"))) }>
+          Set current window width as minimal
+        </Button>
+        <Button 
+          onClick={() => this.props.dispatch(setupWindowWidthMinutes(360)) }>
+          Reset minimal window width to 360 minutes
+        </Button>
       </div>
     );
   }
@@ -113,7 +135,7 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
 //a fragment MainScreen component keeps interest in 
 const mapStateToProps = state => {
   //console.log() only for demonstration purposes
-  console.log('mainScreen mapStateToProps', state);
+  // console.log('mainScreen mapStateToProps', state);
   return  {
     state: state.graphScreenState
   }

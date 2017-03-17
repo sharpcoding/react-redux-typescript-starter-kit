@@ -24,11 +24,11 @@ export class LinearChart extends React.Component<LinearChartProps, void> {
   
   xMin = (data) => d3.min(data, (d: DateTimePoint) => d.time.toDate());
   xMax = (data) => d3.max(data, (d: DateTimePoint) => d.time.toDate());
+  yMin = (data) => d3.min(data, (d: DateTimePoint) => d.value);
   yMax = (data) => d3.max(data, (d: DateTimePoint) => d.value);
   
   getXScale = (props: LinearChartProps) => {
     var filteredData = this.filteredInRange(this.props.data);
-    console.log('filteredData.length', filteredData.length);
     return d3.scaleTime()
       .domain([this.xMin(filteredData), this.xMax(filteredData)])
       .range([props.padding, props.width - props.padding * 2]);
@@ -36,7 +36,7 @@ export class LinearChart extends React.Component<LinearChartProps, void> {
   
   getYScale = (props: LinearChartProps) => {
     return d3.scaleLinear()
-      .domain([0, this.yMax(props.data)])
+      .domain([this.yMin(props.data), this.yMax(props.data)])
       .range([props.height - props.padding, props.padding]);
   };
 
