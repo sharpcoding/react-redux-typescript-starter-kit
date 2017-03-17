@@ -3,8 +3,7 @@ import { createAction, Action } from 'redux-actions';
 
 import { GraphScreenState } from './model';
 
-export const CHANGE_DATE_FROM_VALUE = 'CHANGE_DATE_FROM_VALUE';
-export const CHANGE_DATE_TO_VALUE = 'CHANGE_DATE_TO_VALUE';
+export const CHANGE_DATE_FROM_TO_VALUE = 'CHANGE_DATE_FROM_TO_VALUE';
 export const CHANGE_DATE_WINDOW_MINIMAL_WIDTH_MINUTES = 'CHANGE_DATE_WINDOW_MINIMAL_WIDTH_MINUTES';
 
 /**
@@ -13,14 +12,9 @@ export const CHANGE_DATE_WINDOW_MINIMAL_WIDTH_MINUTES = 'CHANGE_DATE_WINDOW_MINI
  * (the returned type is the FIRST generic type parameter).
  */
 
-const changeDateFromValue = createAction<moment.Moment, string>(
-  CHANGE_DATE_FROM_VALUE,
-  (v: string) => moment(v)
-);
-
-const changeDateToValue = createAction<moment.Moment, string>(
-  CHANGE_DATE_TO_VALUE,
-  (v: string) => moment(v)
+const changeDateFromToValue = createAction<moment.Moment[], string, string>(
+  CHANGE_DATE_FROM_TO_VALUE,
+  (from: string, to: string) => [moment(from), moment(to)]
 );
 
 const changeDateWindowMinimalWidthMinutes = createAction<number, string>(
@@ -30,7 +24,6 @@ const changeDateWindowMinimalWidthMinutes = createAction<number, string>(
 
 
 export {
-  changeDateFromValue,
-  changeDateToValue,
+  changeDateFromToValue,
   changeDateWindowMinimalWidthMinutes
 }

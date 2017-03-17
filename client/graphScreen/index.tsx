@@ -7,7 +7,7 @@ import { ScatterPlot } from '../scatterPlotWidget';
 import { LinearChart } from '../LinearChart';
 import { GraphScreenState } from './model';
 import { TextInput } from './../../components/ui/textInput';
-import { changeDateFromValue, changeDateToValue, changeDateWindowMinimalWidthMinutes } from './actions';
+import { changeDateFromToValue, changeDateWindowMinimalWidthMinutes } from './actions';
 import { ReactSlider } from './../../components/react-slider/react-slider';
 import { BootstrapFormGroupStaticText } from './../../components/ui/bootstrapFormGroupStaticText';
 
@@ -32,6 +32,8 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
     var dateFrom = state.points[0].time;    
     return dateTime.diff(dateFrom, "minutes");
   }
+
+  // translate
 
   translateMinutesDomainToDateTime(state: GraphScreenState, minutes: number): moment.Moment {
     if (state.points.length <= 1)
@@ -86,20 +88,17 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
           to={this.props.state.dateTo} />
         <ReactSlider 
           className="horizontal-slider" 
-          defaultValue={[this.translateDateTimeToMinutesDomain(state, state.dateFrom), this.translateDateTimeToMinutesDomain(state, state.dateTo)]} 
+          defaultValue={[this.translateDateTimeToMinutesDomain(state, state.dateFrom), this.translateDateTimeToMinutesDomain(state, state.dateTo)]}           
           min={0} 
           max={this.calculateDomainLengthMinutes(state)} 
           pearling={true}
+          minDistance={state.dateFromToMinimalWidthMinutes}
           onChange={(e: Array<number>) => {
             var [fromMinutes, toMinutes] = e;
             var newDateFrom = this.translateMinutesDomainToDateTime(state, fromMinutes);
-            var newDateTo = this.translateMinutesDomainToDateTime(state, toMinutes);            
-            if (!this.props.state.dateFrom.isSame(newDateFrom)) {
-              this.props.dispatch(changeDateFromValue(newDateFrom.format("YYYY-MMM-DD HH:mm")));
-              return;
-            }
-            if (!this.props.state.dateTo.isSame(newDateTo)) {
-              this.props.dispatch(changeDateToValue(newDateTo.format("YYYY-MMM-DD HH:mm")));
+            var newDateTo = this.translateMinutesDomainToDateTime(state, toMinutes);
+            if (!this.props.state.dateFrom.isSame(newDateFrom) || !this.props.state.dateTo.isSame(newDateTo)) {
+              this.props.dispatch(changeDateFromToValue(newDateFrom.format("YYYY-MM-DD HH:mm"), newDateTo.format("YYYY-MM-DD HH:mm")));
               return;
             }
           }}            

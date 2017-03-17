@@ -9,7 +9,7 @@
   "scripts": {
     "postinstall": "typings install",
     "dev": "webpack-dev-server --hot --config webpack.config.development.js --display-error-details",
-    "prod": "webpack --config webpack.config.common.js --display-error-details"
+    "prod": "webpack --config webpack.config.generic.js --display-error-details"
   },
   "author": "Sharp Coding <sharp.coding@gmail.com>",
   "license": "GPL",

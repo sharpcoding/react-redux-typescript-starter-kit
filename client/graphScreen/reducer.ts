@@ -6,8 +6,7 @@ import { DateTimePoint } from '../linearChart/models/dateTimePoint';
 
 import { GraphScreenState } from './model';
 import {
-  CHANGE_DATE_FROM_VALUE,
-  CHANGE_DATE_TO_VALUE,
+  CHANGE_DATE_FROM_TO_VALUE,
   CHANGE_DATE_WINDOW_MINIMAL_WIDTH_MINUTES
 } from './actions';
 
@@ -43,29 +42,21 @@ export default handleActions<GraphScreenState, GraphScreenState>({
    * 1) state is automagically passed from store !
    * 2) action (with payload type of moment.Moment) is created by action generator
    */
-  [CHANGE_DATE_FROM_VALUE]: (state: GraphScreenState, action: Action<moment.Moment>): GraphScreenState => {
-    console.log(CHANGE_DATE_FROM_VALUE);
-    if (action.payload.isBefore(DATE_RANGE_MIN_VALUE)) {
-      console.log(`rejecting - ${action.payload.toDate()} is before date range min value ${DATE_RANGE_MIN_VALUE.toDate()}`);
+  [CHANGE_DATE_FROM_TO_VALUE]: (state: GraphScreenState, action: Action<moment.Moment[]>): GraphScreenState => {
+    console.log(CHANGE_DATE_FROM_TO_VALUE);
+    var dateFrom = action.payload[0];
+    var dateTo = action.payload[1];
+    if (dateFrom.isBefore(DATE_RANGE_MIN_VALUE)) {
+      console.log(`rejecting - ${dateFrom.toDate()} is before date range min value ${DATE_RANGE_MIN_VALUE.toDate()}`);
+      return state;
+    }
+    if (dateTo.isAfter(DATE_RANGE_MAX_VALUE)) {
+      console.log(`rejecting - ${dateTo.toDate()} is after date range max value ${DATE_RANGE_MIN_VALUE.toDate()}`);
       return state;
     }
     return {
-      dateFrom: action.payload,
-      dateTo: state.dateTo.clone(),
-      dateFromToMinimalWidthMinutes: state.dateFromToMinimalWidthMinutes,
-      points: _.clone(state.points)
-    };
-  },
-
-  [CHANGE_DATE_TO_VALUE]: (state: GraphScreenState, action: Action<moment.Moment>): GraphScreenState => {
-    console.log(CHANGE_DATE_TO_VALUE);
-    if (action.payload.isAfter(DATE_RANGE_MAX_VALUE)) {
-      console.log(`rejecting - ${action.payload.toDate()} is after date range max value ${DATE_RANGE_MIN_VALUE.toDate()}`);
-      return state;
-    }
-    return {
-      dateFrom: state.dateFrom.clone(),
-      dateTo: action.payload,
+      dateFrom: dateFrom,
+      dateTo: dateTo,
       dateFromToMinimalWidthMinutes: state.dateFromToMinimalWidthMinutes,
       points: _.clone(state.points)
     };
