@@ -16,7 +16,7 @@ const DATE_RANGE_MAX_VALUE = moment("2010-09-30"  );
 const DATE_WINDOW_FROM_VALUE = moment("2010-05-03");
 const DATE_WINDOW_TO_VALUE = moment("2010-07-05");
 const SAMPLES_EVERY_MINUTE = 60;
-const DATE_WINDOW_MINIMAL_WIDTH_MINUTES = 10*24*60;
+const DATE_WINDOW_MINIMAL_WIDTH_MINUTES = 24*60;
 
 const randomDateTimePoints = () => {
   var referenceDate = DATE_RANGE_MIN_VALUE.clone();  

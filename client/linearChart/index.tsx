@@ -38,6 +38,10 @@ export class LinearChart extends React.Component<LinearChartProps, void> {
       .range([props.height - props.padding, props.padding]);
   };
 
+  getHorizontalSampleDistancePx = (sampleCount: number, widthPx: number) => {
+    return sampleCount > 1 ? (widthPx / (sampleCount-1)) : widthPx;
+  }
+
   render() {
     var filteredData = this.filteredInRange(this.props.data);
     var xScale = this.getXScale(filteredData, this.props);
@@ -46,7 +50,11 @@ export class LinearChart extends React.Component<LinearChartProps, void> {
       <svg 
         width={this.props.width} 
         height={this.props.height}>
-        <TimeSeries data={filteredData} xScale={xScale} yScale={yScale} displayDots={this.props.to.diff(this.props.from.clone(), "days") <= 10} />
+        <TimeSeries 
+          data={filteredData} 
+          xScale={xScale} 
+          yScale={yScale}
+          horizontalSampleDistancePx={this.getHorizontalSampleDistancePx(filteredData.length, this.props.width)} />
       </svg>
     );
   }

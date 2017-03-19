@@ -3,15 +3,25 @@ import * as _ from 'lodash';
 import * as moment from 'moment';
 import * as d3 from 'd3';
 import { DateTimePoint } from '../models/DateTimePoint';
+import { TimeSeriesCircle } from './TimeSeriesCircle';
 
 export interface TimeSeriesProps {
   xScale: (value: any) => any;
   yScale: (value: number) => number;
-  displayDots: boolean;  
+  horizontalSampleDistancePx: number;  
   data: DateTimePoint[];  
 }
 
-export class TimeSeries extends React.Component<TimeSeriesProps, void> {
+export interface TimeSeriesState {
+  selectedPoints: Array<number>;
+}
+
+export class TimeSeries extends React.Component<TimeSeriesProps, TimeSeriesState> {
+  constructor(props) {
+    super(props);
+    this.state = { selectedPoints: [] }
+  }
+  
   getSvgPath(): string {
     var self = this;
 
@@ -24,36 +34,43 @@ export class TimeSeries extends React.Component<TimeSeriesProps, void> {
     return line(this.props.data);
   }
 
-  renderCircle(element: DateTimePoint) {    
-    var circleProps = {
-      cx: this.props.xScale(element.time),
-      cy: this.props.yScale(element.value),
-      r: 4,
-      key: _.indexOf(this.props.data, element),
-      fill: "orange"
-    };
-    return <circle {...circleProps} ref={(c) => {
-      if (_.isObject(c)) {
-        //console.log(d3.select(c));
-        d3.select(c).call(
-          d3.drag()
-            .on("start", (d) => {              
-              d3.select(c).attr("fill", "red");
-              {/*d3.select(this).raise().classed("active", true);*/}
-            })
-            .on("drag", (d) => {              
-              {/*d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);*/}
-            })
-            .on("end", (d) => {               
-               {/*d3.select(this).classed("active", false);*/}
-            }));
-      }
-    }} />;
-  };
+  getCircleRadiusBasedOnHorizontalSampleDistancePx = (horizontalSampleDistancePx: number) => {
+    if (horizontalSampleDistancePx < 3)
+      return 1;
+    if ((horizontalSampleDistancePx >= 3) && (horizontalSampleDistancePx < 6))
+      return 2;
+    if ((horizontalSampleDistancePx >= 6) && (horizontalSampleDistancePx < 8))
+      return 3;
+    if ((horizontalSampleDistancePx >= 8) && (horizontalSampleDistancePx < 11))
+      return 4;
+    if ((horizontalSampleDistancePx >= 11) && (horizontalSampleDistancePx < 14))
+      return 5;
+    if ((horizontalSampleDistancePx >= 14) && (horizontalSampleDistancePx < 20))
+      return 6;
+    return 8;
+  }
 
   renderCircles() {
-    if (this.props.displayDots)
-      return _.map(this.props.data, (el) => this.renderCircle(el));
+    if (this.props.horizontalSampleDistancePx > 2)
+      return _.map(this.props.data, (el) => {
+        var isSelected = _.indexOf(this.state.selectedPoints, el.unix) >= 0;
+        return <TimeSeriesCircle
+          key={el.unix} 
+          cx={this.props.xScale(el.time)}
+          cy={this.props.yScale(el.value)}
+          unix={el.unix}
+          fill={isSelected ? "red" : "orange"}
+          isSelected={isSelected}
+          r={this.getCircleRadiusBasedOnHorizontalSampleDistancePx(this.props.horizontalSampleDistancePx)}
+          toggleSelected={(unix) => {
+            if (_.indexOf(this.state.selectedPoints, unix) >= 0) {
+              this.setState({ selectedPoints: _.filter(this.state.selectedPoints, (value) => value != unix) } );
+            } 
+            else
+              this.setState({ selectedPoints: _.concat(this.state.selectedPoints, [unix]) } );
+          }}
+        />}
+      );
     return [];
   }
 
