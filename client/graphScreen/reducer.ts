@@ -1,13 +1,14 @@
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import { handleActions, Action } from 'redux-actions';
-import { Point2D } from '../scatterPlotWidget/models';
 import { DateTimePoint } from '../linearChart/models/dateTimePoint';
+import { EnumGraphPointsSelectionMode } from '../LinearChart/components/enums';
 
 import { GraphScreenState } from './model';
 import {
   CHANGE_DATE_FROM_TO_VALUE,
-  SETUP_WINDOW_WIDTH_MINUTES
+  SETUP_WINDOW_WIDTH_MINUTES,
+  SETUP_GRAPH_POINTS_SELECTION_MODE
 } from './actions';
 
 const SAMPLE_VALUE_MAX = 150;
@@ -41,7 +42,8 @@ const initialState: GraphScreenState = <GraphScreenState>{
     dateFrom: DATE_WINDOW_FROM_VALUE.clone(),
     dateTo: DATE_WINDOW_TO_VALUE.clone(),
     dateFromToMinimalWidthMinutes: DATE_WINDOW_MINIMAL_WIDTH_MINUTES,
-    points: randomDateTimePoints()
+    points: randomDateTimePoints(),
+    graphPointsSelectionMode: EnumGraphPointsSelectionMode.NoSelection
 };
 
 export default handleActions<GraphScreenState, GraphScreenState>({
@@ -65,7 +67,8 @@ export default handleActions<GraphScreenState, GraphScreenState>({
       dateFrom: dateFrom,
       dateTo: dateTo,
       dateFromToMinimalWidthMinutes: state.dateFromToMinimalWidthMinutes,
-      points: _.clone(state.points)
+      points: _.clone(state.points),
+      graphPointsSelectionMode: state.graphPointsSelectionMode
     };
   },
 
@@ -74,7 +77,19 @@ export default handleActions<GraphScreenState, GraphScreenState>({
       dateFrom: state.dateFrom.clone(),
       dateTo: state.dateTo.clone(),
       dateFromToMinimalWidthMinutes: action.payload,
-      points: _.clone(state.points)
+      points: _.clone(state.points),
+      graphPointsSelectionMode: state.graphPointsSelectionMode
+    };
+  },
+
+  [SETUP_GRAPH_POINTS_SELECTION_MODE]: (state: GraphScreenState, action: Action<EnumGraphPointsSelectionMode>): GraphScreenState => {
+    return {
+      dateFrom: state.dateFrom.clone(),
+      dateTo: state.dateTo.clone(),
+      dateFromToMinimalWidthMinutes: action.payload,
+      points: _.clone(state.points),
+      graphPointsSelectionMode: action.payload
     };
   }
+
 }, initialState);

@@ -1,10 +1,12 @@
 import * as moment from 'moment';
 import { createAction, Action } from 'redux-actions';
 
+import { EnumGraphPointsSelectionMode } from '../LinearChart/components/enums';
 import { GraphScreenState } from './model';
 
 export const CHANGE_DATE_FROM_TO_VALUE = 'CHANGE_DATE_FROM_TO_VALUE';
 export const SETUP_WINDOW_WIDTH_MINUTES = 'SETUP_WINDOW_WIDTH_MINUTES';
+export const SETUP_GRAPH_POINTS_SELECTION_MODE = 'SETUP_GRAPH_POINTS_SELECTION_MODE';
 
 /**
  * This is a fragment of code that actually transforms call arguments 
@@ -22,8 +24,15 @@ const setupWindowWidthMinutes = createAction<number, number>(
   (v: number) => v
 );
 
+const setupGraphPointsSelectionMode = createAction<EnumGraphPointsSelectionMode, EnumGraphPointsSelectionMode>(
+  SETUP_GRAPH_POINTS_SELECTION_MODE,
+  (v: EnumGraphPointsSelectionMode) => v
+);
+
+
 
 export {
   changeDateFromToValue,
-  setupWindowWidthMinutes
+  setupWindowWidthMinutes,
+  setupGraphPointsSelectionMode
 }

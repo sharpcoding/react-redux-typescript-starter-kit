@@ -4,16 +4,18 @@ import * as moment from 'moment';
 import * as d3 from 'd3';
 import { DateTimePoint } from '../models/DateTimePoint';
 import { TimeSeriesCircle } from './TimeSeriesCircle';
+import { EnumGraphPointsSelectionMode } from './enums';
 
 export interface TimeSeriesProps {
   xScale: (value: any) => any;
   yScale: (value: number) => number;
   horizontalSampleDistancePx: number;  
+  graphPointsSelectionMode: EnumGraphPointsSelectionMode;
   data: DateTimePoint[];  
 }
 
 export interface TimeSeriesState {
-  selectedPoints: Array<number>;
+  selectedPoints: Array<DateTimePoint>;
 }
 
 export class TimeSeries extends React.Component<TimeSeriesProps, TimeSeriesState> {
@@ -50,28 +52,60 @@ export class TimeSeries extends React.Component<TimeSeriesProps, TimeSeriesState
     return 8;
   }
 
-  renderCircles() {
-    if (this.props.horizontalSampleDistancePx > 2)
-      return _.map(this.props.data, (el) => {
-        var isSelected = _.indexOf(this.state.selectedPoints, el.unix) >= 0;
-        return <TimeSeriesCircle
-          key={el.unix} 
-          cx={this.props.xScale(el.time)}
-          cy={this.props.yScale(el.value)}
-          unix={el.unix}
-          fill={isSelected ? "red" : "orange"}
-          isSelected={isSelected}
-          r={this.getCircleRadiusBasedOnHorizontalSampleDistancePx(this.props.horizontalSampleDistancePx)}
-          toggleSelected={(unix) => {
-            if (_.indexOf(this.state.selectedPoints, unix) >= 0) {
-              this.setState({ selectedPoints: _.filter(this.state.selectedPoints, (value) => value != unix) } );
-            } 
+  elementMarkedByUnixTimeStapmIsOnSelectedList(unix: number): boolean {
+    return (_.findIndex(this.state.selectedPoints, (el) => el.unix == unix) >= 0);
+  }
+
+  renderCircleReactElement(el: DateTimePoint, isSelected: boolean) {
+    return <TimeSeriesCircle
+      key={el.unix} 
+      cx={this.props.xScale(el.time)}
+      cy={this.props.yScale(el.value)}
+      unix={el.unix}
+      fill={isSelected ? "red" : "orange"}
+      isSelected={isSelected}
+      r={this.getCircleRadiusBasedOnHorizontalSampleDistancePx(this.props.horizontalSampleDistancePx)}
+      toggleSelected={(unix) => {
+        switch (this.props.graphPointsSelectionMode) {
+          case EnumGraphPointsSelectionMode.SelectUnselectSingle:
+            if (this.elementMarkedByUnixTimeStapmIsOnSelectedList(unix))
+              this.setState({ selectedPoints: _.filter(this.state.selectedPoints, (point: DateTimePoint) => point.unix != unix) } );
             else
-              this.setState({ selectedPoints: _.concat(this.state.selectedPoints, [unix]) } );
-          }}
-        />}
-      );
-    return [];
+              this.setState({ selectedPoints: _.concat(this.state.selectedPoints, [el]) } );
+            break;
+          case EnumGraphPointsSelectionMode.SelectMultiple:
+            if (!this.elementMarkedByUnixTimeStapmIsOnSelectedList(unix))
+              this.setState({ selectedPoints: _.concat(this.state.selectedPoints, [el]) } );
+            break;
+          case EnumGraphPointsSelectionMode.UnselectMultiple:
+            if (this.elementMarkedByUnixTimeStapmIsOnSelectedList(unix))
+              this.setState({ selectedPoints: _.filter(this.state.selectedPoints, (point: DateTimePoint) => point.unix != unix) } );
+            break;
+        }
+      }}
+      graphPointsSelectionMode={this.props.graphPointsSelectionMode}
+    />
+  }
+
+  renderCircles() {
+    var result = [];
+    switch (this.props.graphPointsSelectionMode) {
+      case EnumGraphPointsSelectionMode.SelectMultiple:
+      case EnumGraphPointsSelectionMode.SelectUnselectSingle:
+      case EnumGraphPointsSelectionMode.UnselectMultiple:
+      if (this.props.horizontalSampleDistancePx >= 6) {
+        result = _.map(this.props.data, (el) => {
+          var isSelected = _.findIndex(this.state.selectedPoints, (selectedPoint) => selectedPoint.unix == el.unix) >= 0;
+          return this.renderCircleReactElement(el, isSelected);
+        });
+      }
+      else {
+        result = _.map(this.state.selectedPoints, (el) => {
+          return this.renderCircleReactElement(el, true);
+        });
+      }
+    }
+    return result;    
   }
 
   render() {

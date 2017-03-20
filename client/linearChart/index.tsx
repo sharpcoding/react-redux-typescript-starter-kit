@@ -4,6 +4,7 @@ import * as moment from 'Moment';
 import * as _ from 'lodash';
 import { DateTimePoint } from './models/dateTimePoint';
 import { TimeSeries } from './components/timeSeries';
+import { EnumGraphPointsSelectionMode } from './components/enums';
 
 export interface LinearChartProps {
   width: number;
@@ -12,6 +13,7 @@ export interface LinearChartProps {
   from: moment.Moment;
   to: moment.Moment;
   data: DateTimePoint[];
+  graphPointsSelectionMode: EnumGraphPointsSelectionMode;
 }
 
 export class LinearChart extends React.Component<LinearChartProps, void> {
@@ -54,7 +56,8 @@ export class LinearChart extends React.Component<LinearChartProps, void> {
           data={filteredData} 
           xScale={xScale} 
           yScale={yScale}
-          horizontalSampleDistancePx={this.getHorizontalSampleDistancePx(filteredData.length, this.props.width)} />
+          horizontalSampleDistancePx={this.getHorizontalSampleDistancePx(filteredData.length, this.props.width)}
+          graphPointsSelectionMode={this.props.graphPointsSelectionMode} />
       </svg>
     );
   }

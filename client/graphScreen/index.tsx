@@ -5,9 +5,10 @@ import * as moment from 'moment';
 import * as _ from 'lodash';
 import { Panel, ButtonGroup, Button, ListGroup, ListGroupItem, Form, Col, FormGroup, ControlLabel, FormControl, HelpBlock  } from 'react-bootstrap';
 import { LinearChart } from '../LinearChart';
+import { EnumGraphPointsSelectionMode } from '../LinearChart/components/enums';
 import { GraphScreenState } from './model';
 import { TextInput } from './../../components/ui/textInput';
-import { changeDateFromToValue, setupWindowWidthMinutes } from './actions';
+import { changeDateFromToValue, setupWindowWidthMinutes, setupGraphPointsSelectionMode } from './actions';
 import { ReactSlider } from './../../components/react-slider/react-slider';
 import { BootstrapFormGroupStaticText } from './../../components/ui/bootstrapFormGroupStaticText';
 
@@ -39,6 +40,10 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
     if (state.points.length <= 1)
       return moment();
     return state.points[0].time.clone().add(minutes, "minutes");
+  }
+
+  getGraphPointsSelectionButtonStyle(stateMode: EnumGraphPointsSelectionMode, expectedMode: EnumGraphPointsSelectionMode): string {
+    return stateMode == expectedMode ? "success" : "default";
   }
 
   render() {
@@ -93,13 +98,35 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
             </Col>
           </FormGroup>
         </Form>
+        <ButtonGroup>
+          <Button bsSize="xs" onClick={() => this.props.dispatch(setupGraphPointsSelectionMode(EnumGraphPointsSelectionMode.NoSelection)) } 
+            bsStyle={this.getGraphPointsSelectionButtonStyle(state.graphPointsSelectionMode, EnumGraphPointsSelectionMode.NoSelection)}>No selection</Button>
+          <Button bsSize="xs" onClick={() => this.props.dispatch(setupGraphPointsSelectionMode(EnumGraphPointsSelectionMode.SelectUnselectSingle)) } 
+            bsStyle={this.getGraphPointsSelectionButtonStyle(state.graphPointsSelectionMode, EnumGraphPointsSelectionMode.SelectUnselectSingle)}>Select single point</Button>
+          <Button bsSize="xs" onClick={() => this.props.dispatch(setupGraphPointsSelectionMode(EnumGraphPointsSelectionMode.SelectMultiple)) } 
+            bsStyle={this.getGraphPointsSelectionButtonStyle(state.graphPointsSelectionMode, EnumGraphPointsSelectionMode.SelectMultiple)}>Select multiple points</Button>
+          <Button bsSize="xs" onClick={() => this.props.dispatch(setupGraphPointsSelectionMode(EnumGraphPointsSelectionMode.UnselectMultiple))} 
+            bsStyle={this.getGraphPointsSelectionButtonStyle(state.graphPointsSelectionMode, EnumGraphPointsSelectionMode.UnselectMultiple)}>Unselect multiple points</Button>
+        </ButtonGroup>
+        &nbsp;
+        <ButtonGroup>
+          <Button bsSize="xs"
+            onClick={() => this.props.dispatch(setupWindowWidthMinutes(state.dateTo.diff(state.dateFrom, "minutes"))) }>
+            Lock window width to current
+          </Button>
+          <Button bsSize="xs"
+            onClick={() => this.props.dispatch(setupWindowWidthMinutes(60)) }>
+            Unlock window width
+          </Button>
+        </ButtonGroup>
         <LinearChart 
-          width={700} 
-          height={500} 
+          width={1800} 
+          height={600} 
           padding={0} 
           data={this.props.state.points} 
           from={this.props.state.dateFrom} 
-          to={this.props.state.dateTo} />
+          to={this.props.state.dateTo}
+          graphPointsSelectionMode={this.props.state.graphPointsSelectionMode} />
         <ReactSlider 
           defaultValue={[this.translateDateTimeToMinutesDomain(state, state.dateFrom), this.translateDateTimeToMinutesDomain(state, state.dateTo)]}           
           min={0} 
@@ -116,14 +143,6 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
             }
           }}            
         />
-        <Button
-          onClick={() => this.props.dispatch(setupWindowWidthMinutes(state.dateTo.diff(state.dateFrom, "minutes"))) }>
-          Set current window width as minimal
-        </Button>
-        <Button 
-          onClick={() => this.props.dispatch(setupWindowWidthMinutes(360)) }>
-          Reset minimal window width to 360 minutes
-        </Button>
       </div>
     );
   }

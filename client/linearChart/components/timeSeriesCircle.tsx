@@ -2,6 +2,7 @@ import * as React from 'react';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import * as d3 from 'd3';
+import { EnumGraphPointsSelectionMode } from './enums';
 
 export interface TimeSeriesCircleProps {
   cx: number;
@@ -11,6 +12,7 @@ export interface TimeSeriesCircleProps {
   unix: number;
   toggleSelected: Function;
   isSelected: boolean;
+  graphPointsSelectionMode: EnumGraphPointsSelectionMode;
 }
 
 export class TimeSeriesCircle extends React.Component<TimeSeriesCircleProps, void> {
@@ -21,22 +23,23 @@ export class TimeSeriesCircle extends React.Component<TimeSeriesCircleProps, voi
       r: this.props.r,
       fill: this.props.fill
     };
-    var self = this;
+    let self = this;
     return <circle {...circleProps} ref={(c) => {
-      if (_.isObject(c)) {
-        d3.select(c).call(
-          d3.drag()
-            .on("start", (d) => {     
-              self.props.toggleSelected(self.props.unix);
-              {/*d3.select(this).raise().classed("active", true);*/}
-            })
-            .on("drag", (d) => {              
-              {/*d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);*/}
-            })
-            .on("end", (d) => {               
-               {/*d3.select(this).classed("active", false);*/}
-            }));
-      }  
+      if (!_.isObject(c))
+        return;
+      let d3SelectionResult = d3.select(c);
+      d3SelectionResult.style("cursor", "pointer");
+      d3SelectionResult.on("click", null);
+      d3SelectionResult.on("mouseenter", null);
+      switch (self.props.graphPointsSelectionMode) {
+        case EnumGraphPointsSelectionMode.SelectUnselectSingle:
+          d3SelectionResult.on("click", () => self.props.toggleSelected(self.props.unix));
+          break;
+        case EnumGraphPointsSelectionMode.SelectMultiple:
+        case EnumGraphPointsSelectionMode.UnselectMultiple:      
+          d3SelectionResult.on("mouseenter", () => { self.props.toggleSelected(self.props.unix); });
+          break;
+      }
     }} />;  
   }
 }
