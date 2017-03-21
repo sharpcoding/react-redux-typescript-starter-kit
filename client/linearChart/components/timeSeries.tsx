@@ -9,7 +9,7 @@ import { EnumGraphPointsSelectionMode } from './enums';
 export interface TimeSeriesProps {
   xScale: (value: any) => any;
   yScale: (value: number) => number;
-  horizontalSampleDistancePx: number;  
+  horizontalSampleDistancePx: number;
   graphPointsSelectionMode: EnumGraphPointsSelectionMode;
   data: DateTimePoint[];  
 }
@@ -56,7 +56,7 @@ export class TimeSeries extends React.Component<TimeSeriesProps, TimeSeriesState
     return (_.findIndex(this.state.selectedPoints, (el) => el.unix == unix) >= 0);
   }
 
-  renderCircleReactElement(el: DateTimePoint, isSelected: boolean) {
+  renderTimeSeriesPointInTimeReactElement(el: DateTimePoint, isSelected: boolean) {
     return <TimeSeriesPointInTime
       key={el.unix} 
       cx={this.props.xScale(el.time)}
@@ -65,6 +65,7 @@ export class TimeSeries extends React.Component<TimeSeriesProps, TimeSeriesState
       fill={isSelected ? "red" : "orange"}
       isSelected={isSelected}
       r={this.getCircleRadiusBasedOnHorizontalSampleDistancePx(this.props.horizontalSampleDistancePx)}
+      selectionActiveAreaHeightPx={150}
       toggleSelected={(unix) => {
         switch (this.props.graphPointsSelectionMode) {
           case EnumGraphPointsSelectionMode.SelectUnselectSingle:
@@ -96,12 +97,12 @@ export class TimeSeries extends React.Component<TimeSeriesProps, TimeSeriesState
       if (this.props.horizontalSampleDistancePx >= 6) {
         result = _.map(this.props.data, (el) => {
           var isSelected = _.findIndex(this.state.selectedPoints, (selectedPoint) => selectedPoint.unix == el.unix) >= 0;
-          return this.renderCircleReactElement(el, isSelected);
+          return this.renderTimeSeriesPointInTimeReactElement(el, isSelected);
         });
       }
       else {
         result = _.map(this.state.selectedPoints, (el) => {
-          return this.renderCircleReactElement(el, true);
+          return this.renderTimeSeriesPointInTimeReactElement(el, true);
         });
       }
     }
