@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import * as moment from 'moment';
 import * as d3 from 'd3';
 import { DateTimePoint } from '../models/DateTimePoint';
-import { TimeSeriesCircle } from './TimeSeriesCircle';
+import { TimeSeriesPointInTime } from './timeSeriesPointInTime';
 import { EnumGraphPointsSelectionMode } from './enums';
 
 export interface TimeSeriesProps {
@@ -57,7 +57,7 @@ export class TimeSeries extends React.Component<TimeSeriesProps, TimeSeriesState
   }
 
   renderCircleReactElement(el: DateTimePoint, isSelected: boolean) {
-    return <TimeSeriesCircle
+    return <TimeSeriesPointInTime
       key={el.unix} 
       cx={this.props.xScale(el.time)}
       cy={this.props.yScale(el.value)}

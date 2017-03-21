@@ -4,7 +4,7 @@ import * as moment from 'moment';
 import * as d3 from 'd3';
 import { EnumGraphPointsSelectionMode } from './enums';
 
-export interface TimeSeriesCircleProps {
+export interface TimeSeriesPointInTimeProps {
   cx: number;
   cy: number;
   r: number,
@@ -15,7 +15,7 @@ export interface TimeSeriesCircleProps {
   graphPointsSelectionMode: EnumGraphPointsSelectionMode;
 }
 
-export class TimeSeriesCircle extends React.Component<TimeSeriesCircleProps, void> {
+export class TimeSeriesPointInTime extends React.Component<TimeSeriesPointInTimeProps, void> {
   render() {
     var circleProps = {
       cx: this.props.cx,
