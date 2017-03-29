@@ -4,11 +4,14 @@ This work is influenced by the following:
 - https://github.com/jaysoo/todomvc-redux-react-typescript
 - https://github.com/freddyrangel/playing-with-react-and-d3
 
+THIS IS UNDER DEVELOPMENT CURRENTLY (March-April 2017), YET WORKS.
+ 
 This is a fairly simple starter kit with the following libraries / "technologies" intermingled and playing well with each other:
 * Webpack in "production" (prod) and "development" (dev) modes
 * Redux
-* ReactJS
-* React Bootstrap https://react-bootstrap.github.io/
+* React
+* Typescript
+* React-Bootstrap https://react-bootstrap.github.io/
 * D3 adapted for React
 * Redux DevTools Extension https://github.com/zalmoxisus/redux-devtools-extension
 
