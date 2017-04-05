@@ -6,8 +6,15 @@ import { DateTimePoint } from '../models/DateTimePoint';
 import { TimeSeriesPointInTime } from './timeSeriesPointInTime';
 import { EnumGraphPointsSelectionMode } from './enums';
 
+
 export interface TimeSeriesProps {
+  /**
+   * placeholder for D3 function that calculates x-scale
+   */
   xScale: (value: any) => any;
+  /**
+   * placeholder for D3 function that calculates y-scale
+   */
   yScale: (value: number) => number;
   horizontalSampleDistancePx: number;
   graphPointsSelectionMode: EnumGraphPointsSelectionMode;

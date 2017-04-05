@@ -120,12 +120,13 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
           </Button>
         </ButtonGroup>
         <LinearChart 
-          width={1800} 
+          width={800} 
           height={600} 
           padding={0} 
           data={this.props.state.allPoints} 
           from={this.props.state.dateFrom} 
           to={this.props.state.dateTo}
+          secondsPerSample={60}
           graphPointsSelectionMode={this.props.state.graphPointsSelectionMode} />
         <ReactSlider 
           defaultValue={[this.translateDateTimeToMinutesDomain(state, state.dateFrom), this.translateDateTimeToMinutesDomain(state, state.dateTo)]}           
@@ -141,7 +142,7 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
               this.props.dispatch(changeDateFromToValue(newDateFrom.format("YYYY-MM-DD HH:mm"), newDateTo.format("YYYY-MM-DD HH:mm")));
               return;
             }
-          }}            
+          }}
         />
       </div>
     );

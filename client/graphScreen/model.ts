@@ -8,5 +8,8 @@ export type GraphScreenState = {
   dateFromToMinimalWidthMinutes: number;  
   graphPointsSelectionMode: EnumGraphPointsSelectionMode;
   allPoints: DateTimePoint[];
-  displayedPoints: DateTimePoint[];
+  /**
+   * Describes the declared density provided in data: DateTimePoint[] collection
+   */
+  secondsPerSample: number;
 };

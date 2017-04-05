@@ -5,6 +5,7 @@ import * as _ from 'lodash';
 import { DateTimePoint } from './models/dateTimePoint';
 import { TimeSeries } from './components/timeSeries';
 import { EnumGraphPointsSelectionMode } from './components/enums';
+import { getHorizontalSampleDistancePx, resampleFactor } from './common/calculations';
 
 export interface LinearChartProps {
   width: number;
@@ -13,15 +14,31 @@ export interface LinearChartProps {
   from: moment.Moment;
   to: moment.Moment;
   data: DateTimePoint[];
+  secondsPerSample: number;
   graphPointsSelectionMode: EnumGraphPointsSelectionMode;
 }
 
 export class LinearChart extends React.Component<LinearChartProps, void> {
   filteredInRange = (data: DateTimePoint[]) => {
-    var unixFrom = this.props.from.unix();
-    var unixTo = this.props.to.unix();
-    return _.filter(data, el => el.unix >= unixFrom && el.unix <= unixTo);
-  } 
+    let result = new Array<DateTimePoint>();
+    let unixFrom = this.props.from.unix();
+    let unixTo = this.props.to.unix();
+    let rFactor = resampleFactor(this.props.secondsPerSample, this.props.width, this.props.from.clone(), this.props.to.clone());
+    let filtered = _.filter(data, el => el.unix >= unixFrom && el.unix <= unixTo);
+    let temporarySum = 0;    
+    for (let i=0; i < filtered.length; i++) {
+      temporarySum += filtered[i].value;
+      if (i % rFactor == 0) {
+        result.push({
+          time: filtered[i].time.clone(),
+          unix: filtered[i].time.unix(),
+          value: temporarySum / rFactor
+        });
+        temporarySum = 0;
+      }
+    }
+    return result;
+  };
   
   xMin = (data) => d3.min(data, (d: DateTimePoint) => d.time.toDate());
   xMax = (data) => d3.max(data, (d: DateTimePoint) => d.time.toDate());
@@ -40,10 +57,6 @@ export class LinearChart extends React.Component<LinearChartProps, void> {
       .range([props.height - props.padding, props.padding]);
   };
 
-  getHorizontalSampleDistancePx = (sampleCount: number, widthPx: number) => {
-    return sampleCount > 1 ? (widthPx / (sampleCount-1)) : widthPx;
-  }
-
   render() {
     var filteredData = this.filteredInRange(this.props.data);
     var xScale = this.getXScale(filteredData, this.props);
@@ -56,7 +69,7 @@ export class LinearChart extends React.Component<LinearChartProps, void> {
           data={filteredData} 
           xScale={xScale} 
           yScale={yScale}
-          horizontalSampleDistancePx={this.getHorizontalSampleDistancePx(filteredData.length, this.props.width)}
+          horizontalSampleDistancePx={getHorizontalSampleDistancePx(filteredData.length, this.props.width)}
           graphPointsSelectionMode={this.props.graphPointsSelectionMode} />
       </svg>
     );
