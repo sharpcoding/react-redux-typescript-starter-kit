@@ -7,5 +7,6 @@ export type GraphScreenState = {
   dateTo: moment.Moment,
   dateFromToMinimalWidthMinutes: number;  
   graphPointsSelectionMode: EnumGraphPointsSelectionMode;
-  points: DateTimePoint[]
+  allPoints: DateTimePoint[];
+  displayedPoints: DateTimePoint[];
 };

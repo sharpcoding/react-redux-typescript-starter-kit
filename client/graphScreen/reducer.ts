@@ -15,8 +15,10 @@ const SAMPLE_VALUE_MAX = 150;
 const DATE_RANGE_MIN_VALUE = moment("2010-03-01");
 const DATE_RANGE_MAX_VALUE = moment("2010-09-30"  );
 const DATE_WINDOW_FROM_VALUE = moment("2010-05-03");
-const DATE_WINDOW_TO_VALUE = moment("2010-07-05");
-const SAMPLES_EVERY_MINUTE = 60;
+const DATE_WINDOW_TO_VALUE = moment("2010-05-05");
+const SAMPLES_EVERY_MINUTE_LEVEL_1 = 60;
+const SAMPLES_EVERY_MINUTE_LEVEL_2 = 5;
+const SAMPLES_EVERY_MINUTE_LEVEL_3 = 1;
 const DATE_WINDOW_MINIMAL_WIDTH_MINUTES = 24*60;
 
 const randomDateTimePoints = () => {
@@ -25,7 +27,7 @@ const randomDateTimePoints = () => {
   var currentValue = _.random(50, 100);
   while (referenceDate.isBefore(DATE_RANGE_MAX_VALUE)) {
     result.push(<DateTimePoint>{ time: referenceDate.clone(), unix: referenceDate.unix(), value: currentValue });
-    referenceDate.add(SAMPLES_EVERY_MINUTE, "minutes");
+    referenceDate.add(SAMPLES_EVERY_MINUTE_LEVEL_1, "minutes");
     var chanceForChangeIndexValue = _.random(0, 100);
     if (_.inRange(chanceForChangeIndexValue, 0, 10)) {
       currentValue += 40 - _.random(0, 80);
@@ -37,12 +39,17 @@ const randomDateTimePoints = () => {
   return result;
 }
 
+var getDisplayedPoints = (dateFrom: moment.Moment, dateTo: moment.Moment) : GraphScreenState[] => {
+  return null;
+};
+
 
 const initialState: GraphScreenState = <GraphScreenState>{
     dateFrom: DATE_WINDOW_FROM_VALUE.clone(),
     dateTo: DATE_WINDOW_TO_VALUE.clone(),
     dateFromToMinimalWidthMinutes: DATE_WINDOW_MINIMAL_WIDTH_MINUTES,
-    points: randomDateTimePoints(),
+    allPoints: randomDateTimePoints(),
+    displayedPoints: null,
     graphPointsSelectionMode: EnumGraphPointsSelectionMode.NoSelection
 };
 
@@ -67,7 +74,8 @@ export default handleActions<GraphScreenState, GraphScreenState>({
       dateFrom: dateFrom,
       dateTo: dateTo,
       dateFromToMinimalWidthMinutes: state.dateFromToMinimalWidthMinutes,
-      points: _.clone(state.points),
+      allPoints: state.allPoints,
+      displayedPoints: state.displayedPoints,
       graphPointsSelectionMode: state.graphPointsSelectionMode
     };
   },
@@ -77,7 +85,8 @@ export default handleActions<GraphScreenState, GraphScreenState>({
       dateFrom: state.dateFrom.clone(),
       dateTo: state.dateTo.clone(),
       dateFromToMinimalWidthMinutes: action.payload,
-      points: _.clone(state.points),
+      allPoints: state.allPoints,
+      displayedPoints: state.displayedPoints,
       graphPointsSelectionMode: state.graphPointsSelectionMode
     };
   },
@@ -87,7 +96,8 @@ export default handleActions<GraphScreenState, GraphScreenState>({
       dateFrom: state.dateFrom.clone(),
       dateTo: state.dateTo.clone(),
       dateFromToMinimalWidthMinutes: action.payload,
-      points: _.clone(state.points),
+      allPoints: state.allPoints,
+      displayedPoints: state.displayedPoints,
       graphPointsSelectionMode: action.payload
     };
   }

@@ -19,27 +19,27 @@ interface MainScreenProps {
 
 export class MainScreen extends React.Component<MainScreenProps, void> {  
   calculateDomainLengthMinutes(state: GraphScreenState): number {
-    if (state.points.length <= 1)
+    if (state.allPoints.length <= 1)
       return 0;
-    return this.translateDateTimeToMinutesDomain(state, state.points[state.points.length-1].time)
+    return this.translateDateTimeToMinutesDomain(state, state.allPoints[state.allPoints.length-1].time)
   }
 
   /**
    * Calculates the difference in minutes between the datetime of the last available and the first available point
    */
   translateDateTimeToMinutesDomain(state: GraphScreenState, dateTime: moment.Moment): number {
-    if (state.points.length <= 1)
+    if (state.allPoints.length <= 1)
       return 0;
-    var dateFrom = state.points[0].time;    
+    var dateFrom = state.allPoints[0].time;    
     return dateTime.diff(dateFrom, "minutes");
   }
 
   // translate
 
   translateMinutesDomainToDateTime(state: GraphScreenState, minutes: number): moment.Moment {
-    if (state.points.length <= 1)
+    if (state.allPoints.length <= 1)
       return moment();
-    return state.points[0].time.clone().add(minutes, "minutes");
+    return state.allPoints[0].time.clone().add(minutes, "minutes");
   }
 
   getGraphPointsSelectionButtonStyle(stateMode: EnumGraphPointsSelectionMode, expectedMode: EnumGraphPointsSelectionMode): string {
@@ -62,19 +62,19 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
                Samples from:
             </Col>
             <Col sm={2}>
-              <BootstrapFormGroupStaticText text={state.points[0].time.format("YYYY-MM-DD HH:mm")} />
+              <BootstrapFormGroupStaticText text={state.allPoints[0].time.format("YYYY-MM-DD HH:mm")} />
             </Col>
             <Col componentClass={ControlLabel} sm={2}>
               Samples to:
             </Col>
             <Col sm={2}>
-              <BootstrapFormGroupStaticText text={state.points[state.points.length-1].time.format("YYYY-MM-DD HH:mm")} />
+              <BootstrapFormGroupStaticText text={state.allPoints[state.allPoints.length-1].time.format("YYYY-MM-DD HH:mm")} />
             </Col>
             <Col componentClass={ControlLabel} sm={2}>
               Total number of samples:
             </Col>
             <Col sm={2}>
-              <BootstrapFormGroupStaticText text={state.points.length.toString()} />
+              <BootstrapFormGroupStaticText text={state.allPoints.length.toString()} />
             </Col>
           </FormGroup>
           <FormGroup>
@@ -123,7 +123,7 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
           width={1800} 
           height={600} 
           padding={0} 
-          data={this.props.state.points} 
+          data={this.props.state.allPoints} 
           from={this.props.state.dateFrom} 
           to={this.props.state.dateTo}
           graphPointsSelectionMode={this.props.state.graphPointsSelectionMode} />
