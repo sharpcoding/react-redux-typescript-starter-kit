@@ -25,16 +25,16 @@ export class LinearChart extends React.Component<LinearChartProps, void> {
     let unixTo = this.props.to.unix();
     let rFactor = resampleFactor(this.props.secondsPerSample, this.props.width, this.props.from.clone(), this.props.to.clone());
     let filtered = _.filter(data, el => el.unix >= unixFrom && el.unix <= unixTo);
-    let temporarySum = 0;    
+    let resampledSum = 0;
     for (let i=0; i < filtered.length; i++) {
-      temporarySum += filtered[i].value;
+      resampledSum += filtered[i].value;
       if (i % rFactor == 0) {
         result.push({
           time: filtered[i].time.clone(),
           unix: filtered[i].time.unix(),
-          value: temporarySum / rFactor
+          value: resampledSum / rFactor
         });
-        temporarySum = 0;
+        resampledSum = 0;
       }
     }
     return result;

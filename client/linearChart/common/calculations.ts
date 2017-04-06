@@ -22,8 +22,8 @@ export var getHorizontalSampleDistancePx = (samplesCount: number, widthPx: numbe
  * rawDataSecondsPerSample holds declared density in the RAW data sample array
  */
 export var resampleFactor = (rawDataSecondsPerSample: number, widthPx: number, momentFrom: moment.Moment, momentTo: moment.Moment) => {
-  var numberOfSecondsInDateRange = momentTo.diff(momentFrom, "second");
-  var rawDataNumberOfSamplesInDateRange = numberOfSecondsInDateRange / rawDataSecondsPerSample;
-  var samplesPerPixel = rawDataNumberOfSamplesInDateRange / widthPx;
+  let numberOfSecondsInDateRange = momentTo.diff(momentFrom, "second");
+  let rawDataNumberOfSamplesInDateRange = numberOfSecondsInDateRange / rawDataSecondsPerSample;
+  let samplesPerPixel = rawDataNumberOfSamplesInDateRange / widthPx;
   return samplesPerPixel < 1 ? 1 : _.ceil(samplesPerPixel);
-} 
+}

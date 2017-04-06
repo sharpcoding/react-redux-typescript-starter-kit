@@ -126,7 +126,7 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
           data={this.props.state.allPoints} 
           from={this.props.state.dateFrom} 
           to={this.props.state.dateTo}
-          secondsPerSample={60}
+          secondsPerSample={this.props.state.secondsPerSample}
           graphPointsSelectionMode={this.props.state.graphPointsSelectionMode} />
         <ReactSlider 
           defaultValue={[this.translateDateTimeToMinutesDomain(state, state.dateFrom), this.translateDateTimeToMinutesDomain(state, state.dateTo)]}           
