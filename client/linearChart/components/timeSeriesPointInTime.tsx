@@ -51,6 +51,12 @@ export class TimeSeriesPointInTime extends React.Component<TimeSeriesPointInTime
           if (!_.isObject(c))
             return;
           let d3SelectionResult = d3.select(c);
+          d3SelectionResult.call(d3.drag()
+            .on("start", () => { })
+            .on("drag", () => {
+              d3SelectionResult.attr("cy", d3.event.y);
+            })
+            .on("end", () => { }));
           d3SelectionResult.style("cursor", "pointer");
           d3SelectionResult.on("click", null);
           d3SelectionResult.on("mouseenter", null);
