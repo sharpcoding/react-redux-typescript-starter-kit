@@ -7,7 +7,7 @@ import { TimeSeriesPointInTime } from './timeSeriesPointInTime';
 import { EnumGraphPointsSelectionMode } from './enums';
 
 
-export interface TimeSeriesProps {
+export interface ITimeSeriesProps {
   /**
    * placeholder for D3 function that calculates x-scale
    */
@@ -21,14 +21,30 @@ export interface TimeSeriesProps {
   data: DateTimePoint[];  
 }
 
-export interface TimeSeriesState {
-  selectedPoints: Array<DateTimePoint>;
+export interface ITextGauge {
+  visible: boolean;
+  textValue: string;
+  x: number;
+  y: number;
 }
 
-export class TimeSeries extends React.Component<TimeSeriesProps, TimeSeriesState> {
+export interface ITimeSeriesState {
+  selectedPoints: Array<DateTimePoint>;
+  draggedPointTextGauge: ITextGauge;
+}
+
+export class TimeSeries extends React.Component<ITimeSeriesProps, ITimeSeriesState> {
   constructor(props) {
     super(props);
-    this.state = { selectedPoints: [] }
+    this.state = {
+      selectedPoints: [], 
+      draggedPointTextGauge: {
+        visible: false,
+        textValue: "",
+        x: 0,
+        y: 0
+      }
+    }
   }
   
   getSvgPath(): string {
@@ -73,21 +89,38 @@ export class TimeSeries extends React.Component<TimeSeriesProps, TimeSeriesState
       isSelected={isSelected}
       r={this.getCircleRadiusBasedOnHorizontalSampleDistancePx(this.props.horizontalSampleDistancePx)}
       selectionActiveAreaHeightPx={150}
+      startedDragging={() => { console.log("started") }}
+      beingDragged={(x: number, y: number, value: string) => {
+        console.log("udpate text");
+      }}
+      stoppedDragging={() => { console.log("ended") }}
       toggleSelected={(unix) => {
         switch (this.props.graphPointsSelectionMode) {
           case EnumGraphPointsSelectionMode.SelectUnselectSingle:
             if (this.elementMarkedByUnixTimeStapmIsOnSelectedList(unix))
-              this.setState({ selectedPoints: _.filter(this.state.selectedPoints, (point: DateTimePoint) => point.unix != unix) } );
+              this.setState({ 
+                selectedPoints: _.filter(this.state.selectedPoints, (point: DateTimePoint) => point.unix != unix),
+                draggedPointTextGauge: this.state.draggedPointTextGauge
+              });
             else
-              this.setState({ selectedPoints: _.concat(this.state.selectedPoints, [el]) } );
+              this.setState({
+                selectedPoints: _.concat(this.state.selectedPoints, [el]),
+                draggedPointTextGauge: this.state.draggedPointTextGauge
+              });
             break;
           case EnumGraphPointsSelectionMode.SelectMultiple:
             if (!this.elementMarkedByUnixTimeStapmIsOnSelectedList(unix))
-              this.setState({ selectedPoints: _.concat(this.state.selectedPoints, [el]) } );
+              this.setState({
+                selectedPoints: _.concat(this.state.selectedPoints, [el]),
+                draggedPointTextGauge: this.state.draggedPointTextGauge
+              });
             break;
           case EnumGraphPointsSelectionMode.UnselectMultiple:
             if (this.elementMarkedByUnixTimeStapmIsOnSelectedList(unix))
-              this.setState({ selectedPoints: _.filter(this.state.selectedPoints, (point: DateTimePoint) => point.unix != unix) } );
+              this.setState({ 
+                selectedPoints: _.filter(this.state.selectedPoints, (point: DateTimePoint) => point.unix != unix),
+                draggedPointTextGauge: this.state.draggedPointTextGauge
+              });
             break;
         }
       }}
@@ -118,6 +151,12 @@ export class TimeSeries extends React.Component<TimeSeriesProps, TimeSeriesState
 
   render() {
     return (<g>
+      {this.state.draggedPointTextGauge.visible && 
+       <text 
+        x={this.state.draggedPointTextGauge.x} 
+        y={this.state.draggedPointTextGauge.y}>
+        {this.state.draggedPointTextGauge.textValue}
+      </text>}
       <path d={this.getSvgPath()} fill="none" stroke="steelblue" />
       {this.renderCircles()}
     </g>);

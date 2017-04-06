@@ -14,6 +14,9 @@ export interface TimeSeriesPointInTimeProps {
   selectionActiveAreaHeightPx: number;
   isSelected: boolean;
   graphPointsSelectionMode: EnumGraphPointsSelectionMode;
+  startedDragging: Function;
+  beingDragged: Function;
+  stoppedDragging: Function;
 }
 
 export class TimeSeriesPointInTime extends React.Component<TimeSeriesPointInTimeProps, void> {
@@ -33,7 +36,7 @@ export class TimeSeriesPointInTime extends React.Component<TimeSeriesPointInTime
           width={self.props.r*2} 
           height={self.props.selectionActiveAreaHeightPx} 
           fill="white"
-          opacity="0.0"          
+          opacity="0.0"
           ref={(c) => {
             if (!_.isObject(c))
               return;
@@ -50,13 +53,15 @@ export class TimeSeriesPointInTime extends React.Component<TimeSeriesPointInTime
         <circle {...circleProps} ref={(c) => {
           if (!_.isObject(c))
             return;
+          var selfReact = this;
           let d3SelectionResult = d3.select(c);
           d3SelectionResult.call(d3.drag()
-            .on("start", () => { })
+            .on("start", () => selfReact.props.startedDragging())
             .on("drag", () => {
               d3SelectionResult.attr("cy", d3.event.y);
+              selfReact.props.beingDragged(d3.event.x, d3.event.y);
             })
-            .on("end", () => { }));
+            .on("end", () => selfReact.props.stoppedDragging()));
           d3SelectionResult.style("cursor", "pointer");
           d3SelectionResult.on("click", null);
           d3SelectionResult.on("mouseenter", null);
