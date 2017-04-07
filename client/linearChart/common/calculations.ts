@@ -50,7 +50,7 @@ export var resampleFactorApproximation = (rFactor: number) => {
 }
 
 export var getAllApproximations = (): number[] => {
-  return _.map(rFactorLevels, el => el.low);
+  return _.map(rFactorLevels, el => el.high);
 }
 
 export var getDataResampled = (data: DateTimePoint[], rFactor: number): DateTimePoint[]  => {
