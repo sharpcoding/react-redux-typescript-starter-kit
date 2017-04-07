@@ -1,5 +1,6 @@
 import * as moment from 'Moment';
 import * as _ from 'lodash';
+import { DateTimePoint } from '../models/dateTimePoint';
 
 /**
  * The distance in pixels (in horizontal, x-scale) between pixels highlighted as centres of two consecutive points
@@ -26,4 +27,45 @@ export var resampleFactor = (rawDataSecondsPerSample: number, widthPx: number, m
   let rawDataNumberOfSamplesInDateRange = numberOfSecondsInDateRange / rawDataSecondsPerSample;
   let samplesPerPixel = rawDataNumberOfSamplesInDateRange / widthPx;
   return samplesPerPixel < 1 ? 1 : _.ceil(samplesPerPixel);
+}
+
+var rFactorLevels = [  
+  { low: 10, high: 30 },
+  { low: 30, high: 50 },
+  { low: 50, high: 200 },
+  { low: 200, high: 500 },
+  { low: 500, high: 1000 },
+  { low: 1000, high: 2000 },
+  { low: 2000, high: 5000 }
+];
+
+export var resampleFactorApproximation = (rFactor: number) => {
+  let rFactorBelowLowestPossible = (rFactor < rFactorLevels[0].low);
+  let rFactorAboveHighestPossible = !(_.isObject(_.find(rFactorLevels, el => rFactor < el.high)));
+  if (rFactorBelowLowestPossible)
+    return rFactor;
+  if (rFactorAboveHighestPossible)
+    return rFactorLevels[rFactorLevels.length-1].high;
+  return _.find(rFactorLevels, el => rFactor >= el.low && rFactor < el.high).high;
+}
+
+export var getAllApproximations = (): number[] => {
+  return _.map(rFactorLevels, el => el.low);
+}
+
+export var getDataResampled = (data: DateTimePoint[], rFactor: number): DateTimePoint[]  => {
+  let resampledSum = 0;
+  let result = [];
+  for (let i=0; i < data.length; i++) {
+    resampledSum += data[i].value;
+    if (i % rFactor == 0) {
+      result.push({
+        time: data[i].time.clone(),
+        unix: data[i].time.unix(),
+        value: resampledSum / rFactor
+      });
+      resampledSum = 0;
+    }
+  }
+  return result;
 }

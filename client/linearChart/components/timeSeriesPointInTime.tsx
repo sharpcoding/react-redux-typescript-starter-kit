@@ -59,7 +59,7 @@ export class TimeSeriesPointInTime extends React.Component<TimeSeriesPointInTime
             .on("start", () => selfReact.props.startedDragging())
             .on("drag", () => {
               d3SelectionResult.attr("cy", d3.event.y);
-              selfReact.props.beingDragged(d3.event.x, d3.event.y);
+              selfReact.props.beingDragged(d3.event.x, d3.event.y, d3.event.y.toString());
             })
             .on("end", () => selfReact.props.stoppedDragging()));
           d3SelectionResult.style("cursor", "pointer");

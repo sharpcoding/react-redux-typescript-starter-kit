@@ -19,27 +19,20 @@ interface MainScreenProps {
 
 export class MainScreen extends React.Component<MainScreenProps, void> {  
   calculateDomainLengthMinutes(state: GraphScreenState): number {
-    if (state.allPoints.length <= 1)
-      return 0;
-    return this.translateDateTimeToMinutesDomain(state, state.allPoints[state.allPoints.length-1].time)
+    return this.translateDateTimeToMinutesDomain(state, state.allPointsTo)
   }
 
   /**
    * Calculates the difference in minutes between the datetime of the last available and the first available point
    */
   translateDateTimeToMinutesDomain(state: GraphScreenState, dateTime: moment.Moment): number {
-    if (state.allPoints.length <= 1)
-      return 0;
-    var dateFrom = state.allPoints[0].time;    
-    return dateTime.diff(dateFrom, "minutes");
+    return dateTime.diff(state.allPointsFrom.clone(), "minutes");
   }
 
   // translate
 
   translateMinutesDomainToDateTime(state: GraphScreenState, minutes: number): moment.Moment {
-    if (state.allPoints.length <= 1)
-      return moment();
-    return state.allPoints[0].time.clone().add(minutes, "minutes");
+    return state.allPointsFrom.clone().add(minutes, "minutes");
   }
 
   getGraphPointsSelectionButtonStyle(stateMode: EnumGraphPointsSelectionMode, expectedMode: EnumGraphPointsSelectionMode): string {
@@ -62,13 +55,13 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
                Samples from:
             </Col>
             <Col sm={2}>
-              <BootstrapFormGroupStaticText text={state.allPoints[0].time.format("YYYY-MM-DD HH:mm")} />
+              <BootstrapFormGroupStaticText text={state.allPointsFrom.format("YYYY-MM-DD HH:mm")} />
             </Col>
             <Col componentClass={ControlLabel} sm={2}>
               Samples to:
             </Col>
             <Col sm={2}>
-              <BootstrapFormGroupStaticText text={state.allPoints[state.allPoints.length-1].time.format("YYYY-MM-DD HH:mm")} />
+              <BootstrapFormGroupStaticText text={state.allPointsTo.format("YYYY-MM-DD HH:mm")} />
             </Col>
             <Col componentClass={ControlLabel} sm={2}>
               Total number of samples:
@@ -126,6 +119,8 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
           data={this.props.state.allPoints} 
           from={this.props.state.dateFrom} 
           to={this.props.state.dateTo}
+          yMinValue={this.props.state.yMinValue}
+          yMaxValue={this.props.state.yMaxValue}
           secondsPerSample={this.props.state.secondsPerSample}
           graphPointsSelectionMode={this.props.state.graphPointsSelectionMode} />
         <ReactSlider 

@@ -5,37 +5,62 @@ import * as _ from 'lodash';
 import { DateTimePoint } from './models/dateTimePoint';
 import { TimeSeries } from './components/timeSeries';
 import { EnumGraphPointsSelectionMode } from './components/enums';
-import { getHorizontalSampleDistancePx, resampleFactor } from './common/calculations';
+import { getHorizontalSampleDistancePx, resampleFactor, resampleFactorApproximation, getAllApproximations, getDataResampled } from './common/calculations';
 
-export interface LinearChartProps {
+export interface ILinearChartProps {
   width: number;
   height: number;
   padding: number;
   from: moment.Moment;
   to: moment.Moment;
+  yMinValue: number;
+  yMaxValue: number;
   data: DateTimePoint[];
   secondsPerSample: number;
   graphPointsSelectionMode: EnumGraphPointsSelectionMode;
 }
 
-export class LinearChart extends React.Component<LinearChartProps, void> {
-  filteredInRange = (data: DateTimePoint[]) => {
+export interface IDateTimePointSeriesCache {
+  rFractor: number;
+  samples: DateTimePoint[];
+}
+
+export interface ITimeSeriesState {
+  rFactorSampleCache: IDateTimePointSeriesCache[];
+}
+
+export class LinearChart extends React.Component<ILinearChartProps, ITimeSeriesState> {
+  constructor(props) {
+    super(props);
+    var rFactorSampleCache = new Array<IDateTimePointSeriesCache>();
+    console.log("building rFactor cache...");
+    _.each(getAllApproximations(), rFactor => {
+      console.log(`rFactor: ${rFactor}`);
+      rFactorSampleCache.push({
+        rFractor: rFactor,
+        samples: getDataResampled(props.data, rFactor)
+      });
+    });
+    this.state = {
+      rFactorSampleCache: rFactorSampleCache
+    }
+    console.log("built rFactor cache !");
+    _.each(rFactorSampleCache, el => console.log(el.samples.length));
+  };
+
+  filteredInRange = () => {
     let result = new Array<DateTimePoint>();
     let unixFrom = this.props.from.unix();
     let unixTo = this.props.to.unix();
     let rFactor = resampleFactor(this.props.secondsPerSample, this.props.width, this.props.from.clone(), this.props.to.clone());
-    let filtered = _.filter(data, el => el.unix >= unixFrom && el.unix <= unixTo);
-    let resampledSum = 0;
-    for (let i=0; i < filtered.length; i++) {
-      resampledSum += filtered[i].value;
-      if (i % rFactor == 0) {
-        result.push({
-          time: filtered[i].time.clone(),
-          unix: filtered[i].time.unix(),
-          value: resampledSum / rFactor
-        });
-        resampledSum = 0;
-      }
+    let rFactorApproximation = resampleFactorApproximation(rFactor);
+    let rFactorCacheElement = _.find(this.state.rFactorSampleCache, el => el.rFractor == rFactorApproximation);
+    if (_.isObject(rFactorCacheElement)) {
+      result = _.filter(rFactorCacheElement.samples, el => el.unix >= unixFrom && el.unix <= unixTo);
+      console.log(`filteredInRange() rFactor: ${rFactor} rFactorApproximation: ${rFactorApproximation} allSamples: ${this.props.data.length} cacheSamples: ${rFactorCacheElement.samples.length} resultSamples: ${result.length}`);
+    } else {
+      result = _.filter(this.props.data, el => el.unix >= unixFrom && el.unix <= unixTo);
+      console.log(`filteredInRange() rFactor: ${rFactor}  rFactorApproximation: ${rFactorApproximation} allSamples: ${this.props.data.length} resultSamples: ${result.length}`);
     }
     return result;
   };
@@ -45,20 +70,20 @@ export class LinearChart extends React.Component<LinearChartProps, void> {
   yMin = (data) => d3.min(data, (d: DateTimePoint) => d.value);
   yMax = (data) => d3.max(data, (d: DateTimePoint) => d.value);
   
-  getXScale = (filteredData: DateTimePoint[], props: LinearChartProps) => {    
+  getXScale = (filteredData: DateTimePoint[], props: ILinearChartProps) => {
     return d3.scaleTime()
       .domain([this.xMin(filteredData), this.xMax(filteredData)])
       .range([props.padding, props.width - props.padding * 2]);
   };
   
-  getYScale = (filteredData: DateTimePoint[], props: LinearChartProps) => {
+  getYScale = (filteredData: DateTimePoint[], props: ILinearChartProps) => {
     return d3.scaleLinear()
-      .domain([this.yMin(props.data), this.yMax(props.data)])
+      .domain([props.yMinValue, props.yMaxValue])
       .range([props.height - props.padding, props.padding]);
   };
 
   render() {
-    var filteredData = this.filteredInRange(this.props.data);
+    var filteredData = this.filteredInRange();    
     var xScale = this.getXScale(filteredData, this.props);
     var yScale = this.getYScale(filteredData, this.props);
     return (

@@ -8,6 +8,10 @@ export type GraphScreenState = {
   dateFromToMinimalWidthMinutes: number;  
   graphPointsSelectionMode: EnumGraphPointsSelectionMode;
   allPoints: DateTimePoint[];
+  allPointsFrom: moment.Moment;
+  allPointsTo: moment.Moment;
+  yMinValue: number;
+  yMaxValue: number;
   /**
    * Describes the declared density provided in data: DateTimePoint[] collection
    */

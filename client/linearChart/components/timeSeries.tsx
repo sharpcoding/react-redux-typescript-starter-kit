@@ -89,23 +89,41 @@ export class TimeSeries extends React.Component<ITimeSeriesProps, ITimeSeriesSta
       isSelected={isSelected}
       r={this.getCircleRadiusBasedOnHorizontalSampleDistancePx(this.props.horizontalSampleDistancePx)}
       selectionActiveAreaHeightPx={150}
-      startedDragging={() => { console.log("started") }}
-      beingDragged={(x: number, y: number, value: string) => {
-        console.log("udpate text");
+      startedDragging={() => { 
+        this.setState({
+          selectedPoints: this.state.selectedPoints,
+          draggedPointTextGauge: { textValue: "", x: 0, y: 0, visible: true }
+        })
       }}
-      stoppedDragging={() => { console.log("ended") }}
+      beingDragged={(x: number, y: number, value: string) => {
+        var prevState = this.state;
+        prevState.draggedPointTextGauge.textValue = value;
+        prevState.draggedPointTextGauge.x = this.props.xScale(el.time);
+        prevState.draggedPointTextGauge.y = y-this.getCircleRadiusBasedOnHorizontalSampleDistancePx(this.props.horizontalSampleDistancePx)-1;
+        this.setState(prevState);
+      }}
+      stoppedDragging={() => {
+        this.setState({
+          selectedPoints: this.state.selectedPoints,
+          draggedPointTextGauge: { textValue: "", x: 0, y: 0, visible: false }
+        });
+      }}
       toggleSelected={(unix) => {
         switch (this.props.graphPointsSelectionMode) {
           case EnumGraphPointsSelectionMode.SelectUnselectSingle:
             if (this.elementMarkedByUnixTimeStapmIsOnSelectedList(unix))
-              this.setState({ 
-                selectedPoints: _.filter(this.state.selectedPoints, (point: DateTimePoint) => point.unix != unix),
-                draggedPointTextGauge: this.state.draggedPointTextGauge
+              this.setState((prevState) => {
+                return {
+                  selectedPoints: _.filter(prevState.selectedPoints, (point: DateTimePoint) => point.unix != unix),
+                  draggedPointTextGauge: prevState.draggedPointTextGauge
+                }
               });
             else
-              this.setState({
-                selectedPoints: _.concat(this.state.selectedPoints, [el]),
-                draggedPointTextGauge: this.state.draggedPointTextGauge
+              this.setState((prevState) => { 
+                return {
+                  selectedPoints: _.concat(prevState.selectedPoints, [el]),
+                  draggedPointTextGauge: prevState.draggedPointTextGauge
+                }
               });
             break;
           case EnumGraphPointsSelectionMode.SelectMultiple:
