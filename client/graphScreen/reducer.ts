@@ -98,12 +98,31 @@ export default handleActions<GraphScreenState, GraphScreenState>({
   },
 
   [SETUP_ZOOM_WINDOW_LIMITATION]: (state: GraphScreenState, action: Action<EnumSliderWindowZoomLimitationMode>): GraphScreenState => {
-    return _.extend({}, state, {
-      dateFromToMinimalWidthMinutes: state.dateFromToMinimalWidthMinutes/10,
-      sliderWindowZoomLimitationMode: action.payload,
-      zoomLevel1PointsFrom: state.windowDateFrom.clone(),
-      zoomLevel1PointsTo: state.windowDateTo.clone()
-    });
+    var result = <GraphScreenState>{};
+    switch (action.payload) {
+      case EnumSliderWindowZoomLimitationMode.NoZoom:
+        result = state;
+        break;
+      case EnumSliderWindowZoomLimitationMode.ZoomLevel1:
+        result = _.extend({}, state, {
+          sliderWindowZoomLimitationMode: action.payload,
+          dateFromToMinimalWidthMinutes: (state.sliderWindowZoomLimitationMode == EnumSliderWindowZoomLimitationMode.NoZoom) ? 
+            state.dateFromToMinimalWidthMinutes/10 : state.dateFromToMinimalWidthMinutes,
+          zoomLevel1PointsFrom: state.windowDateFrom.clone(),
+          zoomLevel1PointsTo: state.windowDateTo.clone()
+        });
+        break;
+      case EnumSliderWindowZoomLimitationMode.ZoomLevel2:
+        result = _.extend({}, state, {
+          sliderWindowZoomLimitationMode: action.payload,
+          dateFromToMinimalWidthMinutes: (state.sliderWindowZoomLimitationMode == EnumSliderWindowZoomLimitationMode.NoZoom) ? 
+            state.dateFromToMinimalWidthMinutes/10 : state.dateFromToMinimalWidthMinutes,
+          zoomLevel2PointsFrom: state.windowDateFrom.clone(),
+          zoomLevel2PointsTo: state.windowDateTo.clone()
+        });
+        break;
+    }
+    return result;
   }
 
 }, initialState);

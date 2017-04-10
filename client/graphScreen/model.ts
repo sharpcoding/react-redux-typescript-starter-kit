@@ -13,6 +13,8 @@ export type GraphScreenState = {
   allPointsTo: moment.Moment;
   zoomLevel1PointsFrom: moment.Moment;
   zoomLevel1PointsTo: moment.Moment;
+  zoomLevel2PointsFrom: moment.Moment;
+  zoomLevel2PointsTo: moment.Moment;
   yMinValue: number;
   yMaxValue: number;
   /**

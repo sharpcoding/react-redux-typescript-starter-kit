@@ -30,6 +30,9 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
       case EnumSliderWindowZoomLimitationMode.ZoomLevel1:
         result = dateTime.diff(state.zoomLevel1PointsFrom.clone(), "minutes");
         break;
+      case EnumSliderWindowZoomLimitationMode.ZoomLevel2:
+        result = dateTime.diff(state.zoomLevel2PointsFrom.clone(), "minutes");
+        break;
     }
     return result;
   }
@@ -43,6 +46,9 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
       case EnumSliderWindowZoomLimitationMode.ZoomLevel1:
         result = this.translateDateTimeToMinutesDomain(state, state.zoomLevel1PointsTo);
         break;
+      case EnumSliderWindowZoomLimitationMode.ZoomLevel2:
+        result = this.translateDateTimeToMinutesDomain(state, state.zoomLevel2PointsTo);
+        break;
     }
     return result;
   }
@@ -55,6 +61,9 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
         break;
       case EnumSliderWindowZoomLimitationMode.ZoomLevel1:
         result = state.zoomLevel1PointsFrom.clone().add(minutes, "minutes");
+        break;
+      case EnumSliderWindowZoomLimitationMode.ZoomLevel2:
+        result = state.zoomLevel2PointsFrom.clone().add(minutes, "minutes");
         break;
     }
     return result;
@@ -172,7 +181,9 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
                 <Button bsSize="xs" onClick={() => this.props.dispatch(setupZoomWindowLimitation(EnumSliderWindowZoomLimitationMode.NoZoom)) } 
                   bsStyle={this.getSliderWindowZoomLimitationButtonStyle(state.sliderWindowZoomLimitationMode, EnumSliderWindowZoomLimitationMode.NoZoom)}>View All</Button>
                 <Button bsSize="xs" onClick={() => this.props.dispatch(setupZoomWindowLimitation(EnumSliderWindowZoomLimitationMode.ZoomLevel1)) } 
-                  bsStyle={this.getSliderWindowZoomLimitationButtonStyle(state.sliderWindowZoomLimitationMode, EnumSliderWindowZoomLimitationMode.ZoomLevel1)}>Zoom level 1</Button>          
+                  bsStyle={this.getSliderWindowZoomLimitationButtonStyle(state.sliderWindowZoomLimitationMode, EnumSliderWindowZoomLimitationMode.ZoomLevel1)}>Zoom level 1</Button>
+                <Button bsSize="xs" onClick={() => this.props.dispatch(setupZoomWindowLimitation(EnumSliderWindowZoomLimitationMode.ZoomLevel2)) } 
+                  bsStyle={this.getSliderWindowZoomLimitationButtonStyle(state.sliderWindowZoomLimitationMode, EnumSliderWindowZoomLimitationMode.ZoomLevel2)}>Zoom level 2</Button>
               </ButtonGroup>
             </Col>
           </Row>
