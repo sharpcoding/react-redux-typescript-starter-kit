@@ -1,5 +1,5 @@
 import * as moment from 'moment';
-import { EnumGraphPointsSelectionMode, EnumSliderWindowLimitation } from '../LinearChart/components/enums';
+import { EnumGraphPointsSelectionMode, EnumSliderWindowZoomLimitationMode } from '../LinearChart/components/enums';
 import { DateTimePoint } from '../linearChart/models/dateTimePoint';
 
 export type GraphScreenState = {
@@ -7,12 +7,12 @@ export type GraphScreenState = {
   windowDateTo: moment.Moment,
   dateFromToMinimalWidthMinutes: number;  
   graphPointsSelectionMode: EnumGraphPointsSelectionMode;
-  sliderWindowZoomMode: EnumSliderWindowLimitation;
+  sliderWindowZoomLimitationMode: EnumSliderWindowZoomLimitationMode;
   allPoints: DateTimePoint[];
   allPointsFrom: moment.Moment;
   allPointsTo: moment.Moment;
-  zoomPointsFrom: moment.Moment;
-  zoomPointsTo: moment.Moment;
+  zoomLevel1PointsFrom: moment.Moment;
+  zoomLevel1PointsTo: moment.Moment;
   yMinValue: number;
   yMaxValue: number;
   /**

@@ -5,10 +5,10 @@ import * as moment from 'moment';
 import * as _ from 'lodash';
 import { Panel, ButtonGroup, Button, ListGroup, ListGroupItem, Grid, Form, Row, Col, FormGroup, ControlLabel, FormControl, HelpBlock  } from 'react-bootstrap';
 import { LinearChart } from '../LinearChart';
-import { EnumGraphPointsSelectionMode } from '../LinearChart/components/enums';
+import { EnumGraphPointsSelectionMode, EnumSliderWindowZoomLimitationMode } from '../LinearChart/components/enums';
 import { GraphScreenState } from './model';
 import { TextInput } from './../../components/ui/textInput';
-import { changeDateFromToValue, setupWindowWidthMinutes, setupGraphPointsSelectionMode } from './actions';
+import { changeDateFromToValue, setupWindowWidthMinutes, setupGraphPointsSelectionMode, setupZoomWindowLimitation } from './actions';
 import { ReactSlider } from './../../components/react-slider/react-slider';
 import { BootstrapFormGroupStaticText } from './../../components/ui/bootstrapFormGroupStaticText';
 
@@ -18,25 +18,61 @@ interface MainScreenProps {
 }
 
 export class MainScreen extends React.Component<MainScreenProps, void> {  
-  calculateDomainLengthMinutes(state: GraphScreenState): number {
-    return this.translateDateTimeToMinutesDomain(state, state.allPointsTo)
-  }
-
   /**
    * Calculates the difference in minutes between the datetime of the last available and the first available point
    */
   translateDateTimeToMinutesDomain(state: GraphScreenState, dateTime: moment.Moment): number {
-    return dateTime.diff(state.allPointsFrom.clone(), "minutes");
+    var result: number;
+    switch (state.sliderWindowZoomLimitationMode) {
+      case EnumSliderWindowZoomLimitationMode.NoZoom:
+        result = dateTime.diff(state.allPointsFrom.clone(), "minutes");
+        break;
+      case EnumSliderWindowZoomLimitationMode.ZoomLevel1:
+        result = dateTime.diff(state.zoomLevel1PointsFrom.clone(), "minutes");
+        break;
+    }
+    return result;
   }
 
-  // translate
+  calculateDomainLengthMinutes(state: GraphScreenState): number {
+    var result: number;
+    switch (state.sliderWindowZoomLimitationMode) {
+      case EnumSliderWindowZoomLimitationMode.NoZoom:
+        result = this.translateDateTimeToMinutesDomain(state, state.allPointsTo);
+        break;
+      case EnumSliderWindowZoomLimitationMode.ZoomLevel1:
+        result = this.translateDateTimeToMinutesDomain(state, state.zoomLevel1PointsTo);
+        break;
+    }
+    return result;
+  }
 
   translateMinutesDomainToDateTime(state: GraphScreenState, minutes: number): moment.Moment {
-    return state.allPointsFrom.clone().add(minutes, "minutes");
+    var result: moment.Moment;
+    switch (state.sliderWindowZoomLimitationMode) {
+      case EnumSliderWindowZoomLimitationMode.NoZoom:
+        result = state.allPointsFrom.clone().add(minutes, "minutes");
+        break;
+      case EnumSliderWindowZoomLimitationMode.ZoomLevel1:
+        result = state.zoomLevel1PointsFrom.clone().add(minutes, "minutes");
+        break;
+    }
+    return result;
   }
 
   getGraphPointsSelectionButtonStyle(stateMode: EnumGraphPointsSelectionMode, expectedMode: EnumGraphPointsSelectionMode): string {
     return stateMode == expectedMode ? "success" : "default";
+  }
+
+  getSliderWindowZoomLimitationButtonStyle(stateMode: EnumSliderWindowZoomLimitationMode, expectedMode: EnumSliderWindowZoomLimitationMode): string {
+    return stateMode == expectedMode ? "success" : "default";
+  }
+
+  calculateValue(state: GraphScreenState): number[] {
+    return [
+      this.translateDateTimeToMinutesDomain(state, state.windowDateFrom), 
+      this.translateDateTimeToMinutesDomain(state, state.windowDateTo)
+    ];
   }
 
   render() {
@@ -133,17 +169,17 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
           <Row>
             <Col componentClass={ControlLabel} md={12}>
               <ButtonGroup>
-                <Button bsSize="xs" onClick={() => this.props.dispatch(setupGraphPointsSelectionMode(EnumGraphPointsSelectionMode.NoSelection)) } 
-                  bsStyle={this.getGraphPointsSelectionButtonStyle(state.graphPointsSelectionMode, EnumGraphPointsSelectionMode.NoSelection)}>View All</Button>
-                <Button bsSize="xs" onClick={() => this.props.dispatch(setupGraphPointsSelectionMode(EnumGraphPointsSelectionMode.SelectUnselectSingle)) } 
-                  bsStyle={this.getGraphPointsSelectionButtonStyle(state.graphPointsSelectionMode, EnumGraphPointsSelectionMode.SelectUnselectSingle)}>View Zoom</Button>          
+                <Button bsSize="xs" onClick={() => this.props.dispatch(setupZoomWindowLimitation(EnumSliderWindowZoomLimitationMode.NoZoom)) } 
+                  bsStyle={this.getSliderWindowZoomLimitationButtonStyle(state.sliderWindowZoomLimitationMode, EnumSliderWindowZoomLimitationMode.NoZoom)}>View All</Button>
+                <Button bsSize="xs" onClick={() => this.props.dispatch(setupZoomWindowLimitation(EnumSliderWindowZoomLimitationMode.ZoomLevel1)) } 
+                  bsStyle={this.getSliderWindowZoomLimitationButtonStyle(state.sliderWindowZoomLimitationMode, EnumSliderWindowZoomLimitationMode.ZoomLevel1)}>Zoom level 1</Button>          
               </ButtonGroup>
             </Col>
           </Row>
           <Row>
             <Col componentClass={ControlLabel} md={12}>
-              <ReactSlider 
-                defaultValue={[this.translateDateTimeToMinutesDomain(state, state.windowDateFrom), this.translateDateTimeToMinutesDomain(state, state.windowDateTo)]}           
+              <ReactSlider                
+                value={this.calculateValue(state)}
                 min={0} 
                 max={this.calculateDomainLengthMinutes(state)} 
                 pearling={true}

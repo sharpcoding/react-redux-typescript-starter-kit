@@ -1,7 +1,7 @@
 import * as moment from 'moment';
 import { createAction, Action } from 'redux-actions';
 
-import { EnumGraphPointsSelectionMode, EnumSliderWindowLimitation } from '../LinearChart/components/enums';
+import { EnumGraphPointsSelectionMode, EnumSliderWindowZoomLimitationMode } from '../LinearChart/components/enums';
 import { GraphScreenState } from './model';
 
 export const CHANGE_DATE_FROM_TO_VALUE = 'CHANGE_DATE_FROM_TO_VALUE';
@@ -30,9 +30,9 @@ const setupGraphPointsSelectionMode = createAction<EnumGraphPointsSelectionMode,
   (v: EnumGraphPointsSelectionMode) => v
 );
 
-const setupZoomWindowLimitation = createAction<EnumSliderWindowLimitation, EnumSliderWindowLimitation>(
+const setupZoomWindowLimitation = createAction<EnumSliderWindowZoomLimitationMode, EnumSliderWindowZoomLimitationMode>(
   SETUP_ZOOM_WINDOW_LIMITATION,
-  (v: EnumSliderWindowLimitation) => v
+  (v: EnumSliderWindowZoomLimitationMode) => v
 );
 
 

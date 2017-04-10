@@ -2,13 +2,14 @@ import * as _ from 'lodash';
 import * as moment from 'moment';
 import { handleActions, Action } from 'redux-actions';
 import { DateTimePoint } from '../linearChart/models/dateTimePoint';
-import { EnumGraphPointsSelectionMode } from '../LinearChart/components/enums';
+import { EnumGraphPointsSelectionMode, EnumSliderWindowZoomLimitationMode } from '../LinearChart/components/enums';
 
 import { GraphScreenState } from './model';
 import {
   CHANGE_DATE_FROM_TO_VALUE,
   SETUP_WINDOW_WIDTH_MINUTES,
-  SETUP_GRAPH_POINTS_SELECTION_MODE
+  SETUP_GRAPH_POINTS_SELECTION_MODE,
+  SETUP_ZOOM_WINDOW_LIMITATION
 } from './actions';
 
 const SAMPLE_VALUE_MAX = 150;
@@ -54,7 +55,8 @@ const buildInitialState = (): GraphScreenState => {
     yMinValue: _.min(_.map(dtPoints, el => el.value)),
     yMaxValue: _.max(_.map(dtPoints, el => el.value)),
     secondsPerSample: SECONDS_PER_SAMPLE,
-    graphPointsSelectionMode: EnumGraphPointsSelectionMode.NoSelection
+    graphPointsSelectionMode: EnumGraphPointsSelectionMode.NoSelection,
+    sliderWindowZoomLimitationMode: EnumSliderWindowZoomLimitationMode.NoZoom
   }
 }
 
@@ -92,7 +94,16 @@ export default handleActions<GraphScreenState, GraphScreenState>({
   [SETUP_GRAPH_POINTS_SELECTION_MODE]: (state: GraphScreenState, action: Action<EnumGraphPointsSelectionMode>): GraphScreenState => {
     return _.extend({}, state, {
       graphPointsSelectionMode: action.payload
-    }); 
+    });
+  },
+
+  [SETUP_ZOOM_WINDOW_LIMITATION]: (state: GraphScreenState, action: Action<EnumSliderWindowZoomLimitationMode>): GraphScreenState => {
+    return _.extend({}, state, {
+      dateFromToMinimalWidthMinutes: state.dateFromToMinimalWidthMinutes/10,
+      sliderWindowZoomLimitationMode: action.payload,
+      zoomLevel1PointsFrom: state.windowDateFrom.clone(),
+      zoomLevel1PointsTo: state.windowDateTo.clone()
+    });
   }
 
 }, initialState);
