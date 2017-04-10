@@ -75,13 +75,13 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
                Window date from:
             </Col>
             <Col md={2}>
-              <BootstrapFormGroupStaticText text={state.dateFrom.format("YYYY-MM-DD HH:mm")} />
+              <BootstrapFormGroupStaticText text={state.windowDateFrom.format("YYYY-MM-DD HH:mm")} />
             </Col>
             <Col componentClass={ControlLabel} md={2}>
               Window date to:
             </Col>
             <Col md={2}>
-              <BootstrapFormGroupStaticText text={state.dateTo.format("YYYY-MM-DD HH:mm")} />
+              <BootstrapFormGroupStaticText text={state.windowDateTo.format("YYYY-MM-DD HH:mm")} />
             </Col>
             <Col componentClass={ControlLabel} md={2}>
               Min. window width:
@@ -105,7 +105,7 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
               &nbsp;
               <ButtonGroup>
                 <Button bsSize="xs"
-                  onClick={() => this.props.dispatch(setupWindowWidthMinutes(state.dateTo.diff(state.dateFrom, "minutes"))) }>
+                  onClick={() => this.props.dispatch(setupWindowWidthMinutes(state.windowDateTo.diff(state.windowDateFrom, "minutes"))) }>
                   Lock window width to current
                 </Button>
                 <Button bsSize="xs"
@@ -122,8 +122,8 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
                 height={600} 
                 padding={0} 
                 data={this.props.state.allPoints} 
-                from={this.props.state.dateFrom} 
-                to={this.props.state.dateTo}
+                from={this.props.state.windowDateFrom} 
+                to={this.props.state.windowDateTo}
                 yMinValue={this.props.state.yMinValue}
                 yMaxValue={this.props.state.yMaxValue}
                 secondsPerSample={this.props.state.secondsPerSample}
@@ -143,7 +143,7 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
           <Row>
             <Col componentClass={ControlLabel} md={12}>
               <ReactSlider 
-                defaultValue={[this.translateDateTimeToMinutesDomain(state, state.dateFrom), this.translateDateTimeToMinutesDomain(state, state.dateTo)]}           
+                defaultValue={[this.translateDateTimeToMinutesDomain(state, state.windowDateFrom), this.translateDateTimeToMinutesDomain(state, state.windowDateTo)]}           
                 min={0} 
                 max={this.calculateDomainLengthMinutes(state)} 
                 pearling={true}
@@ -152,7 +152,7 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
                   var [fromMinutes, toMinutes] = e;
                   var newDateFrom = this.translateMinutesDomainToDateTime(state, fromMinutes);
                   var newDateTo = this.translateMinutesDomainToDateTime(state, toMinutes);
-                  if (!this.props.state.dateFrom.isSame(newDateFrom) || !this.props.state.dateTo.isSame(newDateTo)) {
+                  if (!this.props.state.windowDateFrom.isSame(newDateFrom) || !this.props.state.windowDateTo.isSame(newDateTo)) {
                     this.props.dispatch(changeDateFromToValue(newDateFrom.format("YYYY-MM-DD HH:mm"), newDateTo.format("YYYY-MM-DD HH:mm")));
                     return;
                   }

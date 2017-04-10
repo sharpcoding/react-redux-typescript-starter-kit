@@ -45,8 +45,8 @@ const randomDateTimePoints = () => {
 const buildInitialState = (): GraphScreenState => {
   let dtPoints: Array<DateTimePoint> = randomDateTimePoints();
   return <GraphScreenState>{
-    dateFrom: DATE_WINDOW_FROM_VALUE.clone(),
-    dateTo: DATE_WINDOW_TO_VALUE.clone(),
+    windowDateFrom: DATE_WINDOW_FROM_VALUE.clone(),
+    windowDateTo: DATE_WINDOW_TO_VALUE.clone(),
     dateFromToMinimalWidthMinutes: DATE_WINDOW_MINIMAL_WIDTH_MINUTES,
     allPoints: dtPoints,
     allPointsFrom: dtPoints[0].time.clone(),
@@ -77,48 +77,22 @@ export default handleActions<GraphScreenState, GraphScreenState>({
       console.log(`rejecting - ${dateTo.toDate()} is after date range max value ${DATE_RANGE_MIN_VALUE.toDate()}`);
       return state;
     }
-    return {
-      dateFrom: dateFrom,
-      dateTo: dateTo,
-      dateFromToMinimalWidthMinutes: state.dateFromToMinimalWidthMinutes,
-      allPoints: state.allPoints,
-      allPointsFrom: state.allPointsFrom,
-      allPointsTo: state.allPointsTo,
-      yMinValue: state.yMinValue,
-      yMaxValue: state.yMaxValue,
-      secondsPerSample: state.secondsPerSample,
-      graphPointsSelectionMode: state.graphPointsSelectionMode
-    };
+    return _.extend({}, state, {
+      windowDateFrom: dateFrom,
+      windowDateTo: dateTo
+    });
   },
 
   [SETUP_WINDOW_WIDTH_MINUTES]: (state: GraphScreenState, action: Action<number>): GraphScreenState => {
-    return {
-      dateFrom: state.dateFrom.clone(),
-      dateTo: state.dateTo.clone(),
-      dateFromToMinimalWidthMinutes: action.payload,
-      allPoints: state.allPoints,
-      allPointsFrom: state.allPointsFrom,
-      allPointsTo: state.allPointsTo,
-      yMinValue: state.yMinValue,
-      yMaxValue: state.yMaxValue,
-      secondsPerSample: state.secondsPerSample,
-      graphPointsSelectionMode: state.graphPointsSelectionMode
-    };
+    return _.extend({}, state, {
+      dateFromToMinimalWidthMinutes: action.payload
+    }); 
   },
 
   [SETUP_GRAPH_POINTS_SELECTION_MODE]: (state: GraphScreenState, action: Action<EnumGraphPointsSelectionMode>): GraphScreenState => {
-    return {
-      dateFrom: state.dateFrom.clone(),
-      dateTo: state.dateTo.clone(),
-      dateFromToMinimalWidthMinutes: action.payload,
-      allPoints: state.allPoints,
-      allPointsFrom: state.allPointsFrom,
-      allPointsTo: state.allPointsTo,
-      yMinValue: state.yMinValue,
-      yMaxValue: state.yMaxValue,
-      secondsPerSample: state.secondsPerSample,
+    return _.extend({}, state, {
       graphPointsSelectionMode: action.payload
-    };
+    }); 
   }
 
 }, initialState);

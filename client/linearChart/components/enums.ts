@@ -5,4 +5,9 @@ export enum EnumGraphPointsSelectionMode {
   UnselectMultiple
 }
 
+export enum EnumSliderWindowLimitation {
+  NoLimits,
+  LimitToFragment
+}
+
 export default EnumGraphPointsSelectionMode;
