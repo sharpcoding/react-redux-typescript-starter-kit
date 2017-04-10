@@ -57,10 +57,10 @@ export class LinearChart extends React.Component<ILinearChartProps, ITimeSeriesS
     let rFactorCacheElement = _.find(this.state.rFactorSampleCache, el => el.rFractor == rFactorApproximation);
     if (_.isObject(rFactorCacheElement)) {
       result = _.filter(rFactorCacheElement.samples, el => el.unix >= unixFrom && el.unix <= unixTo);
-      console.log(`filteredInRange() rFactor: ${rFactor} rFactorApproximation: ${rFactorApproximation} allSamples: ${this.props.data.length} cacheSamples: ${rFactorCacheElement.samples.length} resultSamples: ${result.length}`);
+      // console.log(`filteredInRange() rFactor: ${rFactor} rFactorApproximation: ${rFactorApproximation} allSamples: ${this.props.data.length} cacheSamples: ${rFactorCacheElement.samples.length} resultSamples: ${result.length}`);
     } else {
       result = _.filter(this.props.data, el => el.unix >= unixFrom && el.unix <= unixTo);
-      console.log(`filteredInRange() rFactor: ${rFactor}  rFactorApproximation: ${rFactorApproximation} allSamples: ${this.props.data.length} resultSamples: ${result.length}`);
+      // console.log(`filteredInRange() rFactor: ${rFactor}  rFactorApproximation: ${rFactorApproximation} allSamples: ${this.props.data.length} resultSamples: ${result.length}`);
     }
     return result;
   };

@@ -16,7 +16,7 @@ const DATE_RANGE_MIN_VALUE = moment("2010-03-01");
 const DATE_RANGE_MAX_VALUE = moment("2010-09-30"  );
 const DATE_WINDOW_FROM_VALUE = moment("2010-05-03");
 const DATE_WINDOW_TO_VALUE = moment("2010-05-05");
-const SECONDS_PER_SAMPLE = 5;
+const SECONDS_PER_SAMPLE = 5*60;
 const DATE_WINDOW_MINIMAL_WIDTH_MINUTES = 24*60;
 
 const randomDateTimePoints = () => {

@@ -3,7 +3,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import * as moment from 'moment';
 import * as _ from 'lodash';
-import { Panel, ButtonGroup, Button, ListGroup, ListGroupItem, Form, Col, FormGroup, ControlLabel, FormControl, HelpBlock  } from 'react-bootstrap';
+import { Panel, ButtonGroup, Button, ListGroup, ListGroupItem, Grid, Form, Row, Col, FormGroup, ControlLabel, FormControl, HelpBlock  } from 'react-bootstrap';
 import { LinearChart } from '../LinearChart';
 import { EnumGraphPointsSelectionMode } from '../LinearChart/components/enums';
 import { GraphScreenState } from './model';
@@ -49,96 +49,118 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
           max-values of randomly selected (x,y) points and the total number of points,
           that are immediately rendered in D3-based svg component on the screen.   
         </h5>
-        <Form horizontal>
-          <FormGroup>
-            <Col componentClass={ControlLabel} sm={2}>
+        <Grid>
+          <Row>
+            <Col componentClass={ControlLabel} md={2}>
                Samples from:
             </Col>
-            <Col sm={2}>
+            <Col md={2}>
               <BootstrapFormGroupStaticText text={state.allPointsFrom.format("YYYY-MM-DD HH:mm")} />
             </Col>
-            <Col componentClass={ControlLabel} sm={2}>
+            <Col componentClass={ControlLabel} md={2}>
               Samples to:
             </Col>
-            <Col sm={2}>
+            <Col md={2}>
               <BootstrapFormGroupStaticText text={state.allPointsTo.format("YYYY-MM-DD HH:mm")} />
             </Col>
-            <Col componentClass={ControlLabel} sm={2}>
+            <Col componentClass={ControlLabel} md={2}>
               Total number of samples:
             </Col>
-            <Col sm={2}>
+            <Col md={2}>
               <BootstrapFormGroupStaticText text={state.allPoints.length.toString()} />
             </Col>
-          </FormGroup>
-          <FormGroup>
-            <Col componentClass={ControlLabel} sm={2}>
+          </Row>
+          <Row>
+            <Col componentClass={ControlLabel} md={2}>
                Window date from:
             </Col>
-            <Col sm={2}>
+            <Col md={2}>
               <BootstrapFormGroupStaticText text={state.dateFrom.format("YYYY-MM-DD HH:mm")} />
             </Col>
-            <Col componentClass={ControlLabel} sm={2}>
+            <Col componentClass={ControlLabel} md={2}>
               Window date to:
             </Col>
-            <Col sm={2}>
+            <Col md={2}>
               <BootstrapFormGroupStaticText text={state.dateTo.format("YYYY-MM-DD HH:mm")} />
             </Col>
-            <Col componentClass={ControlLabel} sm={2}>
+            <Col componentClass={ControlLabel} md={2}>
               Min. window width:
             </Col>
-            <Col sm={2}>
+            <Col md={2}>
               <BootstrapFormGroupStaticText text={ state.dateFromToMinimalWidthMinutes.toString() + " minutes"} />
             </Col>
-          </FormGroup>
-        </Form>
-        <ButtonGroup>
-          <Button bsSize="xs" onClick={() => this.props.dispatch(setupGraphPointsSelectionMode(EnumGraphPointsSelectionMode.NoSelection)) } 
-            bsStyle={this.getGraphPointsSelectionButtonStyle(state.graphPointsSelectionMode, EnumGraphPointsSelectionMode.NoSelection)}>No selection</Button>
-          <Button bsSize="xs" onClick={() => this.props.dispatch(setupGraphPointsSelectionMode(EnumGraphPointsSelectionMode.SelectUnselectSingle)) } 
-            bsStyle={this.getGraphPointsSelectionButtonStyle(state.graphPointsSelectionMode, EnumGraphPointsSelectionMode.SelectUnselectSingle)}>Select single point</Button>
-          <Button bsSize="xs" onClick={() => this.props.dispatch(setupGraphPointsSelectionMode(EnumGraphPointsSelectionMode.SelectMultiple)) } 
-            bsStyle={this.getGraphPointsSelectionButtonStyle(state.graphPointsSelectionMode, EnumGraphPointsSelectionMode.SelectMultiple)}>Select multiple points</Button>
-          <Button bsSize="xs" onClick={() => this.props.dispatch(setupGraphPointsSelectionMode(EnumGraphPointsSelectionMode.UnselectMultiple))} 
-            bsStyle={this.getGraphPointsSelectionButtonStyle(state.graphPointsSelectionMode, EnumGraphPointsSelectionMode.UnselectMultiple)}>Unselect multiple points</Button>
-        </ButtonGroup>
-        &nbsp;
-        <ButtonGroup>
-          <Button bsSize="xs"
-            onClick={() => this.props.dispatch(setupWindowWidthMinutes(state.dateTo.diff(state.dateFrom, "minutes"))) }>
-            Lock window width to current
-          </Button>
-          <Button bsSize="xs"
-            onClick={() => this.props.dispatch(setupWindowWidthMinutes(60)) }>
-            Unlock window width
-          </Button>
-        </ButtonGroup>
-        <LinearChart 
-          width={800} 
-          height={600} 
-          padding={0} 
-          data={this.props.state.allPoints} 
-          from={this.props.state.dateFrom} 
-          to={this.props.state.dateTo}
-          yMinValue={this.props.state.yMinValue}
-          yMaxValue={this.props.state.yMaxValue}
-          secondsPerSample={this.props.state.secondsPerSample}
-          graphPointsSelectionMode={this.props.state.graphPointsSelectionMode} />
-        <ReactSlider 
-          defaultValue={[this.translateDateTimeToMinutesDomain(state, state.dateFrom), this.translateDateTimeToMinutesDomain(state, state.dateTo)]}           
-          min={0} 
-          max={this.calculateDomainLengthMinutes(state)} 
-          pearling={true}
-          minDistance={state.dateFromToMinimalWidthMinutes}
-          onChange={(e: Array<number>) => {
-            var [fromMinutes, toMinutes] = e;
-            var newDateFrom = this.translateMinutesDomainToDateTime(state, fromMinutes);
-            var newDateTo = this.translateMinutesDomainToDateTime(state, toMinutes);
-            if (!this.props.state.dateFrom.isSame(newDateFrom) || !this.props.state.dateTo.isSame(newDateTo)) {
-              this.props.dispatch(changeDateFromToValue(newDateFrom.format("YYYY-MM-DD HH:mm"), newDateTo.format("YYYY-MM-DD HH:mm")));
-              return;
-            }
-          }}
-        />
+          </Row>
+          <Row>
+            <Col componentClass={ControlLabel} md={12}>
+              <ButtonGroup>
+                <Button bsSize="xs" onClick={() => this.props.dispatch(setupGraphPointsSelectionMode(EnumGraphPointsSelectionMode.NoSelection)) } 
+                  bsStyle={this.getGraphPointsSelectionButtonStyle(state.graphPointsSelectionMode, EnumGraphPointsSelectionMode.NoSelection)}>No selection</Button>
+                <Button bsSize="xs" onClick={() => this.props.dispatch(setupGraphPointsSelectionMode(EnumGraphPointsSelectionMode.SelectUnselectSingle)) } 
+                  bsStyle={this.getGraphPointsSelectionButtonStyle(state.graphPointsSelectionMode, EnumGraphPointsSelectionMode.SelectUnselectSingle)}>Select single point</Button>
+                <Button bsSize="xs" onClick={() => this.props.dispatch(setupGraphPointsSelectionMode(EnumGraphPointsSelectionMode.SelectMultiple)) } 
+                  bsStyle={this.getGraphPointsSelectionButtonStyle(state.graphPointsSelectionMode, EnumGraphPointsSelectionMode.SelectMultiple)}>Select multiple points</Button>
+                <Button bsSize="xs" onClick={() => this.props.dispatch(setupGraphPointsSelectionMode(EnumGraphPointsSelectionMode.UnselectMultiple))} 
+                  bsStyle={this.getGraphPointsSelectionButtonStyle(state.graphPointsSelectionMode, EnumGraphPointsSelectionMode.UnselectMultiple)}>Unselect multiple points</Button>
+              </ButtonGroup>
+              &nbsp;
+              <ButtonGroup>
+                <Button bsSize="xs"
+                  onClick={() => this.props.dispatch(setupWindowWidthMinutes(state.dateTo.diff(state.dateFrom, "minutes"))) }>
+                  Lock window width to current
+                </Button>
+                <Button bsSize="xs"
+                  onClick={() => this.props.dispatch(setupWindowWidthMinutes(60)) }>
+                  Unlock window width
+                </Button>
+              </ButtonGroup>
+            </Col>
+          </Row>
+          <Row>
+            <Col componentClass={ControlLabel} md={12}>
+              <LinearChart 
+                width={800} 
+                height={600} 
+                padding={0} 
+                data={this.props.state.allPoints} 
+                from={this.props.state.dateFrom} 
+                to={this.props.state.dateTo}
+                yMinValue={this.props.state.yMinValue}
+                yMaxValue={this.props.state.yMaxValue}
+                secondsPerSample={this.props.state.secondsPerSample}
+                graphPointsSelectionMode={this.props.state.graphPointsSelectionMode} />
+            </Col>
+          </Row>
+          <Row>
+            <Col componentClass={ControlLabel} md={12}>
+              <ButtonGroup>
+                <Button bsSize="xs" onClick={() => this.props.dispatch(setupGraphPointsSelectionMode(EnumGraphPointsSelectionMode.NoSelection)) } 
+                  bsStyle={this.getGraphPointsSelectionButtonStyle(state.graphPointsSelectionMode, EnumGraphPointsSelectionMode.NoSelection)}>View All</Button>
+                <Button bsSize="xs" onClick={() => this.props.dispatch(setupGraphPointsSelectionMode(EnumGraphPointsSelectionMode.SelectUnselectSingle)) } 
+                  bsStyle={this.getGraphPointsSelectionButtonStyle(state.graphPointsSelectionMode, EnumGraphPointsSelectionMode.SelectUnselectSingle)}>View Zoom</Button>          
+              </ButtonGroup>
+            </Col>
+          </Row>
+          <Row>
+            <Col componentClass={ControlLabel} md={12}>
+              <ReactSlider 
+                defaultValue={[this.translateDateTimeToMinutesDomain(state, state.dateFrom), this.translateDateTimeToMinutesDomain(state, state.dateTo)]}           
+                min={0} 
+                max={this.calculateDomainLengthMinutes(state)} 
+                pearling={true}
+                minDistance={state.dateFromToMinimalWidthMinutes}
+                onChange={(e: Array<number>) => {
+                  var [fromMinutes, toMinutes] = e;
+                  var newDateFrom = this.translateMinutesDomainToDateTime(state, fromMinutes);
+                  var newDateTo = this.translateMinutesDomainToDateTime(state, toMinutes);
+                  if (!this.props.state.dateFrom.isSame(newDateFrom) || !this.props.state.dateTo.isSame(newDateTo)) {
+                    this.props.dispatch(changeDateFromToValue(newDateFrom.format("YYYY-MM-DD HH:mm"), newDateTo.format("YYYY-MM-DD HH:mm")));
+                    return;
+                  }
+                }}
+              />
+            </Col>
+          </Row>
+        </Grid>
       </div>
     );
   }
