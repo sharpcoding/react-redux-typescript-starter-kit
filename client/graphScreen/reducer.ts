@@ -60,6 +60,10 @@ const buildInitialState = (): GraphScreenState => {
   }
 }
 
+const cameToThisZoomLevelByZoomingIn = (currentMode: EnumSliderWindowZoomLimitationMode, newMode: EnumSliderWindowZoomLimitationMode) => {
+  return newMode > currentMode;
+}
+
 const initialState = buildInitialState();
 
 export default handleActions<GraphScreenState, GraphScreenState>({
@@ -101,25 +105,43 @@ export default handleActions<GraphScreenState, GraphScreenState>({
     var result = <GraphScreenState>{};
     switch (action.payload) {
       case EnumSliderWindowZoomLimitationMode.NoZoom:
-        result = state;
+        result = _.extend({}, state, {
+          sliderWindowZoomLimitationMode: action.payload
+        });
         break;
       case EnumSliderWindowZoomLimitationMode.ZoomLevel1:
-        result = _.extend({}, state, {
-          sliderWindowZoomLimitationMode: action.payload,
-          dateFromToMinimalWidthMinutes: (state.sliderWindowZoomLimitationMode == EnumSliderWindowZoomLimitationMode.NoZoom) ? 
-            state.dateFromToMinimalWidthMinutes/10 : state.dateFromToMinimalWidthMinutes,
-          zoomLevel1PointsFrom: state.windowDateFrom.clone(),
-          zoomLevel1PointsTo: state.windowDateTo.clone()
-        });
+        if (cameToThisZoomLevelByZoomingIn(state.sliderWindowZoomLimitationMode, action.payload)) {
+          result = _.extend({}, state, {
+            sliderWindowZoomLimitationMode: action.payload,
+            dateFromToMinimalWidthMinutes: (state.sliderWindowZoomLimitationMode == EnumSliderWindowZoomLimitationMode.NoZoom) ? 
+              state.dateFromToMinimalWidthMinutes/10 : state.dateFromToMinimalWidthMinutes,
+            zoomLevel1PointsFrom: state.windowDateFrom.clone(),
+            zoomLevel1PointsTo: state.windowDateTo.clone()
+          });
+        } else {
+          result = _.extend({}, state, {
+            sliderWindowZoomLimitationMode: action.payload,
+            windowDateFrom: state.zoomLevel1PointsFrom.clone(),
+            windowDateTo: state.zoomLevel1PointsTo.clone()
+          });
+        }
         break;
       case EnumSliderWindowZoomLimitationMode.ZoomLevel2:
-        result = _.extend({}, state, {
-          sliderWindowZoomLimitationMode: action.payload,
-          dateFromToMinimalWidthMinutes: (state.sliderWindowZoomLimitationMode == EnumSliderWindowZoomLimitationMode.NoZoom) ? 
-            state.dateFromToMinimalWidthMinutes/10 : state.dateFromToMinimalWidthMinutes,
-          zoomLevel2PointsFrom: state.windowDateFrom.clone(),
-          zoomLevel2PointsTo: state.windowDateTo.clone()
-        });
+        if (cameToThisZoomLevelByZoomingIn(state.sliderWindowZoomLimitationMode, action.payload)) {
+          result = _.extend({}, state, {
+            sliderWindowZoomLimitationMode: action.payload,
+            dateFromToMinimalWidthMinutes: (state.sliderWindowZoomLimitationMode == EnumSliderWindowZoomLimitationMode.NoZoom) ? 
+              state.dateFromToMinimalWidthMinutes/10 : state.dateFromToMinimalWidthMinutes,
+            zoomLevel2PointsFrom: state.windowDateFrom.clone(),
+            zoomLevel2PointsTo: state.windowDateTo.clone()
+          });
+        } else {
+          result = _.extend({}, state, {
+            sliderWindowZoomLimitationMode: action.payload,
+            windowDateFrom: state.zoomLevel2PointsFrom.clone(),
+            windowDateTo: state.zoomLevel2PointsTo.clone()
+          });
+        }
         break;
     }
     return result;
