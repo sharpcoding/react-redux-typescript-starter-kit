@@ -87,7 +87,7 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
     return stateMode == expectedMode ? "success" : "default";
   }
 
-  calculateValue(state: GraphScreenState): number[] {
+  calculateSliderValue(state: GraphScreenState): number[] {
     return [
       this.translateDateTimeToMinutesDomain(state, state.windowDateFrom), 
       this.translateDateTimeToMinutesDomain(state, state.windowDateTo)
@@ -178,9 +178,10 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
             <Col componentClass={ControlLabel} md={12}>
               <LinearChart 
                 chartDimensions={this._chartDimensions}
+                zoomSettings={this.props.state.chartZoomSettings}
                 data={this.props.state.allPoints} 
-                from={this.props.state.windowDateFrom} 
-                to={this.props.state.windowDateTo}
+                windowDateFrom={this.props.state.windowDateFrom} 
+                windowDateTo={this.props.state.windowDateTo}
                 yMinValue={this.props.state.yMinValue}
                 yMaxValue={this.props.state.yMaxValue}
                 secondsPerSample={this.props.state.secondsPerSample}
@@ -217,7 +218,7 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
           <Row>
             <Col componentClass={ControlLabel} md={12}>
               <ReactSlider
-                value={this.calculateValue(state)}
+                value={this.calculateSliderValue(state)}
                 min={0} 
                 max={this.calculateDomainLengthMinutes(state)} 
                 pearling={true}
@@ -245,7 +246,7 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
 //a fragment MainScreen component keeps interest in 
 const mapStateToProps = state => {
   //console.log() only for demonstration purposes
-  console.log('mainScreen mapStateToProps', state);
+  // console.log('mainScreen mapStateToProps', state);
   return  {
     state: state.graphScreenState
   }

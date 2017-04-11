@@ -125,7 +125,7 @@ export default handleActions<GraphScreenState, GraphScreenState>({
           chartZoomSettings = _.extend({}, chartZoomSettings, {
             zoomLevel1PointsFrom: state.windowDateFrom.clone(),
             zoomLevel1PointsTo: state.windowDateTo.clone()
-          })
+          });
           result = _.extend({}, state, {
             chartZoomSettings: chartZoomSettings,
             dateFromToMinimalWidthMinutes: state.dateFromToMinimalWidthMinutes / 10
