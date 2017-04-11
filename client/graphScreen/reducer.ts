@@ -106,21 +106,22 @@ export default handleActions<GraphScreenState, GraphScreenState>({
     switch (action.payload) {
       case EnumSliderWindowZoomLimitationMode.NoZoom:
         result = _.extend({}, state, {
-          sliderWindowZoomLimitationMode: action.payload
+          sliderWindowZoomLimitationMode: action.payload,
+          dateFromToMinimalWidthMinutes: state.windowDateTo.clone().diff(state.windowDateFrom, "minute")
         });
         break;
       case EnumSliderWindowZoomLimitationMode.ZoomLevel1:
         if (cameToThisZoomLevelByZoomingIn(state.sliderWindowZoomLimitationMode, action.payload)) {
           result = _.extend({}, state, {
             sliderWindowZoomLimitationMode: action.payload,
-            dateFromToMinimalWidthMinutes: (state.sliderWindowZoomLimitationMode == EnumSliderWindowZoomLimitationMode.NoZoom) ? 
-              state.dateFromToMinimalWidthMinutes/10 : state.dateFromToMinimalWidthMinutes,
+            dateFromToMinimalWidthMinutes: state.dateFromToMinimalWidthMinutes / 10,
             zoomLevel1PointsFrom: state.windowDateFrom.clone(),
             zoomLevel1PointsTo: state.windowDateTo.clone()
           });
         } else {
           result = _.extend({}, state, {
             sliderWindowZoomLimitationMode: action.payload,
+            dateFromToMinimalWidthMinutes: state.windowDateTo.clone().diff(state.windowDateFrom, "minute"),
             windowDateFrom: state.windowDateFrom.clone(),
             windowDateTo: state.windowDateTo.clone()
           });
@@ -130,17 +131,12 @@ export default handleActions<GraphScreenState, GraphScreenState>({
         if (cameToThisZoomLevelByZoomingIn(state.sliderWindowZoomLimitationMode, action.payload)) {
           result = _.extend({}, state, {
             sliderWindowZoomLimitationMode: action.payload,
-            dateFromToMinimalWidthMinutes: (state.sliderWindowZoomLimitationMode == EnumSliderWindowZoomLimitationMode.NoZoom) ? 
-              state.dateFromToMinimalWidthMinutes/10 : state.dateFromToMinimalWidthMinutes,
+            dateFromToMinimalWidthMinutes: state.dateFromToMinimalWidthMinutes / 10,
             zoomLevel2PointsFrom: state.windowDateFrom.clone(),
             zoomLevel2PointsTo: state.windowDateTo.clone()
           });
         } else {
-          result = _.extend({}, state, {
-            sliderWindowZoomLimitationMode: action.payload,
-            windowDateFrom: state.windowDateFrom.clone(),
-            windowDateTo: state.windowDateTo.clone()
-          });
+          //only 3 zoom levels - will not happen !
         }
         break;
     }
