@@ -121,8 +121,8 @@ export default handleActions<GraphScreenState, GraphScreenState>({
         } else {
           result = _.extend({}, state, {
             sliderWindowZoomLimitationMode: action.payload,
-            windowDateFrom: state.zoomLevel1PointsFrom.clone(),
-            windowDateTo: state.zoomLevel1PointsTo.clone()
+            windowDateFrom: state.windowDateFrom.clone(),
+            windowDateTo: state.windowDateTo.clone()
           });
         }
         break;
@@ -138,8 +138,8 @@ export default handleActions<GraphScreenState, GraphScreenState>({
         } else {
           result = _.extend({}, state, {
             sliderWindowZoomLimitationMode: action.payload,
-            windowDateFrom: state.zoomLevel2PointsFrom.clone(),
-            windowDateTo: state.zoomLevel2PointsTo.clone()
+            windowDateFrom: state.windowDateFrom.clone(),
+            windowDateTo: state.windowDateTo.clone()
           });
         }
         break;
