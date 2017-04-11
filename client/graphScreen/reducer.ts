@@ -2,7 +2,8 @@ import * as _ from 'lodash';
 import * as moment from 'moment';
 import { handleActions, Action } from 'redux-actions';
 import { DateTimePoint } from '../linearChart/models/dateTimePoint';
-import { EnumGraphPointsSelectionMode, EnumSliderWindowZoomLimitationMode } from '../LinearChart/components/enums';
+import { EnumGraphPointsSelectionMode, EnumZoomSelected } from '../LinearChart/components/enums';
+import { IChartZoomSettings } from '../linearChart/common/interfaces';
 
 import { GraphScreenState } from './model';
 import {
@@ -17,7 +18,7 @@ const DATE_RANGE_MIN_VALUE = moment("2010-03-01");
 const DATE_RANGE_MAX_VALUE = moment("2010-09-30"  );
 const DATE_WINDOW_FROM_VALUE = moment("2010-05-03");
 const DATE_WINDOW_TO_VALUE = moment("2010-05-05");
-const SECONDS_PER_SAMPLE = 5*60;
+const SECONDS_PER_SAMPLE = 60*5;
 const DATE_WINDOW_MINIMAL_WIDTH_MINUTES = 24*60;
 
 const randomDateTimePoints = () => {
@@ -55,12 +56,18 @@ const buildInitialState = (): GraphScreenState => {
     yMinValue: _.min(_.map(dtPoints, el => el.value)),
     yMaxValue: _.max(_.map(dtPoints, el => el.value)),
     secondsPerSample: SECONDS_PER_SAMPLE,
+    chartZoomSettings: {
+      zoomSelected: EnumZoomSelected.NoZoom,
+      zoomLevel1PointsFrom: null,
+      zoomLevel1PointsTo: null,
+      zoomLevel2PointsFrom: null,
+      zoomLevel2PointsTo: null
+    },
     graphPointsSelectionMode: EnumGraphPointsSelectionMode.NoSelection,
-    sliderWindowZoomLimitationMode: EnumSliderWindowZoomLimitationMode.NoZoom
   }
 }
 
-const cameToThisZoomLevelByZoomingIn = (currentMode: EnumSliderWindowZoomLimitationMode, newMode: EnumSliderWindowZoomLimitationMode) => {
+const cameToThisZoomLevelByZoomingIn = (currentMode: EnumZoomSelected, newMode: EnumZoomSelected) => {
   return newMode > currentMode;
 }
 
@@ -101,39 +108,46 @@ export default handleActions<GraphScreenState, GraphScreenState>({
     });
   },
 
-  [SETUP_ZOOM_WINDOW_LIMITATION]: (state: GraphScreenState, action: Action<EnumSliderWindowZoomLimitationMode>): GraphScreenState => {
+  [SETUP_ZOOM_WINDOW_LIMITATION]: (state: GraphScreenState, action: Action<EnumZoomSelected>): GraphScreenState => {
     var result = <GraphScreenState>{};
+    var chartZoomSettings = <IChartZoomSettings> _.extend({}, state.chartZoomSettings, {
+      zoomSelected: action.payload
+    });
     switch (action.payload) {
-      case EnumSliderWindowZoomLimitationMode.NoZoom:
+      case EnumZoomSelected.NoZoom:
         result = _.extend({}, state, {
-          sliderWindowZoomLimitationMode: action.payload,
+          chartZoomSettings: chartZoomSettings,
           dateFromToMinimalWidthMinutes: state.windowDateTo.clone().diff(state.windowDateFrom, "minute")
         });
         break;
-      case EnumSliderWindowZoomLimitationMode.ZoomLevel1:
-        if (cameToThisZoomLevelByZoomingIn(state.sliderWindowZoomLimitationMode, action.payload)) {
-          result = _.extend({}, state, {
-            sliderWindowZoomLimitationMode: action.payload,
-            dateFromToMinimalWidthMinutes: state.dateFromToMinimalWidthMinutes / 10,
+      case EnumZoomSelected.ZoomLevel1:
+        if (cameToThisZoomLevelByZoomingIn(state.chartZoomSettings.zoomSelected, action.payload)) {
+          chartZoomSettings = _.extend({}, chartZoomSettings, {
             zoomLevel1PointsFrom: state.windowDateFrom.clone(),
             zoomLevel1PointsTo: state.windowDateTo.clone()
+          })
+          result = _.extend({}, state, {
+            chartZoomSettings: chartZoomSettings,
+            dateFromToMinimalWidthMinutes: state.dateFromToMinimalWidthMinutes / 10
           });
         } else {
           result = _.extend({}, state, {
-            sliderWindowZoomLimitationMode: action.payload,
+            chartZoomSettings: chartZoomSettings,
             dateFromToMinimalWidthMinutes: state.windowDateTo.clone().diff(state.windowDateFrom, "minute"),
             windowDateFrom: state.windowDateFrom.clone(),
             windowDateTo: state.windowDateTo.clone()
           });
         }
         break;
-      case EnumSliderWindowZoomLimitationMode.ZoomLevel2:
-        if (cameToThisZoomLevelByZoomingIn(state.sliderWindowZoomLimitationMode, action.payload)) {
-          result = _.extend({}, state, {
-            sliderWindowZoomLimitationMode: action.payload,
-            dateFromToMinimalWidthMinutes: state.dateFromToMinimalWidthMinutes / 10,
+      case EnumZoomSelected.ZoomLevel2:
+        if (cameToThisZoomLevelByZoomingIn(state.chartZoomSettings.zoomSelected, action.payload)) {
+          chartZoomSettings = _.extend({}, chartZoomSettings, {
             zoomLevel2PointsFrom: state.windowDateFrom.clone(),
             zoomLevel2PointsTo: state.windowDateTo.clone()
+          });
+          result = _.extend({}, state, {
+            chartZoomSettings: chartZoomSettings,
+            dateFromToMinimalWidthMinutes: state.dateFromToMinimalWidthMinutes / 10
           });
         } else {
           //only 3 zoom levels - will not happen !

@@ -40,7 +40,7 @@ export class TimeSeriesPointInTime extends React.Component<TimeSeriesPointInTime
           ref={(c) => {
             if (!_.isObject(c))
               return;
-            let d3SelectionResult = d3.select(c);            
+            let d3SelectionResult = d3.select(c);
             d3SelectionResult.on("mouseenter", null);
             switch (self.props.graphPointsSelectionMode) {
               case EnumGraphPointsSelectionMode.SelectMultiple:

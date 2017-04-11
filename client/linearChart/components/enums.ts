@@ -5,7 +5,7 @@ export enum EnumGraphPointsSelectionMode {
   UnselectMultiple
 }
 
-export enum EnumSliderWindowZoomLimitationMode {
+export enum EnumZoomSelected {
   NoZoom,
   ZoomLevel1,
   ZoomLevel2

@@ -4,7 +4,9 @@ import * as moment from 'moment';
 import * as d3 from 'd3';
 import { DateTimePoint } from '../models/DateTimePoint';
 import { TimeSeriesPointInTime } from './timeSeriesPointInTime';
+import { DateTimeAxis } from './dateTimeAxis';
 import { EnumGraphPointsSelectionMode } from './enums';
+import { IChartDimensions } from '../common/interfaces';
 
 
 export interface ITimeSeriesProps {
@@ -18,7 +20,8 @@ export interface ITimeSeriesProps {
   yScale: (value: number) => number;
   horizontalSampleDistancePx: number;
   graphPointsSelectionMode: EnumGraphPointsSelectionMode;
-  data: DateTimePoint[];  
+  data: DateTimePoint[];
+  chartDimensions: IChartDimensions;
 }
 
 export interface ITextGauge {
@@ -164,7 +167,7 @@ export class TimeSeries extends React.Component<ITimeSeriesProps, ITimeSeriesSta
         });
       }
     }
-    return result;    
+    return result;
   }
 
   render() {
@@ -177,6 +180,7 @@ export class TimeSeries extends React.Component<ITimeSeriesProps, ITimeSeriesSta
       </text>}
       <path d={this.getSvgPath()} fill="none" stroke="steelblue" />
       {this.renderCircles()}
+      <DateTimeAxis xScale={this.props.xScale} chartDimensions={this.props.chartDimensions} />
     </g>);
   }
 }

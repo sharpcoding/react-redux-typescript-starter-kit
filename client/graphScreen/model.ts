@@ -1,5 +1,6 @@
 import * as moment from 'moment';
-import { EnumGraphPointsSelectionMode, EnumSliderWindowZoomLimitationMode } from '../LinearChart/components/enums';
+import { IChartZoomSettings } from '../linearChart/common/interfaces';
+import { EnumGraphPointsSelectionMode, EnumZoomSelected } from '../LinearChart/components/enums';
 import { DateTimePoint } from '../linearChart/models/dateTimePoint';
 
 export type GraphScreenState = {
@@ -7,15 +8,17 @@ export type GraphScreenState = {
   windowDateTo: moment.Moment,
   dateFromToMinimalWidthMinutes: number;  
   graphPointsSelectionMode: EnumGraphPointsSelectionMode;
-  sliderWindowZoomLimitationMode: EnumSliderWindowZoomLimitationMode;
+  chartZoomSettings: IChartZoomSettings;
   allPoints: DateTimePoint[];
   allPointsFrom: moment.Moment;
   allPointsTo: moment.Moment;
-  zoomLevel1PointsFrom: moment.Moment;
-  zoomLevel1PointsTo: moment.Moment;
-  zoomLevel2PointsFrom: moment.Moment;
-  zoomLevel2PointsTo: moment.Moment;
+  /**
+   * Minimum y-value as found in the allPoints non-cached array
+   */
   yMinValue: number;
+  /**
+   * Maximum y-value as found in the allPoints non-cached array
+   */
   yMaxValue: number;
   /**
    * Describes the declared density provided in data: DateTimePoint[] collection

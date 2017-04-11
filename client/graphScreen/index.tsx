@@ -4,34 +4,44 @@ import { connect } from 'react-redux';
 import * as moment from 'moment';
 import * as _ from 'lodash';
 import { Panel, ButtonGroup, Button, ListGroup, ListGroupItem, Grid, Form, Row, Col, FormGroup, ControlLabel, FormControl, HelpBlock  } from 'react-bootstrap';
-import { LinearChart } from '../LinearChart';
-import { EnumGraphPointsSelectionMode, EnumSliderWindowZoomLimitationMode } from '../LinearChart/components/enums';
-import { GraphScreenState } from './model';
-import { TextInput } from './../../components/ui/textInput';
-import { changeDateFromToValue, setupWindowWidthMinutes, setupGraphPointsSelectionMode, setupZoomWindowLimitation } from './actions';
 import { ReactSlider } from './../../components/react-slider/react-slider';
 import { BootstrapFormGroupStaticText } from './../../components/ui/bootstrapFormGroupStaticText';
+import { GraphScreenState } from './model';
+import { TextInput } from './../../components/ui/textInput';
+import { LinearChart } from '../LinearChart';
+import { EnumGraphPointsSelectionMode, EnumZoomSelected } from '../LinearChart/components/enums';
+import { IChartDimensions } from '../linearChart/common/interfaces';
+import { changeDateFromToValue, setupWindowWidthMinutes, setupGraphPointsSelectionMode, setupZoomWindowLimitation } from './actions';
 
 interface MainScreenProps {
   state: GraphScreenState;
   dispatch: Dispatch<{}>;
 }
 
-export class MainScreen extends React.Component<MainScreenProps, void> {  
+export class MainScreen extends React.Component<MainScreenProps, void> {
+  private _chartDimensions: IChartDimensions = {
+    canvasHeight: 500,
+    canvasWidth: 800,
+    paddingBottom: 20,
+    paddingLeft: 10,
+    paddingRight: 10,
+    paddingTop: 0
+  };
+
   /**
    * Calculates the difference in minutes between the datetime of the last available and the first available point
    */
   translateDateTimeToMinutesDomain(state: GraphScreenState, dateTime: moment.Moment): number {
     var result: number;
-    switch (state.sliderWindowZoomLimitationMode) {
-      case EnumSliderWindowZoomLimitationMode.NoZoom:
+    switch (state.chartZoomSettings.zoomSelected) {
+      case EnumZoomSelected.NoZoom:
         result = dateTime.diff(state.allPointsFrom.clone(), "minutes");
         break;
-      case EnumSliderWindowZoomLimitationMode.ZoomLevel1:
-        result = dateTime.diff(state.zoomLevel1PointsFrom.clone(), "minutes");
+      case EnumZoomSelected.ZoomLevel1:
+        result = dateTime.diff(state.chartZoomSettings.zoomLevel1PointsFrom.clone(), "minutes");
         break;
-      case EnumSliderWindowZoomLimitationMode.ZoomLevel2:
-        result = dateTime.diff(state.zoomLevel2PointsFrom.clone(), "minutes");
+      case EnumZoomSelected.ZoomLevel2:
+        result = dateTime.diff(state.chartZoomSettings.zoomLevel2PointsFrom.clone(), "minutes");
         break;
     }
     return result;
@@ -39,15 +49,15 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
 
   calculateDomainLengthMinutes(state: GraphScreenState): number {
     var result: number;
-    switch (state.sliderWindowZoomLimitationMode) {
-      case EnumSliderWindowZoomLimitationMode.NoZoom:
+    switch (state.chartZoomSettings.zoomSelected) {
+      case EnumZoomSelected.NoZoom:
         result = this.translateDateTimeToMinutesDomain(state, state.allPointsTo);
         break;
-      case EnumSliderWindowZoomLimitationMode.ZoomLevel1:
-        result = this.translateDateTimeToMinutesDomain(state, state.zoomLevel1PointsTo);
+      case EnumZoomSelected.ZoomLevel1:
+        result = this.translateDateTimeToMinutesDomain(state, state.chartZoomSettings.zoomLevel1PointsTo);
         break;
-      case EnumSliderWindowZoomLimitationMode.ZoomLevel2:
-        result = this.translateDateTimeToMinutesDomain(state, state.zoomLevel2PointsTo);
+      case EnumZoomSelected.ZoomLevel2:
+        result = this.translateDateTimeToMinutesDomain(state, state.chartZoomSettings.zoomLevel2PointsTo);
         break;
     }
     return result;
@@ -55,15 +65,15 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
 
   translateMinutesDomainToDateTime(state: GraphScreenState, minutes: number): moment.Moment {
     var result: moment.Moment;
-    switch (state.sliderWindowZoomLimitationMode) {
-      case EnumSliderWindowZoomLimitationMode.NoZoom:
+    switch (state.chartZoomSettings.zoomSelected) {
+      case EnumZoomSelected.NoZoom:
         result = state.allPointsFrom.clone().add(minutes, "minutes");
         break;
-      case EnumSliderWindowZoomLimitationMode.ZoomLevel1:
-        result = state.zoomLevel1PointsFrom.clone().add(minutes, "minutes");
+      case EnumZoomSelected.ZoomLevel1:
+        result = state.chartZoomSettings.zoomLevel1PointsFrom.clone().add(minutes, "minutes");
         break;
-      case EnumSliderWindowZoomLimitationMode.ZoomLevel2:
-        result = state.zoomLevel2PointsFrom.clone().add(minutes, "minutes");
+      case EnumZoomSelected.ZoomLevel2:
+        result = state.chartZoomSettings.zoomLevel2PointsFrom.clone().add(minutes, "minutes");
         break;
     }
     return result;
@@ -73,7 +83,7 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
     return stateMode == expectedMode ? "success" : "default";
   }
 
-  getSliderWindowZoomLimitationButtonStyle(stateMode: EnumSliderWindowZoomLimitationMode, expectedMode: EnumSliderWindowZoomLimitationMode): string {
+  getZoomButtonStyle(stateMode: EnumZoomSelected, expectedMode: EnumZoomSelected): string {
     return stateMode == expectedMode ? "success" : "default";
   }
 
@@ -84,7 +94,7 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
     ];
   }
 
-  isButtonDisabled(zoomLimitationLevelButtonIsPresenting: EnumSliderWindowZoomLimitationMode, currentZoomLimitationLevel: EnumSliderWindowZoomLimitationMode): boolean {
+  isButtonDisabled(zoomLimitationLevelButtonIsPresenting: EnumZoomSelected, currentZoomLimitationLevel: EnumZoomSelected): boolean {
     return Math.abs(zoomLimitationLevelButtonIsPresenting - currentZoomLimitationLevel) > 1;
   }
 
@@ -158,7 +168,7 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
                   Lock window width to current
                 </Button>
                 <Button bsSize="xs"
-                  onClick={() => this.props.dispatch(setupWindowWidthMinutes(60)) }>
+                  onClick={() => this.props.dispatch(setupWindowWidthMinutes(5)) }>
                   Unlock window width
                 </Button>
               </ButtonGroup>
@@ -167,9 +177,7 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
           <Row>
             <Col componentClass={ControlLabel} md={12}>
               <LinearChart 
-                width={800} 
-                height={600} 
-                padding={0} 
+                chartDimensions={this._chartDimensions}
                 data={this.props.state.allPoints} 
                 from={this.props.state.windowDateFrom} 
                 to={this.props.state.windowDateTo}
@@ -183,24 +191,24 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
             <Col componentClass={ControlLabel} md={12}>
               <ButtonGroup>
                 <Button 
-                  disabled={this.isButtonDisabled(EnumSliderWindowZoomLimitationMode.NoZoom, state.sliderWindowZoomLimitationMode)} 
+                  disabled={this.isButtonDisabled(EnumZoomSelected.NoZoom, state.chartZoomSettings.zoomSelected)} 
                   bsSize="xs" 
-                  onClick={() => this.props.dispatch(setupZoomWindowLimitation(EnumSliderWindowZoomLimitationMode.NoZoom)) } 
-                  bsStyle={this.getSliderWindowZoomLimitationButtonStyle(state.sliderWindowZoomLimitationMode, EnumSliderWindowZoomLimitationMode.NoZoom)}>
+                  onClick={() => this.props.dispatch(setupZoomWindowLimitation(EnumZoomSelected.NoZoom)) } 
+                  bsStyle={this.getZoomButtonStyle(state.chartZoomSettings.zoomSelected, EnumZoomSelected.NoZoom)}>
                   View All
                 </Button>
                 <Button 
-                  disabled={this.isButtonDisabled(EnumSliderWindowZoomLimitationMode.ZoomLevel1, state.sliderWindowZoomLimitationMode)}
+                  disabled={this.isButtonDisabled(EnumZoomSelected.ZoomLevel1, state.chartZoomSettings.zoomSelected)}
                   bsSize="xs" 
-                  onClick={() => this.props.dispatch(setupZoomWindowLimitation(EnumSliderWindowZoomLimitationMode.ZoomLevel1)) } 
-                  bsStyle={this.getSliderWindowZoomLimitationButtonStyle(state.sliderWindowZoomLimitationMode, EnumSliderWindowZoomLimitationMode.ZoomLevel1)}>
+                  onClick={() => this.props.dispatch(setupZoomWindowLimitation(EnumZoomSelected.ZoomLevel1)) } 
+                  bsStyle={this.getZoomButtonStyle(state.chartZoomSettings.zoomSelected, EnumZoomSelected.ZoomLevel1)}>
                   Zoom level 1
                 </Button>
                 <Button 
-                  disabled={this.isButtonDisabled(EnumSliderWindowZoomLimitationMode.ZoomLevel2, state.sliderWindowZoomLimitationMode)}
+                  disabled={this.isButtonDisabled(EnumZoomSelected.ZoomLevel2, state.chartZoomSettings.zoomSelected)}
                   bsSize="xs" 
-                  onClick={() => this.props.dispatch(setupZoomWindowLimitation(EnumSliderWindowZoomLimitationMode.ZoomLevel2)) } 
-                  bsStyle={this.getSliderWindowZoomLimitationButtonStyle(state.sliderWindowZoomLimitationMode, EnumSliderWindowZoomLimitationMode.ZoomLevel2)}>
+                  onClick={() => this.props.dispatch(setupZoomWindowLimitation(EnumZoomSelected.ZoomLevel2)) } 
+                  bsStyle={this.getZoomButtonStyle(state.chartZoomSettings.zoomSelected, EnumZoomSelected.ZoomLevel2)}>
                   Zoom level 2
                 </Button>
               </ButtonGroup>
@@ -208,7 +216,7 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
           </Row>
           <Row>
             <Col componentClass={ControlLabel} md={12}>
-              <ReactSlider                
+              <ReactSlider
                 value={this.calculateValue(state)}
                 min={0} 
                 max={this.calculateDomainLengthMinutes(state)} 
@@ -237,7 +245,7 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
 //a fragment MainScreen component keeps interest in 
 const mapStateToProps = state => {
   //console.log() only for demonstration purposes
-  // console.log('mainScreen mapStateToProps', state);
+  console.log('mainScreen mapStateToProps', state);
   return  {
     state: state.graphScreenState
   }
