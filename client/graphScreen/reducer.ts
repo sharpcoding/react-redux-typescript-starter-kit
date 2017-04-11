@@ -3,6 +3,7 @@ import * as moment from 'moment';
 import { handleActions, Action } from 'redux-actions';
 import { DateTimePoint } from '../linearChart/models/dateTimePoint';
 import { EnumGraphPointsSelectionMode, EnumZoomSelected } from '../LinearChart/components/enums';
+import { prepareInitialCache } from '../linearChart/common/calculations';
 import { IChartZoomSettings } from '../linearChart/common/interfaces';
 
 import { GraphScreenState } from './model';
@@ -45,16 +46,16 @@ const randomDateTimePoints = () => {
 };
 
 const buildInitialState = (): GraphScreenState => {
-  let dtPoints: Array<DateTimePoint> = randomDateTimePoints();
+  let allSamples: Array<DateTimePoint> = randomDateTimePoints();
   return <GraphScreenState>{
     windowDateFrom: DATE_WINDOW_FROM_VALUE.clone(),
     windowDateTo: DATE_WINDOW_TO_VALUE.clone(),
     dateFromToMinimalWidthMinutes: DATE_WINDOW_MINIMAL_WIDTH_MINUTES,
-    allPoints: dtPoints,
-    allPointsFrom: dtPoints[0].time.clone(),
-    allPointsTo: dtPoints[dtPoints.length-1].time.clone(),
-    yMinValue: _.min(_.map(dtPoints, el => el.value)),
-    yMaxValue: _.max(_.map(dtPoints, el => el.value)),
+    allPoints: allSamples,
+    allPointsFrom: allSamples[0].time.clone(),
+    allPointsTo: allSamples[allSamples.length-1].time.clone(),
+    yMinValue: _.min(_.map(allSamples, el => el.value)),
+    yMaxValue: _.max(_.map(allSamples, el => el.value)),
     secondsPerSample: SECONDS_PER_SAMPLE,
     chartZoomSettings: {
       zoomSelected: EnumZoomSelected.NoZoom,
@@ -63,6 +64,7 @@ const buildInitialState = (): GraphScreenState => {
       zoomLevel2PointsFrom: null,
       zoomLevel2PointsTo: null
     },
+    rFactorSampleCache: prepareInitialCache(allSamples),
     graphPointsSelectionMode: EnumGraphPointsSelectionMode.NoSelection,
   }
 }

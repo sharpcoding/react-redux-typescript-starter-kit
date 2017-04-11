@@ -176,10 +176,10 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
           </Row>
           <Row>
             <Col componentClass={ControlLabel} md={12}>
-              <LinearChart 
+              <LinearChart
                 chartDimensions={this._chartDimensions}
                 zoomSettings={this.props.state.chartZoomSettings}
-                data={this.props.state.allPoints} 
+                filteredData={this.props.state.allPoints}
                 windowDateFrom={this.props.state.windowDateFrom} 
                 windowDateTo={this.props.state.windowDateTo}
                 yMinValue={this.props.state.yMinValue}

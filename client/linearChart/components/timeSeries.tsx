@@ -20,7 +20,7 @@ export interface ITimeSeriesProps {
   yScale: (value: number) => number;
   horizontalSampleDistancePx: number;
   graphPointsSelectionMode: EnumGraphPointsSelectionMode;
-  data: DateTimePoint[];
+  filteredData: DateTimePoint[];
   chartDimensions: IChartDimensions;
 }
 
@@ -59,7 +59,7 @@ export class TimeSeries extends React.Component<ITimeSeriesProps, ITimeSeriesSta
       })
       .y(function(d: DateTimePoint) { return self.props.yScale(d.value); });
 
-    return line(this.props.data);
+    return line(this.props.filteredData);
   }
 
   getCircleRadiusBasedOnHorizontalSampleDistancePx = (horizontalSampleDistancePx: number) => {
@@ -156,7 +156,7 @@ export class TimeSeries extends React.Component<ITimeSeriesProps, ITimeSeriesSta
       case EnumGraphPointsSelectionMode.SelectUnselectSingle:
       case EnumGraphPointsSelectionMode.UnselectMultiple:
       if (this.props.horizontalSampleDistancePx >= 6) {
-        result = _.map(this.props.data, (el) => {
+        result = _.map(this.props.filteredData, (el) => {
           var isSelected = _.findIndex(this.state.selectedPoints, (selectedPoint) => selectedPoint.unix == el.unix) >= 0;
           return this.renderTimeSeriesPointInTimeReactElement(el, isSelected);
         });

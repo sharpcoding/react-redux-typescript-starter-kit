@@ -1,5 +1,5 @@
 import * as moment from 'moment';
-import { IChartZoomSettings } from '../linearChart/common/interfaces';
+import { IChartZoomSettings, IDateTimePointSeriesCache } from '../linearChart/common/interfaces';
 import { EnumGraphPointsSelectionMode, EnumZoomSelected } from '../LinearChart/components/enums';
 import { DateTimePoint } from '../linearChart/models/dateTimePoint';
 
@@ -12,6 +12,7 @@ export type GraphScreenState = {
   allPoints: DateTimePoint[];
   allPointsFrom: moment.Moment;
   allPointsTo: moment.Moment;
+  rFactorSampleCache: IDateTimePointSeriesCache[];
   /**
    * Minimum y-value as found in the allPoints non-cached array
    */
