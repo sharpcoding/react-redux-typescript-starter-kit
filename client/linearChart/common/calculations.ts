@@ -5,7 +5,7 @@ import { EnumZoomSelected } from '../components/enums';
 import { DateTimePoint } from '../models/dateTimePoint';
 import { GraphScreenState } from '../../graphScreen/model';
 
-const calculationsDebugging: boolean = false;
+const calculationsDebugging: boolean = true;
 
 /**
  * The distance in pixels (in horizontal, x-scale) between pixels highlighted as centres of two consecutive points
@@ -53,7 +53,7 @@ var resampleFactorApproximation = (rFactor: number) => {
   let rFactorBelowLowestPossible = (rFactor < rFactorLevels[0].low);
   let rFactorAboveHighestPossible = !(_.isObject(_.find(rFactorLevels, el => rFactor < el.high)));
   if (rFactorBelowLowestPossible) {    
-    (calculationsDebugging ? console.log("There is no available approximation for rFactor", rFactor) : null);
+    calculationsDebugging ? console.log("There is no available approximation for rFactor", rFactor) : null;
     return rFactor;
   }
   if (rFactorAboveHighestPossible)
@@ -71,7 +71,7 @@ var rFactorLevelsRequiringResamplingEveryTimeZoomLevelChanged = (): number[] => 
 
 export var prepareInitialCache = (allSamples: DateTimePoint[]): IDateTimePointSeriesCache[] => {
   var result = new Array<IDateTimePointSeriesCache>();
-  (calculationsDebugging ? console.log("building rFactor cache...") : null);
+  calculationsDebugging ? console.log("building rFactor cache...") : null;
   _.each(rFactorLevelsRequiringResamplingEveryTimeZoomLevelChanged(), rFactor => {
     (calculationsDebugging ? console.log(`rFactor: ${rFactor}`) : null);
     result.push({
@@ -84,7 +84,7 @@ export var prepareInitialCache = (allSamples: DateTimePoint[]): IDateTimePointSe
     });
   });
   _.each(rFactorLevelsNotRequiringResamplingEveryTimeZoomLevelChanged(), rFactor => {
-    (calculationsDebugging ? console.log(`rFactor: ${rFactor}`) : null);
+    calculationsDebugging ? console.log(`rFactor: ${rFactor}`) : null;
     result.push({
       rFactor: rFactor,
       resampleEveryTimeZoomLevelChanged: false,
@@ -92,7 +92,7 @@ export var prepareInitialCache = (allSamples: DateTimePoint[]): IDateTimePointSe
       zoomLvlSamples: [] //leaving for now... until someone clicks on zoom level other than EnumZoomSelected.NoZoom
     });
   });
-  (calculationsDebugging ? console.log("built rFactor cache !") : null);
+  calculationsDebugging ? console.log("built rFactor cache !") : null;
   _.each(result, el => console.log(el.allSamples.length));
   return result;
 }
@@ -134,12 +134,12 @@ export var getDataFiltered = (state: GraphScreenState, canvasWidth: number): Dat
       case EnumZoomSelected.ZoomLevel1:
       case EnumZoomSelected.ZoomLevel2:
         result = _.filter(rFactorCacheElement.zoomLvlSamples, el => el.unix >= unixFrom && el.unix <= unixTo);
-        (calculationsDebugging ? console.log('[Cache] rFactorExact', rFactorExact, 'rFactorApproximation', rFactorApproximation, 'source', rFactorCacheElement.zoomLvlSamples.length, 'result', result.length) : null);
+        calculationsDebugging ? console.log('[Cache] rFactorExact', rFactorExact, 'rFactorApproximation', rFactorApproximation, 'source', rFactorCacheElement.zoomLvlSamples.length, 'result', result.length) : null;
         break;
     }
   } else {
     result = _.filter(state.allPoints, el => el.unix >= unixFrom && el.unix <= unixTo);
-    (calculationsDebugging ? console.log('[NoCache] rFactorExact', rFactorExact, 'rFactorApproximation', rFactorApproximation, 'source', state.allPoints.length, 'result', result.length) : null);
+    calculationsDebugging ? console.log('[NoCache] rFactorExact', rFactorExact, 'rFactorApproximation', rFactorApproximation, 'source', state.allPoints.length, 'result', result.length) : null;
   }
   return result;
 }
