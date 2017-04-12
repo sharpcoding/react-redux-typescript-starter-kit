@@ -1,9 +1,9 @@
-import * as moment from 'Moment';
+import { Moment } from 'Moment';
 import { DateTimePoint } from '../models/dateTimePoint';
-import { EnumZoomSelected } from '../components/enums';
+import { EnumZoomSelected } from './enums';
 
 /**
- * Cache entry
+ * Describes a single cache entry
  */
 export interface IDateTimePointSeriesCache {
   /**
@@ -42,7 +42,7 @@ export interface IDateTimePointSeriesCache {
 /**
  * Different read-only dimensions provided in creation time 
  */
-export interface IChartDimensions {
+export interface ILinearChartDimensions {
   canvasWidth: number;
   canvasHeight: number;
   paddingBottom: number;
@@ -51,10 +51,10 @@ export interface IChartDimensions {
   paddingRight: number;
 }
 
-export interface IChartZoomSettings {
+export interface ILinearChartZoomSettings {
   zoomSelected: EnumZoomSelected;
-  zoomLevel1PointsFrom: moment.Moment;
-  zoomLevel1PointsTo: moment.Moment;
-  zoomLevel2PointsFrom: moment.Moment;
-  zoomLevel2PointsTo: moment.Moment;
+  zoomLevel1PointsFrom: Moment;
+  zoomLevel1PointsTo: Moment;
+  zoomLevel2PointsFrom: Moment;
+  zoomLevel2PointsTo: Moment;
 }

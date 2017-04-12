@@ -8,5 +8,3 @@ export type DateTimePoint = {
    */
   unix: number;
 }
-
-export default DateTimePoint;

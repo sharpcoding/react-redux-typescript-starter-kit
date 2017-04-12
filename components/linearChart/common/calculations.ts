@@ -1,9 +1,9 @@
 import * as moment from 'Moment';
 import * as _ from 'lodash';
-import { IDateTimePointSeriesCache, IChartZoomSettings } from './interfaces';
-import { EnumZoomSelected } from '../components/enums';
+import { IDateTimePointSeriesCache, ILinearChartZoomSettings } from './interfaces';
+import { EnumZoomSelected } from './enums';
 import { DateTimePoint } from '../models/dateTimePoint';
-import { GraphScreenState } from '../../graphScreen/model';
+import { LinearChartState } from '../models/linearChartState';
 
 const calculationsDebugging: boolean = true;
 
@@ -119,7 +119,7 @@ var getDataResampled = (data: DateTimePoint[], rFactor: number): DateTimePoint[]
  * That Selection is based on rFactor (resample factor), after a proper cache is chosen, samples are filtered by date from / to range.
  * Quite an important function in regards to performance aspect.
  */
-export var getDataFiltered = (state: GraphScreenState, canvasWidth: number): DateTimePoint[] => {  
+export var getDataFiltered = (state: LinearChartState, canvasWidth: number): DateTimePoint[] => {  
   let result = new Array<DateTimePoint>();
   let unixFrom = state.windowDateFrom.unix();
   let unixTo = state.windowDateTo.unix();
@@ -144,7 +144,7 @@ export var getDataFiltered = (state: GraphScreenState, canvasWidth: number): Dat
   return result;
 }
 
-var getUnixTimeStampLimitationsFromTo = (chartZoomSettings: IChartZoomSettings) => {
+var getUnixTimeStampLimitationsFromTo = (chartZoomSettings: ILinearChartZoomSettings) => {
   let result = { unixFrom: 0, unixTo: 0 };
   switch (chartZoomSettings.zoomSelected) {
     case EnumZoomSelected.ZoomLevel1:
@@ -159,7 +159,58 @@ var getUnixTimeStampLimitationsFromTo = (chartZoomSettings: IChartZoomSettings) 
   return result;
 }
 
-export var rebuildSampleCacheAdjustedToCurrentZoomLevel = (rFactorSampleCache: IDateTimePointSeriesCache[], chartZoomSettings: IChartZoomSettings):IDateTimePointSeriesCache[] => {
+/**
+ * Calculates the difference in minutes between the datetime of the last available and the first available point
+ */
+export var translateDateTimeToMinutesDomain = (state: LinearChartState, dateTime: moment.Moment): number => {
+  var result: number;
+  switch (state.chartZoomSettings.zoomSelected) {
+    case EnumZoomSelected.NoZoom:
+      result = dateTime.diff(state.allPointsFrom.clone(), "minutes");
+      break;
+    case EnumZoomSelected.ZoomLevel1:
+      result = dateTime.diff(state.chartZoomSettings.zoomLevel1PointsFrom.clone(), "minutes");
+      break;
+    case EnumZoomSelected.ZoomLevel2:
+      result = dateTime.diff(state.chartZoomSettings.zoomLevel2PointsFrom.clone(), "minutes");
+      break;
+  }
+  return result;
+}
+
+export var calculateDomainLengthMinutes = (state: LinearChartState): number => {
+  var result: number;
+  switch (state.chartZoomSettings.zoomSelected) {
+    case EnumZoomSelected.NoZoom:
+      result = this.translateDateTimeToMinutesDomain(state, state.allPointsTo);
+      break;
+    case EnumZoomSelected.ZoomLevel1:
+      result = this.translateDateTimeToMinutesDomain(state, state.chartZoomSettings.zoomLevel1PointsTo);
+      break;
+    case EnumZoomSelected.ZoomLevel2:
+      result = this.translateDateTimeToMinutesDomain(state, state.chartZoomSettings.zoomLevel2PointsTo);
+      break;
+  }
+  return result;
+}
+
+export var translateMinutesDomainToDateTime = (state: LinearChartState, minutes: number): moment.Moment => {
+  var result: moment.Moment;
+  switch (state.chartZoomSettings.zoomSelected) {
+    case EnumZoomSelected.NoZoom:
+      result = state.allPointsFrom.clone().add(minutes, "minutes");
+      break;
+    case EnumZoomSelected.ZoomLevel1:
+      result = state.chartZoomSettings.zoomLevel1PointsFrom.clone().add(minutes, "minutes");
+      break;
+    case EnumZoomSelected.ZoomLevel2:
+      result = state.chartZoomSettings.zoomLevel2PointsFrom.clone().add(minutes, "minutes");
+      break;
+  }
+  return result;
+}
+
+export var rebuildSampleCacheAdjustedToCurrentZoomLevel = (rFactorSampleCache: IDateTimePointSeriesCache[], chartZoomSettings: ILinearChartZoomSettings):IDateTimePointSeriesCache[] => {
   var result = new Array<IDateTimePointSeriesCache>();  
   var limitations = getUnixTimeStampLimitationsFromTo(chartZoomSettings);
   _.each(rFactorSampleCache, el => {

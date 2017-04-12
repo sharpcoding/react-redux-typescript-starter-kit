@@ -4,13 +4,13 @@ import * as moment from 'Moment';
 import * as _ from 'lodash';
 import { DateTimePoint } from './models/dateTimePoint';
 import { TimeSeries } from './components/timeSeries';
-import { IChartDimensions, IChartZoomSettings } from './common/interfaces';
-import { EnumGraphPointsSelectionMode, EnumZoomSelected } from './components/enums';
+import { EnumGraphPointsSelectionMode, EnumZoomSelected } from './common/enums';
+import { ILinearChartDimensions, ILinearChartZoomSettings } from './common/interfaces';
 import { getHorizontalSampleDistancePx } from './common/calculations';
 
 export interface ILinearChartProps {
-  chartDimensions: IChartDimensions;
-  zoomSettings: IChartZoomSettings;
+  chartDimensions: ILinearChartDimensions;
+  zoomSettings: ILinearChartZoomSettings;
   windowDateFrom: moment.Moment;
   windowDateTo: moment.Moment;
   yMinValue: number;
@@ -23,11 +23,7 @@ export interface ILinearChartProps {
   graphPointsSelectionMode: EnumGraphPointsSelectionMode;
 }
 
-export interface ITimeSeriesState {
-  // rFactorSampleCache: IDateTimePointSeriesCache[];
-}
-
-export class LinearChart extends React.Component<ILinearChartProps, ITimeSeriesState> {
+export class LinearChart extends React.Component<ILinearChartProps, void> {
   constructor(props) {
     super(props);    
   };

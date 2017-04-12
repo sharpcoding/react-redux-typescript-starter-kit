@@ -8,7 +8,7 @@ import { ReactSlider } from './../../components/react-slider/react-slider';
 import { BootstrapFormGroupStaticText } from './../../components/ui/bootstrapFormGroupStaticText';
 import { GraphScreenState } from './model';
 import { TextInput } from './../../components/ui/textInput';
-import { LinearChart } from '../LinearChart';
+import { LinearChart } from './../../components/linearChart';
 import { EnumGraphPointsSelectionMode, EnumZoomSelected } from '../LinearChart/components/enums';
 import { getDataFiltered } from '../linearChart/common/calculations';
 import { IChartDimensions } from '../linearChart/common/interfaces';
@@ -28,57 +28,6 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
     paddingRight: 10,
     paddingTop: 10
   };
-
-  /**
-   * Calculates the difference in minutes between the datetime of the last available and the first available point
-   */
-  translateDateTimeToMinutesDomain(state: GraphScreenState, dateTime: moment.Moment): number {
-    var result: number;
-    switch (state.chartZoomSettings.zoomSelected) {
-      case EnumZoomSelected.NoZoom:
-        result = dateTime.diff(state.allPointsFrom.clone(), "minutes");
-        break;
-      case EnumZoomSelected.ZoomLevel1:
-        result = dateTime.diff(state.chartZoomSettings.zoomLevel1PointsFrom.clone(), "minutes");
-        break;
-      case EnumZoomSelected.ZoomLevel2:
-        result = dateTime.diff(state.chartZoomSettings.zoomLevel2PointsFrom.clone(), "minutes");
-        break;
-    }
-    return result;
-  }
-
-  calculateDomainLengthMinutes(state: GraphScreenState): number {
-    var result: number;
-    switch (state.chartZoomSettings.zoomSelected) {
-      case EnumZoomSelected.NoZoom:
-        result = this.translateDateTimeToMinutesDomain(state, state.allPointsTo);
-        break;
-      case EnumZoomSelected.ZoomLevel1:
-        result = this.translateDateTimeToMinutesDomain(state, state.chartZoomSettings.zoomLevel1PointsTo);
-        break;
-      case EnumZoomSelected.ZoomLevel2:
-        result = this.translateDateTimeToMinutesDomain(state, state.chartZoomSettings.zoomLevel2PointsTo);
-        break;
-    }
-    return result;
-  }
-
-  translateMinutesDomainToDateTime(state: GraphScreenState, minutes: number): moment.Moment {
-    var result: moment.Moment;
-    switch (state.chartZoomSettings.zoomSelected) {
-      case EnumZoomSelected.NoZoom:
-        result = state.allPointsFrom.clone().add(minutes, "minutes");
-        break;
-      case EnumZoomSelected.ZoomLevel1:
-        result = state.chartZoomSettings.zoomLevel1PointsFrom.clone().add(minutes, "minutes");
-        break;
-      case EnumZoomSelected.ZoomLevel2:
-        result = state.chartZoomSettings.zoomLevel2PointsFrom.clone().add(minutes, "minutes");
-        break;
-    }
-    return result;
-  }
 
   getGraphPointsSelectionButtonStyle(stateMode: EnumGraphPointsSelectionMode, expectedMode: EnumGraphPointsSelectionMode): string {
     return stateMode == expectedMode ? "success" : "default";
@@ -115,19 +64,19 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
                Samples from:
             </Col>
             <Col md={2}>
-              <BootstrapFormGroupStaticText text={state.allPointsFrom.format("YYYY-MM-DD HH:mm")} />
+              <BootstrapFormGroupStaticText text={state.linearChart.allPointsFrom.format("YYYY-MM-DD HH:mm")} />
             </Col>
             <Col componentClass={ControlLabel} md={2}>
               Samples to:
             </Col>
             <Col md={2}>
-              <BootstrapFormGroupStaticText text={state.allPointsTo.format("YYYY-MM-DD HH:mm")} />
+              <BootstrapFormGroupStaticText text={state.linearChart.allPointsTo.format("YYYY-MM-DD HH:mm")} />
             </Col>
             <Col componentClass={ControlLabel} md={2}>
               Total number of samples:
             </Col>
             <Col md={2}>
-              <BootstrapFormGroupStaticText text={state.allPoints.length.toString()} />
+              <BootstrapFormGroupStaticText text={state.linearChart.allPoints.length.toString()} />
             </Col>
           </Row>
           <Row>
