@@ -3,7 +3,7 @@ import * as moment from 'moment';
 import { handleActions, Action } from 'redux-actions';
 import { DateTimePoint } from '../linearChart/models/dateTimePoint';
 import { EnumGraphPointsSelectionMode, EnumZoomSelected } from '../LinearChart/components/enums';
-import { prepareInitialCache } from '../linearChart/common/calculations';
+import { prepareInitialCache, rebuildSampleCacheAdjustedToCurrentZoomLevel } from '../linearChart/common/calculations';
 import { IChartZoomSettings } from '../linearChart/common/interfaces';
 
 import { GraphScreenState } from './model';
@@ -19,7 +19,7 @@ const DATE_RANGE_MIN_VALUE = moment("2010-03-01");
 const DATE_RANGE_MAX_VALUE = moment("2010-09-30"  );
 const DATE_WINDOW_FROM_VALUE = moment("2010-05-03");
 const DATE_WINDOW_TO_VALUE = moment("2010-05-05");
-const SECONDS_PER_SAMPLE = 60*5;
+const SECONDS_PER_SAMPLE = 5;//5*60;
 const DATE_WINDOW_MINIMAL_WIDTH_MINUTES = 24*60;
 
 const randomDateTimePoints = () => {
@@ -130,12 +130,14 @@ export default handleActions<GraphScreenState, GraphScreenState>({
           });
           result = _.extend({}, state, {
             chartZoomSettings: chartZoomSettings,
+            rFactorSampleCache: rebuildSampleCacheAdjustedToCurrentZoomLevel(state.rFactorSampleCache, chartZoomSettings),
             dateFromToMinimalWidthMinutes: state.dateFromToMinimalWidthMinutes / 10
           });
         } else {
           result = _.extend({}, state, {
             chartZoomSettings: chartZoomSettings,
             dateFromToMinimalWidthMinutes: state.windowDateTo.clone().diff(state.windowDateFrom, "minute"),
+            rFactorSampleCache: rebuildSampleCacheAdjustedToCurrentZoomLevel(state.rFactorSampleCache, chartZoomSettings),
             windowDateFrom: state.windowDateFrom.clone(),
             windowDateTo: state.windowDateTo.clone()
           });
@@ -149,6 +151,7 @@ export default handleActions<GraphScreenState, GraphScreenState>({
           });
           result = _.extend({}, state, {
             chartZoomSettings: chartZoomSettings,
+            rFactorSampleCache: rebuildSampleCacheAdjustedToCurrentZoomLevel(state.rFactorSampleCache, chartZoomSettings),
             dateFromToMinimalWidthMinutes: state.dateFromToMinimalWidthMinutes / 10
           });
         } else {

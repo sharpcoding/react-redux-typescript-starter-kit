@@ -1,10 +1,11 @@
 import * as moment from 'Moment';
 import * as _ from 'lodash';
-import { IDateTimePointSeriesCache } from './interfaces';
+import { IDateTimePointSeriesCache, IChartZoomSettings } from './interfaces';
 import { EnumZoomSelected } from '../components/enums';
 import { DateTimePoint } from '../models/dateTimePoint';
 import { GraphScreenState } from '../../graphScreen/model';
 
+const calculationsDebugging: boolean = false;
 
 /**
  * The distance in pixels (in horizontal, x-scale) between pixels highlighted as centres of two consecutive points
@@ -26,55 +27,77 @@ export var getHorizontalSampleDistancePx = (samplesCount: number, widthPx: numbe
  * 
  * rawDataSecondsPerSample holds declared density in the RAW data sample array
  */
-export var resampleFactor = (rawDataSecondsPerSample: number, widthPx: number, momentFrom: moment.Moment, momentTo: moment.Moment) => {
+var resampleFactor = (rawDataSecondsPerSample: number, widthPx: number, momentFrom: moment.Moment, momentTo: moment.Moment) => {
   let numberOfSecondsInDateRange = momentTo.diff(momentFrom, "second");
   let rawDataNumberOfSamplesInDateRange = numberOfSecondsInDateRange / rawDataSecondsPerSample;
   let samplesPerPixel = rawDataNumberOfSamplesInDateRange / widthPx;
   return samplesPerPixel < 1 ? 1 : _.ceil(samplesPerPixel);
 }
 
-var rFactorLevels = [  
-  { low: 10, high: 30 },
-  { low: 30, high: 50 },
-  { low: 50, high: 200 },
-  { low: 200, high: 500 },
-  { low: 500, high: 1000 },
-  { low: 1000, high: 2000 },
-  { low: 2000, high: 5000 }
+var rFactorLevels = [
+  { low: 1, high: 1, resampleEveryTimeZoomLevelChanged: true },
+  { low: 2, high: 3, resampleEveryTimeZoomLevelChanged: true },
+  { low: 4, high: 5, resampleEveryTimeZoomLevelChanged: true },
+  { low: 6, high: 8, resampleEveryTimeZoomLevelChanged: true },
+  { low: 9, high: 10, resampleEveryTimeZoomLevelChanged: true },
+  { low: 11, high: 25, resampleEveryTimeZoomLevelChanged: false },
+  { low: 26, high: 50, resampleEveryTimeZoomLevelChanged: false },
+  { low: 51, high: 200, resampleEveryTimeZoomLevelChanged: false },
+  { low: 201, high: 500, resampleEveryTimeZoomLevelChanged: false },
+  { low: 501, high: 1000, resampleEveryTimeZoomLevelChanged: false },
+  { low: 1001, high: 2000, resampleEveryTimeZoomLevelChanged: false },
+  { low: 2001, high: 5000, resampleEveryTimeZoomLevelChanged: false }
 ];
 
-export var resampleFactorApproximation = (rFactor: number) => {
+var resampleFactorApproximation = (rFactor: number) => {
   let rFactorBelowLowestPossible = (rFactor < rFactorLevels[0].low);
   let rFactorAboveHighestPossible = !(_.isObject(_.find(rFactorLevels, el => rFactor < el.high)));
-  if (rFactorBelowLowestPossible)
+  if (rFactorBelowLowestPossible) {    
+    (calculationsDebugging ? console.log("There is no available approximation for rFactor", rFactor) : null);
     return rFactor;
+  }
   if (rFactorAboveHighestPossible)
     return rFactorLevels[rFactorLevels.length-1].high;
-  return _.find(rFactorLevels, el => rFactor >= el.low && rFactor < el.high).high;
+  return _.find(rFactorLevels, el => rFactor >= el.low && rFactor <= el.high).high;
 }
 
-export var getAllApproximations = (): number[] => {
-  return _.map(rFactorLevels, el => el.high);
+var rFactorLevelsNotRequiringResamplingEveryTimeZoomLevelChanged = (): number[] => {
+  return _.map(_.filter(rFactorLevels, el => (!el.resampleEveryTimeZoomLevelChanged)), el => el.high);
+}
+
+var rFactorLevelsRequiringResamplingEveryTimeZoomLevelChanged = (): number[] => {
+  return _.map(_.filter(rFactorLevels, el => (el.resampleEveryTimeZoomLevelChanged)), el => el.high);
 }
 
 export var prepareInitialCache = (allSamples: DateTimePoint[]): IDateTimePointSeriesCache[] => {
   var result = new Array<IDateTimePointSeriesCache>();
-  console.log("building rFactor cache...");
-  _.each(getAllApproximations(), rFactor => {
-    console.log(`rFactor: ${rFactor}`);
-    var resampledData = getDataResampled(allSamples, rFactor);
+  (calculationsDebugging ? console.log("building rFactor cache...") : null);
+  _.each(rFactorLevelsRequiringResamplingEveryTimeZoomLevelChanged(), rFactor => {
+    (calculationsDebugging ? console.log(`rFactor: ${rFactor}`) : null);
     result.push({
       rFactor: rFactor,
-      allSamples: resampledData,
-      zoomLvlSamples: [] //leaving for now... until someone clicks for level1 or level2 zoom
+      resampleEveryTimeZoomLevelChanged: true,
+      allSamples: allSamples, //since we need to make resampling every time zoom level changes, 
+                              //it doesn't make sense to make it all, since it will take lots of time
+                              //for all allSamples longer than 1M
+      zoomLvlSamples: [] //leaving for now... until someone clicks on zoom level other than EnumZoomSelected.NoZoom
     });
   });
-  console.log("built rFactor cache !");
+  _.each(rFactorLevelsNotRequiringResamplingEveryTimeZoomLevelChanged(), rFactor => {
+    (calculationsDebugging ? console.log(`rFactor: ${rFactor}`) : null);
+    result.push({
+      rFactor: rFactor,
+      resampleEveryTimeZoomLevelChanged: false,
+      allSamples: getDataResampled(allSamples, rFactor),
+      zoomLvlSamples: [] //leaving for now... until someone clicks on zoom level other than EnumZoomSelected.NoZoom
+    });
+  });
+  (calculationsDebugging ? console.log("built rFactor cache !") : null);
   _.each(result, el => console.log(el.allSamples.length));
   return result;
 }
 
-export var getDataResampled = (data: DateTimePoint[], rFactor: number): DateTimePoint[]  => {
+var getDataResampled = (data: DateTimePoint[], rFactor: number): DateTimePoint[]  => {
   let resampledSum = 0;
   let result = [];
   for (let i=0; i < data.length; i++) {
@@ -93,14 +116,14 @@ export var getDataResampled = (data: DateTimePoint[], rFactor: number): DateTime
 
 /**
  * Returns DateTimePoint[] array from a selected sample cache selected.
- * That Selection is based on rRactor (resample factor), after a proper cache is chosen, samples are filtered by date from / to range.
+ * That Selection is based on rFactor (resample factor), after a proper cache is chosen, samples are filtered by date from / to range.
  * Quite an important function in regards to performance aspect.
  */
-export var getDataFiltered = (state: GraphScreenState): DateTimePoint[] => {
+export var getDataFiltered = (state: GraphScreenState, canvasWidth: number): DateTimePoint[] => {  
   let result = new Array<DateTimePoint>();
   let unixFrom = state.windowDateFrom.unix();
   let unixTo = state.windowDateTo.unix();
-  let rFactorExact = resampleFactor(this.props.secondsPerSample, this.props.chartDimensions.canvasWidth, this.props.windowDateFrom.clone(), this.props.windowDateTo.clone());
+  let rFactorExact = resampleFactor(state.secondsPerSample, canvasWidth, state.windowDateFrom.clone(), state.windowDateTo.clone());
   let rFactorApproximation = resampleFactorApproximation(rFactorExact);
   let rFactorCacheElement = _.find(state.rFactorSampleCache, el => el.rFactor == rFactorApproximation);
   if (_.isObject(rFactorCacheElement)) {
@@ -111,29 +134,46 @@ export var getDataFiltered = (state: GraphScreenState): DateTimePoint[] => {
       case EnumZoomSelected.ZoomLevel1:
       case EnumZoomSelected.ZoomLevel2:
         result = _.filter(rFactorCacheElement.zoomLvlSamples, el => el.unix >= unixFrom && el.unix <= unixTo);
+        (calculationsDebugging ? console.log('[Cache] rFactorExact', rFactorExact, 'rFactorApproximation', rFactorApproximation, 'source', rFactorCacheElement.zoomLvlSamples.length, 'result', result.length) : null);
         break;
     }
-    // console.log(`filteredInRange() rFactor: ${rFactor} rFactorApproximation: ${rFactorApproximation} allSamples: ${this.props.data.length} cacheSamples: ${rFactorCacheElement.samples.length} resultSamples: ${result.length}`);
   } else {
     result = _.filter(state.allPoints, el => el.unix >= unixFrom && el.unix <= unixTo);
-    // console.log(`filteredInRange() rFactor: ${rFactor}  rFactorApproximation: ${rFactorApproximation} allSamples: ${this.props.data.length} resultSamples: ${result.length}`);
+    (calculationsDebugging ? console.log('[NoCache] rFactorExact', rFactorExact, 'rFactorApproximation', rFactorApproximation, 'source', state.allPoints.length, 'result', result.length) : null);
   }
   return result;
 }
 
-export var rebuildSampleCacheAdjustedToCurrentZoomLevel = (state: GraphScreenState):void => {
-  _.each(this.state.rFactorSampleCache, el => {
-    console.log(`building for ${el.rFactor}`);
-    switch (state.chartZoomSettings.zoomSelected) {
-      case EnumZoomSelected.ZoomLevel1:
-        var unixFrom = this.props.zoomSettings.zoomLevel1PointsFrom.unix();
-        var unixTo = this.props.zoomSettings.zoomLevel1PointsTo.unix();
-        break;
-      case EnumZoomSelected.ZoomLevel2:
-        var unixFrom = this.props.zoomSettings.zoomLevel2PointsFrom.unix();
-        var unixTo = this.props.zoomSettings.zoomLevel2PointsTo.unix();
-        break;
+var getUnixTimeStampLimitationsFromTo = (chartZoomSettings: IChartZoomSettings) => {
+  let result = { unixFrom: 0, unixTo: 0 };
+  switch (chartZoomSettings.zoomSelected) {
+    case EnumZoomSelected.ZoomLevel1:
+      result.unixFrom = chartZoomSettings.zoomLevel1PointsFrom.unix();
+      result.unixTo = chartZoomSettings.zoomLevel1PointsTo.unix();
+      break;
+    case EnumZoomSelected.ZoomLevel2:
+      result.unixFrom = chartZoomSettings.zoomLevel2PointsFrom.unix();
+      result.unixTo = chartZoomSettings.zoomLevel2PointsTo.unix();
+      break;
+  }
+  return result;
+}
+
+export var rebuildSampleCacheAdjustedToCurrentZoomLevel = (rFactorSampleCache: IDateTimePointSeriesCache[], chartZoomSettings: IChartZoomSettings):IDateTimePointSeriesCache[] => {
+  var result = new Array<IDateTimePointSeriesCache>();  
+  var limitations = getUnixTimeStampLimitationsFromTo(chartZoomSettings);
+  _.each(rFactorSampleCache, el => {
+    (calculationsDebugging ? console.log(`building resample cache for ${el.rFactor}`, "el.allSamples", el.allSamples.length) : null);
+    if (el.resampleEveryTimeZoomLevelChanged) {
+      var filteredByDate = _.filter(el.allSamples, (sample: DateTimePoint) => (sample.unix >= limitations.unixFrom) && (sample.unix <= limitations.unixTo));
+      var resampled = getDataResampled(filteredByDate, el.rFactor);
+      el.zoomLvlSamples = resampled;
     }
-    // el.zoomLvlSamples = _.filter(el.allSamples, sample => (sample.unix >= unixFrom) && (sample.unix <= unixTo));
+    else {
+      el.zoomLvlSamples = _.filter(el.allSamples, (sample: DateTimePoint) => 
+        (sample.unix >= limitations.unixFrom) && (sample.unix <= limitations.unixTo));
+    }
+    result.push(el);
   });
+  return result;
 }

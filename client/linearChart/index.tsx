@@ -6,7 +6,7 @@ import { DateTimePoint } from './models/dateTimePoint';
 import { TimeSeries } from './components/timeSeries';
 import { IChartDimensions, IChartZoomSettings } from './common/interfaces';
 import { EnumGraphPointsSelectionMode, EnumZoomSelected } from './components/enums';
-import { getHorizontalSampleDistancePx, resampleFactor, resampleFactorApproximation } from './common/calculations';
+import { getHorizontalSampleDistancePx } from './common/calculations';
 
 export interface ILinearChartProps {
   chartDimensions: IChartDimensions;

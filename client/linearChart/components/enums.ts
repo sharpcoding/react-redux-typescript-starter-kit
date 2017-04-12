@@ -10,5 +10,3 @@ export enum EnumZoomSelected {
   ZoomLevel1,
   ZoomLevel2
 }
-
-export default EnumGraphPointsSelectionMode;

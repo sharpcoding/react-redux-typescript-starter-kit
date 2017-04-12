@@ -10,6 +10,7 @@ import { GraphScreenState } from './model';
 import { TextInput } from './../../components/ui/textInput';
 import { LinearChart } from '../LinearChart';
 import { EnumGraphPointsSelectionMode, EnumZoomSelected } from '../LinearChart/components/enums';
+import { getDataFiltered } from '../linearChart/common/calculations';
 import { IChartDimensions } from '../linearChart/common/interfaces';
 import { changeDateFromToValue, setupWindowWidthMinutes, setupGraphPointsSelectionMode, setupZoomWindowLimitation } from './actions';
 
@@ -25,7 +26,7 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
     paddingBottom: 20,
     paddingLeft: 10,
     paddingRight: 10,
-    paddingTop: 0
+    paddingTop: 10
   };
 
   /**
@@ -179,7 +180,7 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
               <LinearChart
                 chartDimensions={this._chartDimensions}
                 zoomSettings={this.props.state.chartZoomSettings}
-                filteredData={this.props.state.allPoints}
+                filteredData={getDataFiltered(this.props.state, this._chartDimensions.canvasWidth)}
                 windowDateFrom={this.props.state.windowDateFrom} 
                 windowDateTo={this.props.state.windowDateTo}
                 yMinValue={this.props.state.yMinValue}
@@ -201,16 +202,16 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
                 <Button 
                   disabled={this.isButtonDisabled(EnumZoomSelected.ZoomLevel1, state.chartZoomSettings.zoomSelected)}
                   bsSize="xs" 
-                  onClick={() => this.props.dispatch(setupZoomWindowLimitation(EnumZoomSelected.ZoomLevel1)) } 
+                  onClick={() => { this.props.dispatch(setupZoomWindowLimitation(EnumZoomSelected.ZoomLevel1)) }} 
                   bsStyle={this.getZoomButtonStyle(state.chartZoomSettings.zoomSelected, EnumZoomSelected.ZoomLevel1)}>
-                  Zoom level 1
+                  We need to go deeper...
                 </Button>
                 <Button 
                   disabled={this.isButtonDisabled(EnumZoomSelected.ZoomLevel2, state.chartZoomSettings.zoomSelected)}
                   bsSize="xs" 
                   onClick={() => this.props.dispatch(setupZoomWindowLimitation(EnumZoomSelected.ZoomLevel2)) } 
                   bsStyle={this.getZoomButtonStyle(state.chartZoomSettings.zoomSelected, EnumZoomSelected.ZoomLevel2)}>
-                  Zoom level 2
+                  We need to go deeper...
                 </Button>
               </ButtonGroup>
             </Col>
