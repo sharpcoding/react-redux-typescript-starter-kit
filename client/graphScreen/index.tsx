@@ -9,10 +9,10 @@ import { BootstrapFormGroupStaticText } from './../../components/ui/bootstrapFor
 import { GraphScreenState } from './model';
 import { TextInput } from './../../components/ui/textInput';
 import { LinearChart } from './../../components/linearChart';
-import { EnumGraphPointsSelectionMode, EnumZoomSelected } from '../LinearChart/components/enums';
-import { getDataFiltered } from '../linearChart/common/calculations';
-import { IChartDimensions } from '../linearChart/common/interfaces';
-import { changeDateFromToValue, setupWindowWidthMinutes, setupGraphPointsSelectionMode, setupZoomWindowLimitation } from './actions';
+import { EnumChartPointsSelectionMode, EnumZoomSelected } from '../../components/linearChart/common/enums';
+import { ILinearChartDimensions } from '../../components/linearChart/common/interfaces';
+import { calculations as c } from '../../components/linearChart/common/calculations';
+import { chartActions } from '../../components/linearChart/common/actions';
 
 interface MainScreenProps {
   state: GraphScreenState;
@@ -20,7 +20,7 @@ interface MainScreenProps {
 }
 
 export class MainScreen extends React.Component<MainScreenProps, void> {
-  private _chartDimensions: IChartDimensions = {
+  private _chartDimensions: ILinearChartDimensions = {
     canvasHeight: 500,
     canvasWidth: 800,
     paddingBottom: 20,
@@ -29,7 +29,7 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
     paddingTop: 10
   };
 
-  getGraphPointsSelectionButtonStyle(stateMode: EnumGraphPointsSelectionMode, expectedMode: EnumGraphPointsSelectionMode): string {
+  getGraphPointsSelectionButtonStyle(stateMode: EnumChartPointsSelectionMode, expectedMode: EnumChartPointsSelectionMode): string {
     return stateMode == expectedMode ? "success" : "default";
   }
 
@@ -39,8 +39,8 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
 
   calculateSliderValue(state: GraphScreenState): number[] {
     return [
-      this.translateDateTimeToMinutesDomain(state, state.windowDateFrom), 
-      this.translateDateTimeToMinutesDomain(state, state.windowDateTo)
+      c.translateDateTimeToMinutesDomain(state.linearChart, state.linearChart.windowDateFrom), 
+      c.translateDateTimeToMinutesDomain(state.linearChart, state.linearChart.windowDateTo)
     ];
   }
 
@@ -84,41 +84,41 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
                Window date from:
             </Col>
             <Col md={2}>
-              <BootstrapFormGroupStaticText text={state.windowDateFrom.format("YYYY-MM-DD HH:mm")} />
+              <BootstrapFormGroupStaticText text={state.linearChart.windowDateFrom.format("YYYY-MM-DD HH:mm")} />
             </Col>
             <Col componentClass={ControlLabel} md={2}>
               Window date to:
             </Col>
             <Col md={2}>
-              <BootstrapFormGroupStaticText text={state.windowDateTo.format("YYYY-MM-DD HH:mm")} />
+              <BootstrapFormGroupStaticText text={state.linearChart.windowDateTo.format("YYYY-MM-DD HH:mm")} />
             </Col>
             <Col componentClass={ControlLabel} md={2}>
               Min. window width:
             </Col>
             <Col md={2}>
-              <BootstrapFormGroupStaticText text={ state.dateFromToMinimalWidthMinutes.toString() + " minutes"} />
+              <BootstrapFormGroupStaticText text={ state.linearChart.dateFromToMinimalWidthMinutes.toString() + " minutes"} />
             </Col>
           </Row>
           <Row>
             <Col componentClass={ControlLabel} md={12}>
               <ButtonGroup>
-                <Button bsSize="xs" onClick={() => this.props.dispatch(setupGraphPointsSelectionMode(EnumGraphPointsSelectionMode.NoSelection)) } 
-                  bsStyle={this.getGraphPointsSelectionButtonStyle(state.graphPointsSelectionMode, EnumGraphPointsSelectionMode.NoSelection)}>No selection</Button>
-                <Button bsSize="xs" onClick={() => this.props.dispatch(setupGraphPointsSelectionMode(EnumGraphPointsSelectionMode.SelectUnselectSingle)) } 
-                  bsStyle={this.getGraphPointsSelectionButtonStyle(state.graphPointsSelectionMode, EnumGraphPointsSelectionMode.SelectUnselectSingle)}>Select single point</Button>
-                <Button bsSize="xs" onClick={() => this.props.dispatch(setupGraphPointsSelectionMode(EnumGraphPointsSelectionMode.SelectMultiple)) } 
-                  bsStyle={this.getGraphPointsSelectionButtonStyle(state.graphPointsSelectionMode, EnumGraphPointsSelectionMode.SelectMultiple)}>Select multiple points</Button>
-                <Button bsSize="xs" onClick={() => this.props.dispatch(setupGraphPointsSelectionMode(EnumGraphPointsSelectionMode.UnselectMultiple))} 
-                  bsStyle={this.getGraphPointsSelectionButtonStyle(state.graphPointsSelectionMode, EnumGraphPointsSelectionMode.UnselectMultiple)}>Unselect multiple points</Button>
+                <Button bsSize="xs" onClick={() => this.props.dispatch(chartActions.setGraphPointsSelectionMode(EnumChartPointsSelectionMode.NoSelection)) } 
+                  bsStyle={this.getGraphPointsSelectionButtonStyle(state.linearChart.graphPointsSelectionMode, EnumChartPointsSelectionMode.NoSelection)}>No selection</Button>
+                <Button bsSize="xs" onClick={() => this.props.dispatch(chartActions.setGraphPointsSelectionMode(EnumChartPointsSelectionMode.SelectUnselectSingle)) } 
+                  bsStyle={this.getGraphPointsSelectionButtonStyle(state.linearChart.graphPointsSelectionMode, EnumChartPointsSelectionMode.SelectUnselectSingle)}>Select single point</Button>
+                <Button bsSize="xs" onClick={() => this.props.dispatch(chartActions.setGraphPointsSelectionMode(EnumChartPointsSelectionMode.SelectMultiple)) } 
+                  bsStyle={this.getGraphPointsSelectionButtonStyle(state.linearChart.graphPointsSelectionMode, EnumChartPointsSelectionMode.SelectMultiple)}>Select multiple points</Button>
+                <Button bsSize="xs" onClick={() => this.props.dispatch(chartActions.setGraphPointsSelectionMode(EnumChartPointsSelectionMode.UnselectMultiple))} 
+                  bsStyle={this.getGraphPointsSelectionButtonStyle(state.linearChart.graphPointsSelectionMode, EnumChartPointsSelectionMode.UnselectMultiple)}>Unselect multiple points</Button>
               </ButtonGroup>
               &nbsp;
               <ButtonGroup>
                 <Button bsSize="xs"
-                  onClick={() => this.props.dispatch(setupWindowWidthMinutes(state.windowDateTo.diff(state.windowDateFrom, "minutes"))) }>
+                  onClick={() => this.props.dispatch(chartActions.setWindowWidthMinutes(state.linearChart.windowDateTo.diff(state.linearChart.windowDateFrom, "minutes"))) }>
                   Lock window width to current
                 </Button>
                 <Button bsSize="xs"
-                  onClick={() => this.props.dispatch(setupWindowWidthMinutes(5)) }>
+                  onClick={() => this.props.dispatch(chartActions.setWindowWidthMinutes(5)) }>
                   Unlock window width
                 </Button>
               </ButtonGroup>
@@ -128,38 +128,31 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
             <Col componentClass={ControlLabel} md={12}>
               <LinearChart
                 chartDimensions={this._chartDimensions}
-                zoomSettings={this.props.state.chartZoomSettings}
-                filteredData={getDataFiltered(this.props.state, this._chartDimensions.canvasWidth)}
-                windowDateFrom={this.props.state.windowDateFrom} 
-                windowDateTo={this.props.state.windowDateTo}
-                yMinValue={this.props.state.yMinValue}
-                yMaxValue={this.props.state.yMaxValue}
-                secondsPerSample={this.props.state.secondsPerSample}
-                graphPointsSelectionMode={this.props.state.graphPointsSelectionMode} />
+                state={this.props.state.linearChart} />
             </Col>
           </Row>
           <Row>
             <Col componentClass={ControlLabel} md={12}>
               <ButtonGroup>
                 <Button 
-                  disabled={this.isButtonDisabled(EnumZoomSelected.NoZoom, state.chartZoomSettings.zoomSelected)} 
+                  disabled={this.isButtonDisabled(EnumZoomSelected.NoZoom, state.linearChart.chartZoomSettings.zoomSelected)} 
                   bsSize="xs" 
-                  onClick={() => this.props.dispatch(setupZoomWindowLimitation(EnumZoomSelected.NoZoom)) } 
-                  bsStyle={this.getZoomButtonStyle(state.chartZoomSettings.zoomSelected, EnumZoomSelected.NoZoom)}>
+                  onClick={() => this.props.dispatch(chartActions.setZoomWindowLimitation(EnumZoomSelected.NoZoom)) } 
+                  bsStyle={this.getZoomButtonStyle(state.linearChart.chartZoomSettings.zoomSelected, EnumZoomSelected.NoZoom)}>
                   View All
                 </Button>
                 <Button 
-                  disabled={this.isButtonDisabled(EnumZoomSelected.ZoomLevel1, state.chartZoomSettings.zoomSelected)}
+                  disabled={this.isButtonDisabled(EnumZoomSelected.ZoomLevel1, state.linearChart.chartZoomSettings.zoomSelected)}
                   bsSize="xs" 
-                  onClick={() => { this.props.dispatch(setupZoomWindowLimitation(EnumZoomSelected.ZoomLevel1)) }} 
-                  bsStyle={this.getZoomButtonStyle(state.chartZoomSettings.zoomSelected, EnumZoomSelected.ZoomLevel1)}>
+                  onClick={() => { this.props.dispatch(chartActions.setZoomWindowLimitation(EnumZoomSelected.ZoomLevel1)) }} 
+                  bsStyle={this.getZoomButtonStyle(state.linearChart.chartZoomSettings.zoomSelected, EnumZoomSelected.ZoomLevel1)}>
                   We need to go deeper...
                 </Button>
                 <Button 
-                  disabled={this.isButtonDisabled(EnumZoomSelected.ZoomLevel2, state.chartZoomSettings.zoomSelected)}
+                  disabled={this.isButtonDisabled(EnumZoomSelected.ZoomLevel2, state.linearChart.chartZoomSettings.zoomSelected)}
                   bsSize="xs" 
-                  onClick={() => this.props.dispatch(setupZoomWindowLimitation(EnumZoomSelected.ZoomLevel2)) } 
-                  bsStyle={this.getZoomButtonStyle(state.chartZoomSettings.zoomSelected, EnumZoomSelected.ZoomLevel2)}>
+                  onClick={() => this.props.dispatch(chartActions.setZoomWindowLimitation(EnumZoomSelected.ZoomLevel2)) } 
+                  bsStyle={this.getZoomButtonStyle(state.linearChart.chartZoomSettings.zoomSelected, EnumZoomSelected.ZoomLevel2)}>
                   We need to go deeper...
                 </Button>
               </ButtonGroup>
@@ -170,15 +163,15 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
               <ReactSlider
                 value={this.calculateSliderValue(state)}
                 min={0} 
-                max={this.calculateDomainLengthMinutes(state)} 
+                max={c.calculateDomainLengthMinutes(this.props.state.linearChart)} 
                 pearling={true}
-                minDistance={state.dateFromToMinimalWidthMinutes}
+                minDistance={state.linearChart.dateFromToMinimalWidthMinutes}
                 onChange={(e: Array<number>) => {
                   var [fromMinutes, toMinutes] = e;
-                  var newDateFrom = this.translateMinutesDomainToDateTime(state, fromMinutes);
-                  var newDateTo = this.translateMinutesDomainToDateTime(state, toMinutes);
-                  if (!this.props.state.windowDateFrom.isSame(newDateFrom) || !this.props.state.windowDateTo.isSame(newDateTo)) {
-                    this.props.dispatch(changeDateFromToValue(newDateFrom.format("YYYY-MM-DD HH:mm"), newDateTo.format("YYYY-MM-DD HH:mm")));
+                  var newDateFrom = c.translateMinutesDomainToDateTime(state.linearChart, fromMinutes);
+                  var newDateTo = c.translateMinutesDomainToDateTime(state.linearChart, toMinutes);
+                  if (!this.props.state.linearChart.windowDateFrom.isSame(newDateFrom) || !this.props.state.linearChart.windowDateTo.isSame(newDateTo)) {
+                    this.props.dispatch(chartActions.setWindowDateFromTo(newDateFrom.format("YYYY-MM-DD HH:mm"), newDateTo.format("YYYY-MM-DD HH:mm")));
                     return;
                   }
                 }}
@@ -196,7 +189,7 @@ export class MainScreen extends React.Component<MainScreenProps, void> {
 //a fragment MainScreen component keeps interest in 
 const mapStateToProps = state => {
   //console.log() only for demonstration purposes
-  // console.log('mainScreen mapStateToProps', state);
+  console.log('mainScreen mapStateToProps', state);
   return  {
     state: state.graphScreenState
   }

@@ -1,26 +1,14 @@
 import * as React from 'react';
 import * as d3 from 'd3';
-import * as moment from 'Moment';
-import * as _ from 'lodash';
 import { DateTimePoint } from './models/dateTimePoint';
-import { TimeSeries } from './components/timeSeries';
-import { EnumGraphPointsSelectionMode, EnumZoomSelected } from './common/enums';
+import { LinearChartState } from './models/linearChartState';
+import { calculations as c } from './common/calculations';
 import { ILinearChartDimensions, ILinearChartZoomSettings } from './common/interfaces';
-import { getHorizontalSampleDistancePx } from './common/calculations';
+import { TimeSeries } from './components/timeSeries';
 
 export interface ILinearChartProps {
+  state: LinearChartState;
   chartDimensions: ILinearChartDimensions;
-  zoomSettings: ILinearChartZoomSettings;
-  windowDateFrom: moment.Moment;
-  windowDateTo: moment.Moment;
-  yMinValue: number;
-  yMaxValue: number;
-  /**
-   * It might be filtered, resampled, processed data - whatever...
-   */
-  filteredData: DateTimePoint[];
-  secondsPerSample: number;
-  graphPointsSelectionMode: EnumGraphPointsSelectionMode;
 }
 
 export class LinearChart extends React.Component<ILinearChartProps, void> {
@@ -42,24 +30,25 @@ export class LinearChart extends React.Component<ILinearChartProps, void> {
   
   getYScale = (filteredData: DateTimePoint[], props: ILinearChartProps) => {
     return d3.scaleLinear()
-      .domain([props.yMinValue, props.yMaxValue])
+      .domain([props.state.yMinValue, props.state.yMaxValue])
       .range([props.chartDimensions.canvasHeight - props.chartDimensions.paddingTop - props.chartDimensions.paddingBottom, 
         props.chartDimensions.paddingTop]);
   };
 
-  render() {    
-    var xScale = this.getXScale(this.props.filteredData, this.props);
-    var yScale = this.getYScale(this.props.filteredData, this.props);
+  render() {
+    var filteredData = c.getFilteredData(this.props.state, this.props.chartDimensions.canvasWidth);
+    var xScale = this.getXScale(filteredData, this.props);
+    var yScale = this.getYScale(filteredData, this.props);
     return (
       <svg 
         width={this.props.chartDimensions.canvasWidth} 
         height={this.props.chartDimensions.canvasHeight}>
         <TimeSeries 
-          filteredData={this.props.filteredData} 
+          filteredData={filteredData} 
           xScale={xScale} 
           yScale={yScale}
-          horizontalSampleDistancePx={getHorizontalSampleDistancePx(this.props.filteredData.length, this.props.chartDimensions.canvasWidth)}
-          graphPointsSelectionMode={this.props.graphPointsSelectionMode} 
+          horizontalSampleDistancePx={c.getHorizontalSampleDistancePx(filteredData.length, this.props.chartDimensions.canvasWidth)}
+          graphPointsSelectionMode={this.props.state.graphPointsSelectionMode} 
           chartDimensions={this.props.chartDimensions}
         />
       </svg>

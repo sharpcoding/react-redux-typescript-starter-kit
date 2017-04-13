@@ -10,7 +10,7 @@ const calculationsDebugging: boolean = true;
 /**
  * The distance in pixels (in horizontal, x-scale) between pixels highlighted as centres of two consecutive points
  */
-export var getHorizontalSampleDistancePx = (samplesCount: number, widthPx: number) => {
+const getHorizontalSampleDistancePx = (samplesCount: number, widthPx: number) => {
   return samplesCount > 1 ? (widthPx / (samplesCount-1)) : widthPx;
 }
 
@@ -27,14 +27,14 @@ export var getHorizontalSampleDistancePx = (samplesCount: number, widthPx: numbe
  * 
  * rawDataSecondsPerSample holds declared density in the RAW data sample array
  */
-var resampleFactor = (rawDataSecondsPerSample: number, widthPx: number, momentFrom: moment.Moment, momentTo: moment.Moment) => {
+const resampleFactor = (rawDataSecondsPerSample: number, widthPx: number, momentFrom: moment.Moment, momentTo: moment.Moment) => {
   let numberOfSecondsInDateRange = momentTo.diff(momentFrom, "second");
   let rawDataNumberOfSamplesInDateRange = numberOfSecondsInDateRange / rawDataSecondsPerSample;
   let samplesPerPixel = rawDataNumberOfSamplesInDateRange / widthPx;
   return samplesPerPixel < 1 ? 1 : _.ceil(samplesPerPixel);
 }
 
-var rFactorLevels = [
+const rFactorLevels = [
   { low: 1, high: 1, resampleEveryTimeZoomLevelChanged: true },
   { low: 2, high: 3, resampleEveryTimeZoomLevelChanged: true },
   { low: 4, high: 5, resampleEveryTimeZoomLevelChanged: true },
@@ -49,7 +49,7 @@ var rFactorLevels = [
   { low: 2001, high: 5000, resampleEveryTimeZoomLevelChanged: false }
 ];
 
-var resampleFactorApproximation = (rFactor: number) => {
+const resampleFactorApproximation = (rFactor: number) => {
   let rFactorBelowLowestPossible = (rFactor < rFactorLevels[0].low);
   let rFactorAboveHighestPossible = !(_.isObject(_.find(rFactorLevels, el => rFactor < el.high)));
   if (rFactorBelowLowestPossible) {    
@@ -61,15 +61,15 @@ var resampleFactorApproximation = (rFactor: number) => {
   return _.find(rFactorLevels, el => rFactor >= el.low && rFactor <= el.high).high;
 }
 
-var rFactorLevelsNotRequiringResamplingEveryTimeZoomLevelChanged = (): number[] => {
+const rFactorLevelsNotRequiringResamplingEveryTimeZoomLevelChanged = (): number[] => {
   return _.map(_.filter(rFactorLevels, el => (!el.resampleEveryTimeZoomLevelChanged)), el => el.high);
 }
 
-var rFactorLevelsRequiringResamplingEveryTimeZoomLevelChanged = (): number[] => {
+const rFactorLevelsRequiringResamplingEveryTimeZoomLevelChanged = (): number[] => {
   return _.map(_.filter(rFactorLevels, el => (el.resampleEveryTimeZoomLevelChanged)), el => el.high);
 }
 
-export var prepareInitialCache = (allSamples: DateTimePoint[]): IDateTimePointSeriesCache[] => {
+const prepareInitialCache = (allSamples: DateTimePoint[]): IDateTimePointSeriesCache[] => {
   var result = new Array<IDateTimePointSeriesCache>();
   calculationsDebugging ? console.log("building rFactor cache...") : null;
   _.each(rFactorLevelsRequiringResamplingEveryTimeZoomLevelChanged(), rFactor => {
@@ -97,7 +97,7 @@ export var prepareInitialCache = (allSamples: DateTimePoint[]): IDateTimePointSe
   return result;
 }
 
-var getDataResampled = (data: DateTimePoint[], rFactor: number): DateTimePoint[]  => {
+const getDataResampled = (data: DateTimePoint[], rFactor: number): DateTimePoint[]  => {
   let resampledSum = 0;
   let result = [];
   for (let i=0; i < data.length; i++) {
@@ -119,7 +119,7 @@ var getDataResampled = (data: DateTimePoint[], rFactor: number): DateTimePoint[]
  * That Selection is based on rFactor (resample factor), after a proper cache is chosen, samples are filtered by date from / to range.
  * Quite an important function in regards to performance aspect.
  */
-export var getDataFiltered = (state: LinearChartState, canvasWidth: number): DateTimePoint[] => {  
+const getDataFiltered = (state: LinearChartState, canvasWidth: number): DateTimePoint[] => {  
   let result = new Array<DateTimePoint>();
   let unixFrom = state.windowDateFrom.unix();
   let unixTo = state.windowDateTo.unix();
@@ -144,7 +144,7 @@ export var getDataFiltered = (state: LinearChartState, canvasWidth: number): Dat
   return result;
 }
 
-var getUnixTimeStampLimitationsFromTo = (chartZoomSettings: ILinearChartZoomSettings) => {
+const getUnixTimeStampLimitationsFromTo = (chartZoomSettings: ILinearChartZoomSettings) => {
   let result = { unixFrom: 0, unixTo: 0 };
   switch (chartZoomSettings.zoomSelected) {
     case EnumZoomSelected.ZoomLevel1:
@@ -160,9 +160,10 @@ var getUnixTimeStampLimitationsFromTo = (chartZoomSettings: ILinearChartZoomSett
 }
 
 /**
- * Calculates the difference in minutes between the datetime of the last available and the first available point
+ * Calculates the difference - in minutes - between the datetime 
+ * of the last point visible in window and the first point available in window
  */
-export var translateDateTimeToMinutesDomain = (state: LinearChartState, dateTime: moment.Moment): number => {
+const translateDateTimeToMinutesDomain = (state: LinearChartState, dateTime: moment.Moment): number => {
   var result: number;
   switch (state.chartZoomSettings.zoomSelected) {
     case EnumZoomSelected.NoZoom:
@@ -178,23 +179,23 @@ export var translateDateTimeToMinutesDomain = (state: LinearChartState, dateTime
   return result;
 }
 
-export var calculateDomainLengthMinutes = (state: LinearChartState): number => {
+const calculateDomainLengthMinutes = (state: LinearChartState): number => {
   var result: number;
   switch (state.chartZoomSettings.zoomSelected) {
     case EnumZoomSelected.NoZoom:
-      result = this.translateDateTimeToMinutesDomain(state, state.allPointsTo);
+      result = translateDateTimeToMinutesDomain(state, state.allPointsTo);
       break;
     case EnumZoomSelected.ZoomLevel1:
-      result = this.translateDateTimeToMinutesDomain(state, state.chartZoomSettings.zoomLevel1PointsTo);
+      result = translateDateTimeToMinutesDomain(state, state.chartZoomSettings.zoomLevel1PointsTo);
       break;
     case EnumZoomSelected.ZoomLevel2:
-      result = this.translateDateTimeToMinutesDomain(state, state.chartZoomSettings.zoomLevel2PointsTo);
+      result = translateDateTimeToMinutesDomain(state, state.chartZoomSettings.zoomLevel2PointsTo);
       break;
   }
   return result;
 }
 
-export var translateMinutesDomainToDateTime = (state: LinearChartState, minutes: number): moment.Moment => {
+const translateMinutesDomainToDateTime = (state: LinearChartState, minutes: number): moment.Moment => {
   var result: moment.Moment;
   switch (state.chartZoomSettings.zoomSelected) {
     case EnumZoomSelected.NoZoom:
@@ -210,7 +211,7 @@ export var translateMinutesDomainToDateTime = (state: LinearChartState, minutes:
   return result;
 }
 
-export var rebuildSampleCacheAdjustedToCurrentZoomLevel = (rFactorSampleCache: IDateTimePointSeriesCache[], chartZoomSettings: ILinearChartZoomSettings):IDateTimePointSeriesCache[] => {
+const rebuildSampleCacheAdjustedToCurrentZoomLevel = (rFactorSampleCache: IDateTimePointSeriesCache[], chartZoomSettings: ILinearChartZoomSettings):IDateTimePointSeriesCache[] => {
   var result = new Array<IDateTimePointSeriesCache>();  
   var limitations = getUnixTimeStampLimitationsFromTo(chartZoomSettings);
   _.each(rFactorSampleCache, el => {
@@ -227,4 +228,14 @@ export var rebuildSampleCacheAdjustedToCurrentZoomLevel = (rFactorSampleCache: I
     result.push(el);
   });
   return result;
+}
+
+export const calculations = {
+  getHorizontalSampleDistancePx: getHorizontalSampleDistancePx,
+  prepareInitialCache: prepareInitialCache,
+  getFilteredData: getDataFiltered,
+  translateDateTimeToMinutesDomain: translateDateTimeToMinutesDomain,
+  calculateDomainLengthMinutes: calculateDomainLengthMinutes,
+  translateMinutesDomainToDateTime: translateMinutesDomainToDateTime,
+  rebuildSampleCacheAdjustedToCurrentZoomLevel: rebuildSampleCacheAdjustedToCurrentZoomLevel
 }

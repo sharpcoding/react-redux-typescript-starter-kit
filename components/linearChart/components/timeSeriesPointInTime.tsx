@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import * as d3 from 'd3';
-import { EnumGraphPointsSelectionMode } from './enums';
+import { EnumChartPointsSelectionMode } from '../common/enums';
 
 export interface TimeSeriesPointInTimeProps {
   cx: number;
@@ -13,7 +13,7 @@ export interface TimeSeriesPointInTimeProps {
   toggleSelected: Function;
   selectionActiveAreaHeightPx: number;
   isSelected: boolean;
-  graphPointsSelectionMode: EnumGraphPointsSelectionMode;
+  graphPointsSelectionMode: EnumChartPointsSelectionMode;
   startedDragging: Function;
   beingDragged: Function;
   stoppedDragging: Function;
@@ -43,8 +43,8 @@ export class TimeSeriesPointInTime extends React.Component<TimeSeriesPointInTime
             let d3SelectionResult = d3.select(c);
             d3SelectionResult.on("mouseenter", null);
             switch (self.props.graphPointsSelectionMode) {
-              case EnumGraphPointsSelectionMode.SelectMultiple:
-              case EnumGraphPointsSelectionMode.UnselectMultiple:      
+              case EnumChartPointsSelectionMode.SelectMultiple:
+              case EnumChartPointsSelectionMode.UnselectMultiple:      
                 d3SelectionResult.on("mouseenter", () => { self.props.toggleSelected(self.props.unix); });
                 break;
             }
@@ -66,11 +66,11 @@ export class TimeSeriesPointInTime extends React.Component<TimeSeriesPointInTime
           d3SelectionResult.on("click", null);
           d3SelectionResult.on("mouseenter", null);
           switch (self.props.graphPointsSelectionMode) {
-            case EnumGraphPointsSelectionMode.SelectUnselectSingle:
+            case EnumChartPointsSelectionMode.SelectUnselectSingle:
               d3SelectionResult.on("click", () => self.props.toggleSelected(self.props.unix));
               break;
-            case EnumGraphPointsSelectionMode.SelectMultiple:
-            case EnumGraphPointsSelectionMode.UnselectMultiple:      
+            case EnumChartPointsSelectionMode.SelectMultiple:
+            case EnumChartPointsSelectionMode.UnselectMultiple:      
               d3SelectionResult.on("mouseenter", () => { self.props.toggleSelected(self.props.unix); });
               break;
           }

@@ -1,4 +1,4 @@
-export enum EnumGraphPointsSelectionMode {
+export enum EnumChartPointsSelectionMode {
   NoSelection,
   SelectUnselectSingle,
   SelectMultiple,

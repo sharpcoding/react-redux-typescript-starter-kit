@@ -1,19 +1,19 @@
 import { Moment } from 'moment';
 import { DateTimePoint } from './dateTimePoint';
-import { EnumGraphPointsSelectionMode } from '../common/enums';
+import { EnumChartPointsSelectionMode } from '../common/enums';
 import { ILinearChartZoomSettings, IDateTimePointSeriesCache } from '../common/interfaces';
 
 export type LinearChartState = {
   /**
-   * The moment of time we see on x coordinate equal 0
+   * In the scrolling chart - the moment of time we currently see on x coordinate equal 0
    */
   windowDateFrom: Moment,
   /**
-   * The moment of time we see on x coordinate equal full component width px
+   * In the scrolling chart - the moment of time we currently see on x coordinate equal to full canvas width
    */
   windowDateTo: Moment,
   dateFromToMinimalWidthMinutes: number;  
-  graphPointsSelectionMode: EnumGraphPointsSelectionMode;
+  graphPointsSelectionMode: EnumChartPointsSelectionMode;
   chartZoomSettings: ILinearChartZoomSettings;
   allPoints: DateTimePoint[];
   allPointsFrom: Moment;

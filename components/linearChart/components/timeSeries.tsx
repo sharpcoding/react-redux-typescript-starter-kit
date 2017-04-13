@@ -5,8 +5,8 @@ import * as d3 from 'd3';
 import { DateTimePoint } from '../models/DateTimePoint';
 import { TimeSeriesPointInTime } from './timeSeriesPointInTime';
 import { DateTimeAxis } from './dateTimeAxis';
-import { EnumGraphPointsSelectionMode } from './enums';
-import { IChartDimensions } from '../common/interfaces';
+import { EnumChartPointsSelectionMode } from '../common/enums';
+import { ILinearChartDimensions } from '../common/interfaces';
 
 
 export interface ITimeSeriesProps {
@@ -19,9 +19,9 @@ export interface ITimeSeriesProps {
    */
   yScale: (value: number) => number;
   horizontalSampleDistancePx: number;
-  graphPointsSelectionMode: EnumGraphPointsSelectionMode;
+  graphPointsSelectionMode: EnumChartPointsSelectionMode;
   filteredData: DateTimePoint[];
-  chartDimensions: IChartDimensions;
+  chartDimensions: ILinearChartDimensions;
 }
 
 export interface ITextGauge {
@@ -113,7 +113,7 @@ export class TimeSeries extends React.Component<ITimeSeriesProps, ITimeSeriesSta
       }}
       toggleSelected={(unix) => {
         switch (this.props.graphPointsSelectionMode) {
-          case EnumGraphPointsSelectionMode.SelectUnselectSingle:
+          case EnumChartPointsSelectionMode.SelectUnselectSingle:
             if (this.elementMarkedByUnixTimeStapmIsOnSelectedList(unix))
               this.setState((prevState) => {
                 return {
@@ -129,14 +129,14 @@ export class TimeSeries extends React.Component<ITimeSeriesProps, ITimeSeriesSta
                 }
               });
             break;
-          case EnumGraphPointsSelectionMode.SelectMultiple:
+          case EnumChartPointsSelectionMode.SelectMultiple:
             if (!this.elementMarkedByUnixTimeStapmIsOnSelectedList(unix))
               this.setState({
                 selectedPoints: _.concat(this.state.selectedPoints, [el]),
                 draggedPointTextGauge: this.state.draggedPointTextGauge
               });
             break;
-          case EnumGraphPointsSelectionMode.UnselectMultiple:
+          case EnumChartPointsSelectionMode.UnselectMultiple:
             if (this.elementMarkedByUnixTimeStapmIsOnSelectedList(unix))
               this.setState({ 
                 selectedPoints: _.filter(this.state.selectedPoints, (point: DateTimePoint) => point.unix != unix),
@@ -152,9 +152,9 @@ export class TimeSeries extends React.Component<ITimeSeriesProps, ITimeSeriesSta
   renderCircles() {
     var result = [];
     switch (this.props.graphPointsSelectionMode) {
-      case EnumGraphPointsSelectionMode.SelectMultiple:
-      case EnumGraphPointsSelectionMode.SelectUnselectSingle:
-      case EnumGraphPointsSelectionMode.UnselectMultiple:
+      case EnumChartPointsSelectionMode.SelectMultiple:
+      case EnumChartPointsSelectionMode.SelectUnselectSingle:
+      case EnumChartPointsSelectionMode.UnselectMultiple:
       if (this.props.horizontalSampleDistancePx >= 6) {
         result = _.map(this.props.filteredData, (el) => {
           var isSelected = _.findIndex(this.state.selectedPoints, (selectedPoint) => selectedPoint.unix == el.unix) >= 0;
