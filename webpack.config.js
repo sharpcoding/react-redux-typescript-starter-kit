@@ -4,7 +4,6 @@ const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = env => {
-  var recompileScssToDts = _.isObject(env) && _.isString(env.mode) && env.mode == "scss2dts";
   return {
     /*
      * app.ts represents the entry point to your web application. Webpack will
@@ -50,7 +49,7 @@ module.exports = env => {
         },
         {
           test: /\.scss$/,
-          use: recompileScssToDts ? ['typings-for-css-modules-loader?modules&namedExport&sass&camelCase'] : [
+          use: [
             'style-loader',
             'css-loader',
             'sass-loader'
