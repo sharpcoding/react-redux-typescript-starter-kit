@@ -1,26 +1,18 @@
-import * as _ from "lodash";
-import { SetWidthAction, SetHeightAction, SetTextAction } from "./actions";
-import { BLUE_SCR_SET_WIDTH } from "./action-types";
+import * as _ from 'lodash';
+import { BLUE_SCR_SET_WIDTH } from './action-types';
+import { SetHeightAction, SetTextAction, SetWidthAction } from './actions';
 
-interface ISetWidthActionCreator {
-  (width: string): SetWidthAction;
-}
+type ISetWidthActionCreator = (width: string) => SetWidthAction;
+type ISetHeightActionCreator = (width: string) => SetHeightAction;
+type ISetTextActionCreator = (text: string) => SetTextAction;
 
-interface ISetHeightActionCreator {
-  (width: string): SetHeightAction;
-}
-
-interface ISetTextActionCreator {
-  (text: string): SetTextAction;
-}
-
-const setWidth: ISetWidthActionCreator = (width: string) => 
+const setWidth: ISetWidthActionCreator = (width: string) =>
   _.toPlainObject(new SetWidthAction(_.parseInt(width)));
 
-const setHeight: ISetHeightActionCreator = (height: string) => 
+const setHeight: ISetHeightActionCreator = (height: string) =>
   _.toPlainObject(new SetHeightAction(_.parseInt(height)));
 
-const setText: ISetTextActionCreator = (text: string) => 
+const setText: ISetTextActionCreator = (text: string) =>
   _.toPlainObject(new SetTextAction(text));
 
 export {
@@ -29,5 +21,5 @@ export {
   setHeight,
   ISetHeightActionCreator,
   setText,
-  ISetTextActionCreator
-}
+  ISetTextActionCreator,
+};
