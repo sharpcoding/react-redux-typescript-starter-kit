@@ -1,6 +1,5 @@
 import * as _ from "lodash";
 import * as blueScreenActionTypes from "./action-types";
-import { handleActions, Action, combineActions } from "redux-actions";
 import { IRandomDotsScreenState } from "./state";
 import { SetWidthAction, SetHeightAction, SetTextAction } from "./actions";
 
