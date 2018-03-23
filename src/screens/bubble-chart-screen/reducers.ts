@@ -1,11 +1,11 @@
 import * as _ from 'lodash';
 import * as blueScreenActionTypes from './action-types';
-import { SetHeightAction, SetTextAction, SetWidthAction } from './actions';
+import { BubblePointsGenerationStartedAction, BubblePointsGenerationSucceededAction, SetHeightAction, SetWidthAction } from './actions';
 import { IRandomDotsScreenState } from './state';
 
-const initialState: IRandomDotsScreenState = { width: 800, height: 600, color: 'lightblue' };
+const initialState: IRandomDotsScreenState = { width: 800, height: 600, backgroundColor: 'lightblue', bubblePoints: [] };
 
-export type RandomDotsScreenReducerActionTypes = SetWidthAction|SetHeightAction|SetTextAction;
+export type RandomDotsScreenReducerActionTypes = SetWidthAction|SetHeightAction|BubblePointsGenerationStartedAction|BubblePointsGenerationSucceededAction;
 
 // Typescript's discriminated unions (see https://www.typescriptlang.org/docs/handbook/advanced-types.html)
 // are used here to write reducer logic in a streamlined way.
@@ -15,15 +15,16 @@ export type RandomDotsScreenReducerActionTypes = SetWidthAction|SetHeightAction|
 // causing a run-time exception / error.
 // So - the price - we need to call lodash _.toPlainObject() in action-creators to convert complex JavaScript object to plain object.
 
-
 export const randomDotsScreenReducer = (state: IRandomDotsScreenState = initialState, action: RandomDotsScreenReducerActionTypes): IRandomDotsScreenState => {
   switch (action.type) {
-    case blueScreenActionTypes.BLUE_SCR_SET_WIDTH:
+    case blueScreenActionTypes.BUBBLE_CHART_SCR_SET_WIDTH:
       return { ...state, width: action.width } as IRandomDotsScreenState;
-    case blueScreenActionTypes.BLUE_SCR_SET_HEIGHT:
+    case blueScreenActionTypes.BUBBLE_CHART_SCR_SET_HEIGHT:
       return { ...state, height: action.height } as IRandomDotsScreenState;
-    case blueScreenActionTypes.BLUE_SCR_SET_TEXT:
-      return { ...state, text: action.text } as IRandomDotsScreenState;
+    case blueScreenActionTypes.BUBBLE_CHART_SCR_POINTS_GENERATION_STARTED:
+      return { ...state, bubblePoints: [] } as IRandomDotsScreenState;
+    case blueScreenActionTypes.BUBBLE_CHART_SCR_POINTS_GENERATION_SUCCEEED:
+      return { ...state, bubblePoints: action.bubblePoints } as IRandomDotsScreenState;
     default:
       return state;
   }

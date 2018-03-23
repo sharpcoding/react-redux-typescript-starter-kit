@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "module": "es2015",
+    "module": "commonjs",
     "target": "es5",
     "jsx": "react",
     "sourceMap": true,
@@ -13,12 +13,11 @@
     ],
     "baseUrl": "./",
     "paths": {
-      "@state/*": ["./src/store/state/*"],
+      "@state/*": ["./src/store/state/*"]
     }
   },
   "exclude": [
     "dist",
     "node_modules"
-  ]
-  
+  ]  
 }

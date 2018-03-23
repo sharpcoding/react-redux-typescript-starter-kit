@@ -21,8 +21,10 @@
         "timeEnd",
         "trace"
       ]
-    }
+    },
+    "object-literal-sort-keys": false
   },
+  "defaultSeverity": "warning",
   "jsRules": {
     "max-line-length": {
       "options": [120]

@@ -6,24 +6,26 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
-import { SvgGraph } from '../../components';
+import { BubbleChart } from '../../components';
 import { ISetHeightActionCreator, ISetWidthActionCreator, setHeight, setWidth } from './action-creators';
 import { SetHeightAction, SetWidthAction } from './actions';
+import { generateBubbulePoints, IGenerateBubblePointsEffect } from './effects';
 import { IRandomDotsScreenState } from './state';
 
-export interface IRandomDotsChartScreenProps extends IRandomDotsScreenState { }
+export interface IBubbleChartScreenProps extends IRandomDotsScreenState { }
 
-export interface IRandomDotsChartScreenState {
+export interface IBubbleChartScreenState {
   width: string;
   height: string;
 }
 
-export interface IRandomDotsChartScreenDispatchProps {
+export interface IBubbleChartScreenDispatchProps {
   setWidth: ISetWidthActionCreator;
   setHeight: ISetHeightActionCreator;
+  generateBubbulePoints: IGenerateBubblePointsEffect;
 }
 
-export class RandomDotsChartScreenComponent extends React.Component<IRandomDotsChartScreenProps & IRandomDotsChartScreenDispatchProps, IRandomDotsChartScreenState> {
+export class BubbleChartScreenComponent extends React.Component<IBubbleChartScreenProps & IBubbleChartScreenDispatchProps, IBubbleChartScreenState> {
   constructor(props) {
     super(props);
     this.state = _.extend({}, props);
@@ -48,19 +50,20 @@ export class RandomDotsChartScreenComponent extends React.Component<IRandomDotsC
         type='number'
         min={100}
         max={2400}
-      />
+      /> &nbsp;
+      <button type='button' onClick={() => this.props.generateBubbulePoints()}>Generate randomly !</button>
       <br />
       <br />
-      <SvgGraph
-        backgroundColor={this.props.color}
+      <BubbleChart
+        dots={this.props.bubblePoints}
+        backgroundColor={this.props.backgroundColor}
         width={this.props.width}
         height={this.props.height} />
     </span>;
   }
 }
 
-
-const mapStateToProps = (state: IAppState): IRandomDotsChartScreenProps => {
+const mapStateToProps = (state: IAppState): IBubbleChartScreenProps => {
   return state.randomDotsScreenState;
 };
 
@@ -68,8 +71,9 @@ const matchDispatchToProps = (dispatch: Dispatch<void>) => {
   return bindActionCreators({
     setHeight,
     setWidth,
+    generateBubbulePoints,
   }, dispatch);
 };
 
-export const RandomDotsChartScreen =
-  connect<IRandomDotsChartScreenProps, IRandomDotsChartScreenDispatchProps, {}>(mapStateToProps, matchDispatchToProps)(RandomDotsChartScreenComponent);
+export const BubbleChartScreen =
+  connect<IBubbleChartScreenProps, IBubbleChartScreenDispatchProps, {}>(mapStateToProps, matchDispatchToProps)(BubbleChartScreenComponent);

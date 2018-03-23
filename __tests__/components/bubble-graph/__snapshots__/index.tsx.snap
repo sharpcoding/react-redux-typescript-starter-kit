@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Bubble Chart Component renders correctly 1`] = `
+<svg
+  height={768}
+  style={
+    Object {
+      "backgroundColor": "red",
+    }
+  }
+  width={1024}
+>
+  <g />
+</svg>
+`;
