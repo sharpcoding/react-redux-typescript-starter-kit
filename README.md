@@ -4,15 +4,19 @@
 
 ```
 git clone https://github.com/sharpcoding/react-redux-typescript-starter-kit.git
+cd react-redux-typescript-starter-kit
 npm i
 npm run dev
 ```
 
-and if everything goes right, a browser tab window tab should be opened automatically pointing to http://localhost:9000/. 
+everything goes OK, a new browser tab window tab opens automatically pointing to http://localhost:9000/. 
 
-Chrome Web Browser with [Redux DevTools Extension](https://github.com/zalmoxisus/redux-devtools-extension) is recommended. You can play around with code and see changes as they appear by hot-reloading.
+Chrome Web Browser with [Redux DevTools Extension](https://github.com/zalmoxisus/redux-devtools-extension) is recommended. You can play around with code and see changes as they appear by hot-reloading and in Redux DevTools Inspector.
 
-If this seems too much, see the [running demo](https://sharpcoding.github.io/react-redux-typescript-starter-kit/).
+![alt text](/docs/webpack-app.jpg "Starter Kit Screen")
+
+
+If this seems too much, see the [running demo](https://sharpcoding.github.io/react-redux-typescript-starter-kit/demo).
 
 ## Purpose
 
@@ -49,7 +53,7 @@ The purpose of this repository is to:
 - [x] Webpack-npm scripts for [development](/webpack/dev.config.js), [publishing](/webpack/prod.config.js) and [bundle analysis](/webpack/analyze.config.js)
 - [ ] Bootstrap v4
 - [ ] Custom SCSS with variables exported to ECMAScript
-- [x] Snapshot testing with Jest
+- [x] Jest snapshot testing
 
 ## Redux
 
@@ -61,7 +65,7 @@ This makes application of helper-libraries like [react-actions](https://github.c
 
 ### State is just an interface
 
-```
+```javascript
 interface IEngine {
   started: boolean;
   currentGear: number;
@@ -72,7 +76,7 @@ interface IEngine {
 
 Do not use / reuse Redux actions as plain texts:
 
-```
+```javascript
 export const START_ENGINE = 'START_ENGINE';
 export const GEARS_UP_DOWN = 'GEARS_UP_DOWN';
 ```
@@ -80,7 +84,8 @@ export const GEARS_UP_DOWN = 'GEARS_UP_DOWN';
 ### Actions are defined as ES6 classes
 
 An action is just an object. Rearding Redux store requirement it is a plain object having the *type* property:
-```
+
+```javascript
 interface Action {
   type: string;
 }
@@ -90,7 +95,7 @@ Actions are defined by the class construct, which is a great way to:
 - keep action and it's type in the same place
 - define action properties by constructor arguments with *public* modifier.
 
-```
+```javascript
 import { Action } from 'redux';
 import * as actionTypes from './action-types';
 
@@ -113,7 +118,7 @@ Action creators are functions that create actions. The responsibility of action 
 - make them "plain" (not prototype-linked to any function) again,
 - expose the some kind of API to Redux store application, as an example here we see the action creator disallowing user to change more than one gear at a time
 
-```
+```javascript
 import * as _ from 'lodash';
 import { StartEngineAction, GearsUpAction } from './actions';
 
@@ -150,7 +155,7 @@ Reducers are plain functions that make use of [discriminated union types](https:
 - available action parameters and types
 will be easily detected by TypeScript and reported as an error.
 
-```
+```javascript
 import * as _ from 'lodash';
 import * as engineActionTypes from './action-types';
 import { StartEngineAction, GearsUpDownAction } from './actions';
@@ -174,11 +179,11 @@ export const engineReducer = (state: IEngine = initialState, action: EngineReduc
 
 ### Redux-thunk effects are higher-order functions
 
-We believe there is nothing like an "async action" or the like. We highly encourage developers to consciously use the term "effect", which is just an higher-order function (function that returns other function - in case of redux-thunk, the one with *dispatch* argument).
+We believe there is nothing like an "async action", "async action-creator" or the like. Developers are highly encouraged to consciously use the "effect" terminology (which assumes effect to be just an higher-order function - a function that returns other function, in the case of redux-thunk, the one with *dispatch* argument).
 
 As an example, lets imagine a two gears up change in the engine is asynchronous and we want to make it in a safe way:
 
-```
+```javascript
 import * as _ from 'lodash';
 import { Dispatch } from 'react-redux';
 import { GearsUpDownAction } from './actions';
