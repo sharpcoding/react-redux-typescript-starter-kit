@@ -1,7 +1,7 @@
 // tslint:disable:max-classes-per-file
 
 import { Action } from 'redux';
-import { IBubblePoint } from '../../components';
+import { IBubblePoint } from '@components/bubble-chart';
 import * as actionTypes from './action-types';
 
 class SetWidthAction implements Action {

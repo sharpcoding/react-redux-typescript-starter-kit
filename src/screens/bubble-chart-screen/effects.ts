@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import { Dispatch } from 'react-redux';
-import { IBubblePoint } from '../../components';
+import { IBubblePoint } from '@components/bubble-chart';
 import { BubblePointsGenerationStartedAction, BubblePointsGenerationSucceededAction } from './actions';
 
 type IGenerateBubblePointsEffect = () => (dipatch: Dispatch<void>) => void;

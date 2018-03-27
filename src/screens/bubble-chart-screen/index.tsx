@@ -1,31 +1,34 @@
 // tslint:disable:no-empty-interface
 // tslint:disable:no-string-literal
 
-import { IAppState } from '@state/.';
+import { IAppState } from '@store/state';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
-import { BubbleChart } from '../../components';
+import { BubbleChart } from '@components/bubble-chart';
 import { ISetHeightActionCreator, ISetWidthActionCreator, setHeight, setWidth } from './action-creators';
 import { SetHeightAction, SetWidthAction } from './actions';
 import { generateBubbulePoints, IGenerateBubblePointsEffect } from './effects';
-import { IRandomDotsScreenState } from './state';
+import { IBubbleChartScreenState } from './state';
 
-export interface IBubbleChartScreenProps extends IRandomDotsScreenState { }
+export { IBubbleChartScreenState }
+export { bubbleChartScreenReducer, BubbleChartReducerActionTypes } from './reducers';
 
-export interface IBubbleChartScreenState {
+interface IScreenProps extends IBubbleChartScreenState { }
+
+interface IScreenState {
   width: string;
   height: string;
 }
 
-export interface IBubbleChartScreenDispatchProps {
+interface IDispatchProps {
   setWidth: ISetWidthActionCreator;
   setHeight: ISetHeightActionCreator;
   generateBubbulePoints: IGenerateBubblePointsEffect;
 }
 
-export class BubbleChartScreenComponent extends React.Component<IBubbleChartScreenProps & IBubbleChartScreenDispatchProps, IBubbleChartScreenState> {
+export class BubbleChartScreenComponent extends React.Component<IScreenProps & IDispatchProps, IScreenState> {
   constructor(props) {
     super(props);
     this.state = _.extend({}, props);
@@ -51,7 +54,7 @@ export class BubbleChartScreenComponent extends React.Component<IBubbleChartScre
         min={100}
         max={2400}
       /> &nbsp;
-      <button type='button' onClick={() => this.props.generateBubbulePoints()}>Generate randomly !</button>
+      <button type='button' onClick={() => this.props.generateBubbulePoints()}>Async random generation</button>
       <br />
       <br />
       <BubbleChart
@@ -63,8 +66,8 @@ export class BubbleChartScreenComponent extends React.Component<IBubbleChartScre
   }
 }
 
-const mapStateToProps = (state: IAppState): IBubbleChartScreenProps => {
-  return state.randomDotsScreenState;
+const mapStateToProps = (state: IAppState): IScreenProps => {
+  return state.bubbleChartScreenState as IScreenProps;
 };
 
 const matchDispatchToProps = (dispatch: Dispatch<void>) => {
@@ -75,5 +78,4 @@ const matchDispatchToProps = (dispatch: Dispatch<void>) => {
   }, dispatch);
 };
 
-export const BubbleChartScreen =
-  connect<IBubbleChartScreenProps, IBubbleChartScreenDispatchProps, {}>(mapStateToProps, matchDispatchToProps)(BubbleChartScreenComponent);
+export const BubbleChartScreen = connect<IScreenProps, IDispatchProps, {}>(mapStateToProps, matchDispatchToProps)(BubbleChartScreenComponent);

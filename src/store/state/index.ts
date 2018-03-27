@@ -1,5 +1,5 @@
-import { IRandomDotsScreenState } from '../../screens/bubble-chart-screen/state';
+import { IBubbleChartScreenState } from '@screens/bubble-chart-screen';
 
 export interface IAppState {
-  randomDotsScreenState: IRandomDotsScreenState;
+  bubbleChartScreenState: IBubbleChartScreenState;
 }

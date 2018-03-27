@@ -71,5 +71,17 @@ module.exports = {
         loader: 'file-loader'
       }
     ]
-  } 
+  },
+  resolve: {
+    modules: [
+      "node_modules",
+      path.resolve(__dirname, "../src")
+    ],
+    extensions: [".js", ".ts", ".json", ".jsx", ".tsx", ".css", ".scss"],
+    alias: {
+      "@components": path.resolve(__dirname, '../src/components'),
+      "@screens": path.resolve(__dirname, '../src/screens'),
+      "@store":  path.resolve(__dirname, '../src/store')
+    }
+  }
 }

@@ -1,6 +1,6 @@
-import { IBubblePoint } from 'src/components';
+import { IBubblePoint } from '@components/bubble-chart';
 
-export interface IRandomDotsScreenState {
+export interface IBubbleChartScreenState {
   width: number;
   height: number;
   backgroundColor: string;

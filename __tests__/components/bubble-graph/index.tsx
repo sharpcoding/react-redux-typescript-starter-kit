@@ -2,7 +2,7 @@ import * as dateFns from 'date-fns';
 import * as _ from 'lodash';
 import * as React from 'react';
 import * as renderer from 'react-test-renderer';
-import { BubbleChart } from '../../../src/components';
+import { BubbleChart } from '../../../src/components/bubble-chart';
 
 describe('Bubble Chart Component', () => {
   it('renders correctly', () => {

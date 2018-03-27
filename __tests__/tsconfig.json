@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "module": "es2015",
+    "module": "commonjs",
     "target": "es5",
     "jsx": "react",
     "sourceMap": true,
@@ -11,12 +11,7 @@
       "es2017",
       "dom"
     ],
-    "baseUrl": "./",
-    "paths": {
-      "@components/*": ["./src/components/*"],
-      "@screens/*": ["./src/screens/*"],
-      "@store/*": ["./src/store/*"]
-    }
+    "baseUrl": "./"
   },
   "exclude": [
     "dist",

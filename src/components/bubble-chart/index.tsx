@@ -4,6 +4,8 @@ import * as React from 'react';
 import { DotPlotter } from './dot-plotter';
 import { IBubblePoint } from './model/bubble-point';
 
+export { IBubblePoint };
+
 export interface IBubbleChartProps {
   width: number;
   height: number;

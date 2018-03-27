@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "webpack-dev-server --config webpack/dev.config.js --mode development --open",
-    "prod": "webpack --mode production --config webpack/prod.config.js",
+    "publish": "webpack --mode production --config webpack/publish.config.js",
     "analyze": "webpack --mode production --config webpack/analyze.config.js",
     "tests": "jest"
   },
@@ -21,10 +21,10 @@
       "js"
     ],
     "transform": {
-      "^.+\\.(ts|tsx)$": "<rootDir>/jest-preprocessor.js"
+      "^.+\\.(ts|tsx)$": "<rootDir>/__tests__/jest-preprocessor.js"
     },
     "testMatch": [
-      "**/__tests__/**.(ts|tsx|js)"
+      "**/__tests__/**.(ts|tsx)"
     ]
   },
   "dependencies": {

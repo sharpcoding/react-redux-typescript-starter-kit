@@ -2,16 +2,16 @@
 
 import { applyMiddleware, combineReducers, compose, createStore, ReducersMapObject, Store } from 'redux';
 import reduxThunk from 'redux-thunk';
-import { randomDotsScreenReducer, RandomDotsScreenReducerActionTypes } from '../screens/bubble-chart-screen/reducers';
-import { IRandomDotsScreenState } from '../screens/bubble-chart-screen/state';
+import { bubbleChartScreenReducer, BubbleChartReducerActionTypes } from '@screens/bubble-chart-screen';
+import { IBubbleChartScreenState } from '../screens/bubble-chart-screen/state';
 import { IAppState } from './state';
 
 interface ICombinedReducers extends ReducersMapObject {
-  randomDotsScreenState: (state: IRandomDotsScreenState, action: RandomDotsScreenReducerActionTypes) => IRandomDotsScreenState;
+  bubbleChartScreenState: (state: IBubbleChartScreenState, action: BubbleChartReducerActionTypes) => IBubbleChartScreenState;
 }
 
 const reducerMapObject: ICombinedReducers = {
-  randomDotsScreenState: randomDotsScreenReducer,
+  bubbleChartScreenState: bubbleChartScreenReducer,
 };
 
 const combinedReducers = combineReducers<IAppState>(reducerMapObject);
