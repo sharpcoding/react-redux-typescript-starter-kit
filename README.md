@@ -74,7 +74,8 @@ Despite providing lots of benefits, there are special ares of interest when deve
     - [x] actions.ts
     - [x] action-creators.ts
     - [x] reducers.ts
-    - [x] state.ts OR state/index.ts with interfaces
+    - [x] model.ts defining an interface OR
+    - [x] model folder defining interfaces (one per file/module preferred); if a screen container component props are identical with interface used in the Redux store (e.g. *EngineScreenState*), it should be defined here (in model/state.ts), re-exported in index.tsx (read-on) and used in store composition (*IAppState* interface)
   - [ ] complex *screen* containers should be composed of multiple *view* container/presentational components
   - [ ] *view* is a container/presentational component that exists to make better screen decomposition; it should aggregate at least two other presentational components; if it defines it's own Redux-related modules (action-creators.ts, ..., state.ts), then it is a container
   - [ ] having the whole React application visualized as a tree of components, avoid creating container components in the leaf nodes; it might happen a component is found reusable and replaced to @components path alias namespace
@@ -88,6 +89,7 @@ Despite providing lots of benefits, there are special ares of interest when deve
   - [x] Reducers are plain functions
   - [x] Redux-thunk effects are higher-order functions
 - [x] tslint with [VSCode tslint extension](https://marketplace.visualstudio.com/items?itemName=eg2.tslint)
+   - [x] indentation with 2 spaces
 - [x] Webpack-npm scripts for [development](/webpack/dev.config.js), [publishing](/webpack/prod.config.js) and [bundle analysis](/webpack/analyze.config.js)
 - [ ] Bootstrap v4
 - [ ] Custom SCSS with variables exported to ECMAScript

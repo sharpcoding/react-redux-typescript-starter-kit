@@ -10,7 +10,7 @@ import { BubbleChart } from '@components/bubble-chart';
 import { ISetHeightActionCreator, ISetWidthActionCreator, setHeight, setWidth } from './action-creators';
 import { SetHeightAction, SetWidthAction } from './actions';
 import { generateBubbulePoints, IGenerateBubblePointsEffect } from './effects';
-import { IBubbleChartScreenState } from './state';
+import { IBubbleChartScreenState } from './model';
 
 export { IBubbleChartScreenState }
 export { bubbleChartScreenReducer, BubbleChartReducerActionTypes } from './reducers';
