@@ -158,10 +158,10 @@ const start: IStartEngineActionCreator = () =>
   _.toPlainObject(new StartEngineAction());
 
 const gearUp: IGearUpActionCreator = (gears: string) =>
-  _.toPlainObject(new GearsUpAction(1));
+  _.toPlainObject(new GearsUpDownAction(1));
 
 const gearDown: IGearDownActionCreator = (gears: string) =>
-  _.toPlainObject(new GearsUpAction(-1));
+  _.toPlainObject(new GearsUpDownAction(-1));
 
 export {
   start,
