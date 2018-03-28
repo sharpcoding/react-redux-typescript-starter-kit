@@ -157,10 +157,10 @@ type IGearDownActionCreator = () => GearsUpDownAction;
 const start: IStartEngineActionCreator = () =>
   _.toPlainObject(new StartEngineAction());
 
-const gearUp: IGearUpActionCreator = (gears: string) =>
+const gearUp: IGearUpActionCreator = () =>
   _.toPlainObject(new GearsUpDownAction(1));
 
-const gearDown: IGearDownActionCreator = (gears: string) =>
+const gearDown: IGearDownActionCreator = () =>
   _.toPlainObject(new GearsUpDownAction(-1));
 
 export {
