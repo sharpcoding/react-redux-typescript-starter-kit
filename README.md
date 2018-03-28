@@ -63,13 +63,27 @@ Despite providing lots of benefits, there are special ares of interest when deve
 # Decisions made
 
 - [x] Feature-oriented (not role-oriented) repository code structure
-- [x] Typescript and Webpack path aliases (defining "semantic namespaces")
+  - [x] Typescript and Webpack path aliases (defining "semantic namespaces")
+    - [x] *@components* defines a path alias namespace for reusable / universal [presentational components](https://medium.com/@dan_abramov/smart-and-dumb-components-7ca2f9a7c7d0); to emphasize: these components are not containers and know nothing about Redux state
+    - [ ] *@views* (optional) - for complex, reusable presentational components
+    - [x] *@screens*; a screen is **1)** an graphical interface user sees after navigating with an url **2)** an aggregate of components gathered together for a well defined purpose
+    - [x] *@store* defines a path alias namespace for everything related to the Redux Store with one remark: *screens* and *components* define and re-export interfaces to be assembled and reused by the main store interface (*IAppState* in our case)
+  - [x] Every [container component](https://medium.com/@dan_abramov/smart-and-dumb-components-7ca2f9a7c7d0) - especially a screen - should define the following Redux-related modules:
+    - [x] action-creators.ts
+    - [x] action-types.ts
+    - [x] actions.ts
+    - [x] action-creators.ts
+    - [x] reducers.ts
+    - [x] state.ts OR state/index.ts with interfaces
+  - [ ] complex *screen* containers should be composed of multiple *view* container/presentational components
+  - [ ] *view* is a container/presentational component that exists to make better screen decomposition; it should aggregate at least two other presentational components; if it defines it's own Redux-related modules (action-creators.ts, ..., state.ts), then it is a container
+  - [ ] having the whole React application visualized as a tree of components, avoid creating container components in the leaf nodes; it might happen a component is found reusable and replaced to @components path alias namespace
 - [x] index.ts/index.tsx re-exports
 - [x] Redux store:
-  - [x] React state is an interface
-  - [x] Action types are defined as constants
-  - [x] Actions are defined as ES6 classes
-  - [x] Actions acceptable by a reducer make-up a discriminated union type
+  - [x] React state is a TypeScript interface
+  - [x] Action types are defined as TypeScript constants
+  - [x] Actions are defined as TypeScript classes
+  - [x] Actions acceptable by a reducer make-up a TypeScript discriminated union type
   - [x] Action creators are plain functions
   - [x] Reducers are plain functions
   - [x] Redux-thunk effects are higher-order functions
