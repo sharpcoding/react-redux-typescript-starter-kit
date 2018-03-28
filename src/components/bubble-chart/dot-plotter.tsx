@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import { IBubblePoint } from './model/bubble-point';
+import { IBubblePoint } from './models/bubble-point';
 import { IXScale, IYScale } from './scales';
 
 export interface IDotPlotterProps {

@@ -2,8 +2,7 @@
 
 import { applyMiddleware, combineReducers, compose, createStore, ReducersMapObject, Store } from 'redux';
 import reduxThunk from 'redux-thunk';
-import { bubbleChartScreenReducer, BubbleChartReducerActionTypes } from '@screens/bubble-chart-screen';
-import { IBubbleChartScreenState } from '../screens/bubble-chart-screen/state';
+import { bubbleChartScreenReducer, BubbleChartReducerActionTypes, IBubbleChartScreenState } from '@screens/bubble-chart-screen';
 import { IAppState } from './state';
 
 interface ICombinedReducers extends ReducersMapObject {

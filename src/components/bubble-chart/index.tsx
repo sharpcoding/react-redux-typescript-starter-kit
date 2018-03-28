@@ -2,7 +2,7 @@ import * as d3 from 'd3';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { DotPlotter } from './dot-plotter';
-import { IBubblePoint } from './model/bubble-point';
+import { IBubblePoint } from './models/bubble-point';
 
 export { IBubblePoint };
 
