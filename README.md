@@ -11,7 +11,7 @@ npm run dev
 
 everything goes OK, a new browser tab window tab opens automatically pointing to http://localhost:9000/. 
 
-Chrome Web Browser with [Redux DevTools Extension](https://github.com/zalmoxisus/redux-devtools-extension) is recommended. You can play around with code and see changes as they appear by hot-reloading and in Redux DevTools Inspector.
+Chrome Web Browser with [Redux DevTools Extension](https://github.com/zalmoxisus/redux-devtools-extension) is recommended. You can play around with user interface and see actions with store changes in Redux DevTools Inspector, change code and see updates as they appear (by hot-reloading).
 
 ![alt text](/docs/webpack-app.jpg "Starter Kit Screen")
 
@@ -36,9 +36,33 @@ The purpose of this repository is to:
 - encourage developers community to use TypeScript with React Redux development,
 - provide a fast way to start writing mature and streamlined front-end applications.
 
+# General TypeScript remarks
+
+TypeScript is - we believe - a great way to write single page applications today. Besides type-safety (understood as detecting errors directly in IDE or at transpilation phase), there plenty of other benefits:
+
+- targeting different existing/old ECMAScript versions
+- targeting future ECMAScript versions, i.e. incorporating recommendations/proposals - right here and right now
+- seamless handling of different bundle systems like UMD, AMD, CommonJS
+- intellisense in the IDE (!)
+- dedicated linter (tslint)
+- active development and great community
+
+> TypeScript is a (kind of) powered exoskeleton over ECMAScript (of the development phase)
+
+Having this said, it should be emphasized that TypeScript is not used in runtime, so we don't talk about a kinda ECMAScript-on-steroids replacement for your browser - TypeScript is created for developers and for development purposes only.
+
+Despite providing lots of benefits, there are special ares of interest when developing with TypeScript:
+
+- at first, doing things right in TypeScript might be challenging for a seasoned JavaScript developer; as every technology it requires a little bit to learn as there are something like 15+ major versions published; the good news is: it is not "all or nothing" domain, adopting to TypeScript might (and should) be gradual/incremental
+- despite popular belief, not every JavaScript statement is a correct TypeScript statement, this gets clear especially when dealing with JavaScript types implicit conversions (yet implicit conversions is the last thing we do want to happen when using TypeScript)
+- to summarize two points above: using TypeScript might require a little bit of investment and, more importantly, changed mindset
+- partial import in TypeScript is as good as the typings (d.ts) are, e.g. lodash typings do not currently support partial loading, resulting in much bigger bundle sizes
+- loading module variables out of the SCSS into TypeScript module is not seamless - it requires writing a dedicated scss.d.ts file
+- some libraries that might quite well in pure ECMAScript, are getting cumbersome when used in TypeScript (for real type safety and other benefits, it is not enough to provide typings to a JavaScript library / module)
+
 # Decisions made
 
-- [x] Feature-oriented (not role-oriented) code structure
+- [x] Feature-oriented (not role-oriented) repository code structure
 - [x] Typescript and Webpack path aliases (defining "semantic namespaces")
 - [x] index.ts/index.tsx re-exports
 - [x] Redux store:
@@ -55,13 +79,17 @@ The purpose of this repository is to:
 - [ ] Custom SCSS with variables exported to ECMAScript
 - [x] Jest snapshot testing
 
+Throughout paragraphs below I go a little bit into decision details regarding TypeScript Redux programming, yet, it all can be summarized with the following rule:
+
+> use constructs and solutions provided by TypeScript whenever possible
+
+This makes application of helper-libraries like [react-actions](https://github.com/redux-utilities/redux-actions) redundant. Referring to react-actions **typings** example, I found it really cumbersome, awkward to use and - in the context of type safety - limiting.
+
+Another example might be [react-bootstrap](https://react-bootstrap.github.io/) - as for version 0.3 it provides little or no benefits compared to using plain Bootstrap (e.g. no forms validation, still targeting Bootstrap v3), yet it makes another dependency in [package.json](/package.json). 
+
 ## Redux
 
-In this paragraph we go a little bit into decision details regarding TypeScript Redux programming, yet, it can be summarized with the following rule:
-
-**use constructs that are already provided in the ECMAScript/TypeScript whenever possible**.
-
-This makes application of helper-libraries like [react-actions](https://github.com/redux-utilities/redux-actions) redundant. More precisely, we used react-actions **typings** in the past and found it really cumbersome, awkward to use and - in the context of type safety - limiting.
+Solutions applied in the Redux section are influenced by [Reactive libraries for Angular](https://github.com/ngrx/platform)
 
 ### State is just an interface
 
@@ -83,7 +111,7 @@ export const GEARS_UP_DOWN = 'GEARS_UP_DOWN';
 
 ### Actions are defined as ES6 classes
 
-An action is just an object. Rearding Redux store requirement it is a plain object having the *type* property:
+Action is just an object. Rearding Redux store requirement it is a plain object having the *type* property and every action object meets the following contract:
 
 ```javascript
 interface Action {
@@ -91,7 +119,7 @@ interface Action {
 }
 ```
 
-Actions are defined by the class construct, which is a great way to:
+Actions are defined by the *class* construct, which is a great way to:
 - keep action and it's type in the same place
 - define action properties by constructor arguments with *public* modifier.
 
@@ -149,7 +177,7 @@ Please note these simple functions are described by TypeScript type aliases (in 
 
 ### Reducers are plain functions
 
-Reducers are plain functions that make use of [discriminated union types](https://www.typescriptlang.org/docs/handbook/advanced-types.html) - this is big win for TypeScript development, having an appropriate action type (one of an union) "magically" cast in the relevant *case* block. So, any breaking changes to:
+Reducers are plain functions that make use of [discriminated union types](https://www.typescriptlang.org/docs/handbook/advanced-types.html) - this is big win for writing reducer's code, having an appropriate action type (one of an union) "magically" cast in the relevant *case* block. Additionally, any breaking changes to:
 - action types defined,
 - action definitions that are available,
 - available action parameters and types
@@ -212,21 +240,3 @@ instead of:
 ```
 import { BubbleChart } from '../../../src/components';
 ```
-
-
-# General TypeScript remarks
-
-TypeScript is - we believe - a great way to write JavaScript applications today. Besides type-safety, there plenty of other great benefits:
-
-- targeting different existing/old ECMAScript versions
-- targeting future ECMAScript versions, i.e. incorporating recommendations/proposals - right here and right now
-- seamless handling of different bundle systems like UMD, AMD, CommonJS
-- intellisense in the IDE (!)
-- dedicated linter (tslint)
-- active development and great community
-
-However, there are special ares of interest when developing with TypeScript:
-
-- partial import in TypeScript as as good as the typings (d.ts) are, e.g. lodash typings does not currently support partial loading, resulting in much bigger bundle sizes
-- loading module variables out of the SCSS into TypeScript module is not seamless - it requires writing a dedicated scss.d.ts file,
-- some libraries that work quite well in pure ES6, are not a great choice when used in TypeScript (please read on for details)
