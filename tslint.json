@@ -23,7 +23,7 @@
     },
     "object-literal-sort-keys": false,
     "ordered-imports": false,
-    "quotemark": [true, "single", "avoid-escape", "avoid-template"],
+    "quotemark": [true, "single", "avoid-escape", "avoid-template"]
   },
   "defaultSeverity": "warning",
   "jsRules": {
