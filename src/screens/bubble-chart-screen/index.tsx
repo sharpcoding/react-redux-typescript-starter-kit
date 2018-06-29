@@ -1,18 +1,18 @@
 // tslint:disable:no-empty-interface
 // tslint:disable:no-string-literal
 
-import { IAppState } from '@store/state';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
+import { IAppState } from '@store/state';
 import { BubbleChart } from '@components/bubble-chart';
 import { ISetHeightActionCreator, ISetWidthActionCreator, setHeight, setWidth } from './action-creators';
 import { SetHeightAction, SetWidthAction } from './actions';
 import { generateBubbulePoints, IGenerateBubblePointsEffect } from './effects';
-import { IBubbleChartScreenState } from './models/state';
+import { IBubbleChartScreenState } from './models/bubble-chart-screen-state';
 
-export { IBubbleChartScreenState }
+export { IBubbleChartScreenState };
 export { bubbleChartScreenReducer, BubbleChartReducerActionTypes } from './reducers';
 
 interface IScreenProps extends IBubbleChartScreenState { }

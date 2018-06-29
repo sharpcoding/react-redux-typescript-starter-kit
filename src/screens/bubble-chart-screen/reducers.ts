@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import * as blueScreenActionTypes from './action-types';
 import { BubblePointsGenerationStartedAction, BubblePointsGenerationSucceededAction, SetHeightAction, SetWidthAction } from './actions';
-import { IBubbleChartScreenState } from './models/state';
+import { IBubbleChartScreenState } from './models/bubble-chart-screen-state';
 
 const initialState: IBubbleChartScreenState = { width: 800, height: 600, backgroundColor: 'lightblue', bubblePoints: [] };
 
