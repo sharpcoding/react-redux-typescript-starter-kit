@@ -9,16 +9,15 @@ export interface IDotPlotterProps {
   dots: IBubblePoint[];
 }
 
-export const DotPlotter = (props: IDotPlotterProps) => {
-  return (<g>
-    {_.reduce(props.dots, (acc: JSX.Element[], el: IBubblePoint, idx: number) => {
-      acc.push(<circle
+export const DotPlotter = (props: IDotPlotterProps) =>
+  <g>
+    {_.map(props.dots, (el: IBubblePoint, idx: number) =>
+      <circle
         key={`circle_${idx}`}
         cx={props.xScale(el.x)}
         cy={props.yScale(el.y)}
         fill={el.color}
-        r={el.r} />);
-      return acc;
-    }, [])}
-  </g>);
-};
+        r={el.r}
+      />,
+    )}
+  </g>;
