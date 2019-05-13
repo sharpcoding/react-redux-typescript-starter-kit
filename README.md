@@ -224,22 +224,39 @@ export const engineReducer = (state: IEngine = initialState, action: EngineReduc
 };
 ```
 
-### Redux-thunk effects are higher-order functions
+### Effects for complex and asynchronous scenarios
 
-We believe there is nothing like an "async action", "async action-creator" or the like. Developers are highly encouraged to consciously use the "effect" terminology (which assumes effect to be just an higher-order function - a function that returns other function, in the case of redux-thunk, the one with *dispatch* argument).
+We believe there is nothing like an _"async action"_ as well as _"async action-creator"_. Certainly, in the scenarios which are 
+
+- simple
+- do not involve some kind of asynchrony
+
+plain actions and action creators are sufficient.
+
+However, in more complex (most often asynchronous) cases, when **a single activity in user interface results in casting several actions**, developers are highly encouraged to consciously use the **"effect"** terminology. 
+
+For asynchronous scenarios, effect is just an higher-order function (a function that returns other function, in the case of `redux-thunk`, the one with *dispatch* argument).
 
 As an example, lets imagine a two gears up change in the engine is asynchronous and we want to make it in a safe way:
 
 ```javascript
 import * as _ from 'lodash';
 import { Dispatch } from 'react-redux';
-import { GearsUpDownAction } from './actions';
+import { 
+  PressingClutchAction, 
+  GearsUpDownAction,
+  ReleasingClutchAction
+} from './actions';
 
 type ITwoGearsUpEffect = () => (dipatch: Dispatch<void>) => void;
 
 const twoGearsUp: ITwoGearsUpEffect = () => (dispatch: Dispatch<void>) => {
+  dispatch(_.toPlainObject(new PressingClutchAction()))
   new Promise((resolve, reject) => setTimeout(() => resolve(), 1500))
-  .then(() => dispatch(_.toPlainObject(new GearsUpDownAction(2))));
+  .then(() => { 
+    dispatch(_.toPlainObject(new GearsUpDownAction(2)))
+    dispatch(_.toPlainObject(new ReleasingClutchAction()))
+  });
 };
 
 export {
